@@ -128,20 +128,30 @@ select.search-input{cursor:pointer}
 .form-section-title{font-size:11.5px;font-weight:800;color:var(--accent2);letter-spacing:.04em;margin-bottom:13px;display:flex;align-items:center;gap:7px}
 .form-section-title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent2);flex-shrink:0}
 
-/* combo (tag/group token input) */
-.combo{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 7px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;position:relative;transition:border-color .15s;min-height:40px}
-.combo:focus-within{border-color:var(--accent)}
-.combo-chip{display:inline-flex;align-items:center;gap:5px;background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:5px 5px 5px 11px;font-size:12.5px;font-weight:600}
-.combo-chip .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.combo-chip .x{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px}
-.combo-chip .x:hover{background:#3a3f52;color:#fff}
-.combo-input{flex:1;min-width:90px;background:transparent;border:none;outline:none;padding:5px 3px;font-size:13px}
-.combo-drop{position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--bg2);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 28px #000a;max-height:190px;overflow-y:auto;z-index:60;display:none}
-.combo-drop.on{display:block}
-.combo-opt{padding:9px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px}
-.combo-opt:hover{background:var(--panel2)}
-.combo-opt.create{color:var(--accent2);font-weight:700;border-top:1px solid var(--line)}
-.combo-empty{padding:10px 12px;color:var(--muted);font-size:12.5px}
+/* wizard */
+.wizard-steps{display:flex;gap:4px;margin-bottom:18px;overflow-x:auto;padding-bottom:2px}
+.wizard-step{flex:1;min-width:76px;text-align:center;padding:9px 6px;border-radius:9px;font-size:11px;font-weight:700;color:var(--muted);background:var(--panel);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:.13s}
+.wizard-step:hover{border-color:#48506e;color:var(--text)}
+.wizard-step.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.wizard-panel{display:none}
+.wizard-panel.on{display:block}
+.modal-foot .btn.left{margin-right:auto}
+
+/* tag/category/group toggle-grid picker with inline add + delete */
+.tagblock{margin-bottom:20px}
+.tagblock:last-child{margin-bottom:0}
+.tagblock-head{margin-bottom:9px}
+.tagblock-head label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+.toggle-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
+.toggle-pill{position:relative;display:inline-flex;align-items:center;gap:6px;padding:8px 27px 8px 14px;border-radius:20px;background:var(--panel);border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:.13s}
+.toggle-pill:hover{border-color:#48506e}
+.toggle-pill.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.toggle-pill .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.toggle-pill .del{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;opacity:.5}
+.toggle-pill .del:hover{opacity:1;background:#0004}
+.tagblock-add{display:flex;gap:6px}
+.tagblock-add input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;outline:none;font-size:12.5px}
+.tagblock-add input:focus{border-color:var(--accent)}
 
 /* relationship builder */
 .rel-row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;position:relative}
@@ -287,17 +297,12 @@ select.search-input{cursor:pointer}
   <div class="modal" style="max-width:640px">
     <h2 id="frTitle">친구 추가 <button class="icon-btn x" data-close="ovFriend">✕</button></h2>
 
-    <div class="form-section">
-      <div class="form-section-title">기본 정보</div>
-      <div class="field-row">
-        <div class="field" style="flex:2">
-          <label>이름</label>
-          <input type="text" id="frName" placeholder="이름">
-        </div>
-        <div class="field" style="flex:1.4">
-          <label>분류</label>
-          <div class="combo" id="frCategoryCombo"></div>
-        </div>
+    <div class="wizard-steps" id="frSteps"></div>
+
+    <div class="wizard-panel" data-step="0">
+      <div class="field">
+        <label>이름</label>
+        <input type="text" id="frName" placeholder="이름">
       </div>
       <div class="field-row">
         <div class="field">
@@ -309,35 +314,41 @@ select.search-input{cursor:pointer}
           <input type="text" id="frImg" placeholder="https://...">
         </div>
       </div>
-    </div>
-
-    <div class="form-section">
-      <div class="form-section-title">소개</div>
       <div class="field">
+        <label>본문</label>
         <textarea id="frDesc" placeholder="이 친구에 대한 소개"></textarea>
       </div>
-    </div>
-
-    <div class="form-section">
-      <div class="form-section-title">태그</div>
-      <div id="frTagPickers"></div>
-    </div>
-
-    <div class="form-section">
-      <div class="form-section-title">무리</div>
-      <div class="field">
-        <div class="combo" id="frGroupCombo"></div>
+      <div class="tagblock">
+        <div class="tagblock-head"><label>분류 (하나만 선택)</label></div>
+        <div class="toggle-grid" id="grid-분류"></div>
+        <div class="tagblock-add">
+          <input type="text" id="add-분류" placeholder="새 분류 추가">
+          <button class="btn sm" data-addcat="1">추가</button>
+        </div>
       </div>
     </div>
 
-    <div class="form-section">
-      <div class="form-section-title">인간관계</div>
-      <div id="frRelList"></div>
-      <button class="btn sm" id="frAddRel" style="margin-bottom:12px">＋ 관계 추가</button>
+    <div class="wizard-panel" data-step="1">
+      <div id="frTagBlocks"></div>
     </div>
 
-    <div class="form-section">
-      <div class="form-section-title">메모</div>
+    <div class="wizard-panel" data-step="2">
+      <div class="tagblock">
+        <div class="tagblock-head"><label>무리 (복수 선택 가능)</label></div>
+        <div class="toggle-grid" id="grid-groups"></div>
+        <div class="tagblock-add">
+          <input type="text" id="add-groups" placeholder="새 무리 추가">
+          <button class="btn sm" data-addgroup="1">추가</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wizard-panel" data-step="3">
+      <div id="frRelList"></div>
+      <button class="btn sm" id="frAddRel">＋ 관계 추가</button>
+    </div>
+
+    <div class="wizard-panel" data-step="4">
       <div class="field">
         <label>관계(글)</label>
         <textarea id="frRelNote" placeholder="관계에 대한 자유 서술"></textarea>
@@ -346,10 +357,6 @@ select.search-input{cursor:pointer}
         <label>기타사항</label>
         <textarea id="frEtc"></textarea>
       </div>
-    </div>
-
-    <div class="form-section">
-      <div class="form-section-title">평가</div>
       <div class="field-row">
         <div class="field">
           <label>별점</label>
@@ -364,7 +371,9 @@ select.search-input{cursor:pointer}
 
     <div class="modal-foot">
       <button class="btn" data-close="ovFriend">취소</button>
-      <button class="btn primary" id="frSave">저장</button>
+      <button class="btn left" id="frPrev">이전</button>
+      <button class="btn primary" id="frNext">다음</button>
+      <button class="btn primary" id="frSave" style="display:none">저장</button>
     </div>
   </div>
 </div>
@@ -492,6 +501,7 @@ const S = {
   relTypes: [],
   friends: [],        // enriched: {..., tagsByType:{name:[tag,...]}, category, groups:[...], relOut:[...], relIn:[...]}
   editingFriendId: null,
+  wizardStep: 0,
   pickedCategory: null,
   pickedTags: {},     // tagTypeName -> Set(tagId)
   pickedGroups: new Set(),
@@ -690,116 +700,146 @@ window.toggleFav = async (id) => {
 /* =====================================================
    친구 편집 모달
 ===================================================== */
-/* ---- generic combo (chip token input with search + inline create) ---- */
-function initCombo(elId, {getAll, isSelected, multi, onToggle, onCreate, placeholder}){
-  const root = $('#'+elId);
-  root.innerHTML = `<div class="combo-drop"></div><input class="combo-input" placeholder="${esc(placeholder||'검색 또는 입력')}">`;
-  const inputEl = root.querySelector('.combo-input');
-  const dropEl = root.querySelector('.combo-drop');
-
-  function renderChips(){
-    root.querySelectorAll('.combo-chip').forEach(c => c.remove());
-    const selected = getAll().filter(it => isSelected(it.id));
-    selected.forEach(it => {
-      const chip = document.createElement('span');
-      chip.className = 'combo-chip';
-      chip.innerHTML = `${it.color ? `<span class="dot" style="background:${esc(it.color)}"></span>` : ''}${esc(it.label)}<span class="x" data-remove="${it.id}">✕</span>`;
-      chip.querySelector('.x').addEventListener('click', e => { e.stopPropagation(); onToggle(it.id, false); renderChips(); renderDrop(); });
-      root.insertBefore(chip, inputEl);
-    });
-  }
-  function renderDrop(){
-    const q = inputEl.value.trim().toLowerCase();
-    const all = getAll();
-    const filtered = all.filter(it => !isSelected(it.id) && it.label.toLowerCase().includes(q));
-    const exact = all.some(it => it.label.toLowerCase() === q);
-    let html = filtered.map(it => `<div class="combo-opt" data-id="${it.id}">${it.color?`<span class="dot" style="background:${esc(it.color)}"></span>`:''}${esc(it.label)}</div>`).join('');
-    if(q && !exact) html += `<div class="combo-opt create" data-create="1">＋ '${esc(inputEl.value.trim())}' 새로 추가</div>`;
-    dropEl.innerHTML = html || `<div class="combo-empty">${q ? '일치하는 항목 없음' : (all.length ? '입력해서 검색하거나 새로 추가하세요' : '아직 없음 — 입력해서 추가하세요')}</div>`;
-    dropEl.querySelectorAll('[data-id]').forEach(o => o.addEventListener('click', () => {
-      onToggle(o.dataset.id, true);
-      inputEl.value = '';
-      renderChips();
-      if(!multi){ closeDrop(); } else renderDrop();
-      inputEl.focus();
-    }));
-    const createOpt = dropEl.querySelector('[data-create]');
-    if(createOpt) createOpt.addEventListener('click', async () => {
-      const label = inputEl.value.trim();
-      const newId = await onCreate(label);
-      if(newId){ onToggle(newId, true); inputEl.value=''; renderChips(); if(!multi) closeDrop(); else renderDrop(); }
-      inputEl.focus();
-    });
-  }
-  function openDrop(){ dropEl.classList.add('on'); renderDrop(); }
-  function closeDrop(){ dropEl.classList.remove('on'); }
-  inputEl.addEventListener('focus', openDrop);
-  inputEl.addEventListener('input', renderDrop);
-  document.addEventListener('click', e => { if(!root.contains(e.target)) closeDrop(); });
-  renderChips();
+/* ---- generic toggle-grid picker with inline delete ---- */
+function renderToggleGrid(gridId, cfg){
+  const { getAll, isSelected, onToggle, onDelete } = cfg;
+  const grid = $('#'+gridId);
+  if(!grid) return;
+  const items = getAll();
+  grid.innerHTML = items.length ? items.map(it => `
+    <button type="button" class="toggle-pill ${isSelected(it.id)?'on':''}" data-id="${it.id}">
+      ${it.color ? `<span class="dot" style="background:${esc(it.color)}"></span>` : ''}${esc(it.label)}
+      <span class="del" data-del="${it.id}" title="삭제">✕</span>
+    </button>`).join('') : `<div style="color:var(--muted);font-size:12.5px">아직 없음 — 아래에서 추가하세요</div>`;
+  grid.querySelectorAll('.toggle-pill').forEach(btn => btn.addEventListener('click', e => {
+    if(e.target.closest('[data-del]')) return;
+    const id = btn.dataset.id;
+    onToggle(id, !isSelected(id));
+    renderToggleGrid(gridId, cfg);
+  }));
+  grid.querySelectorAll('[data-del]').forEach(x => x.addEventListener('click', async e => {
+    e.stopPropagation();
+    if(!confirm('삭제할까요? 부여된 모든 친구에게서도 사라집니다.')) return;
+    await onDelete(x.dataset.del);
+    renderToggleGrid(gridId, cfg);
+  }));
 }
-
 function categoryItems(){ const tt = tagTypeByName('분류'); return tt ? tt.tags.map(t=>({id:t.id, label:t.label})) : []; }
 function tagItemsFor(name){ const tt = tagTypeByName(name); return tt ? tt.tags.map(t=>({id:t.id, label:t.label})) : []; }
 function groupItems(){ return S.groups.map(g=>({id:g.id, label:g.name, color:g.color||'#666'})); }
 
-function renderFrCategoryCombo(selId){
-  S.pickedCategory = selId || null;
-  initCombo('frCategoryCombo', {
+function catGridConfig(){
+  return {
     getAll: categoryItems,
     isSelected: id => S.pickedCategory === id,
-    multi: false,
-    onToggle: (id, sel) => { S.pickedCategory = sel ? id : (S.pickedCategory === id ? null : S.pickedCategory); },
-    onCreate: async label => {
-      const tt = tagTypeByName('분류'); if(!tt) return null;
-      const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
-      if(error){ toast('추가 실패: '+error.message, true); return null; }
-      tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
-      return data.id;
+    onToggle: (id, on) => { S.pickedCategory = on ? id : (S.pickedCategory===id ? null : S.pickedCategory); },
+    onDelete: async id => {
+      const { error } = await sb.from('tags').delete().eq('id', id);
+      if(error) return toast('삭제 실패: '+error.message, true);
+      const tt = tagTypeByName('분류'); if(tt) tt.tags = tt.tags.filter(t=>t.id!==id);
+      if(S.pickedCategory===id) S.pickedCategory = null;
+      toast('삭제됨');
     },
-    placeholder: '분류 검색 또는 새로 추가',
-  });
+  };
 }
-function renderFrTagPickers(){
-  const wrap = $('#frTagPickers');
-  wrap.innerHTML = NON_CATEGORY_ORDER.map(tn => `
-    <div class="field">
-      <label>${esc(tn)}</label>
-      <div class="combo" id="combo-${esc(tn)}"></div>
-    </div>`).join('');
-  NON_CATEGORY_ORDER.forEach(tn => {
-    initCombo('combo-'+tn, {
-      getAll: () => tagItemsFor(tn),
-      isSelected: id => S.pickedTags[tn]?.has(id),
-      multi: true,
-      onToggle: (id, sel) => { S.pickedTags[tn] = S.pickedTags[tn] || new Set(); sel ? S.pickedTags[tn].add(id) : S.pickedTags[tn].delete(id); },
-      onCreate: async label => {
-        const tt = tagTypeByName(tn); if(!tt){ toast('태그 유형이 없습니다: '+tn, true); return null; }
-        const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
-        if(error){ toast('추가 실패: '+error.message, true); return null; }
-        tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
-        return data.id;
-      },
-      placeholder: tn + ' 검색 또는 새로 추가',
-    });
-  });
+function tagGridConfig(tn){
+  return {
+    getAll: () => tagItemsFor(tn),
+    isSelected: id => S.pickedTags[tn]?.has(id),
+    onToggle: (id, on) => { S.pickedTags[tn] = S.pickedTags[tn] || new Set(); on ? S.pickedTags[tn].add(id) : S.pickedTags[tn].delete(id); },
+    onDelete: async id => {
+      const { error } = await sb.from('tags').delete().eq('id', id);
+      if(error) return toast('삭제 실패: '+error.message, true);
+      const tt = tagTypeByName(tn); if(tt) tt.tags = tt.tags.filter(t=>t.id!==id);
+      S.pickedTags[tn]?.delete(id);
+      toast('삭제됨');
+    },
+  };
 }
-function renderFrGroupCombo(){
-  initCombo('frGroupCombo', {
+function groupGridConfig(){
+  return {
     getAll: groupItems,
     isSelected: id => S.pickedGroups.has(id),
-    multi: true,
-    onToggle: (id, sel) => { sel ? S.pickedGroups.add(id) : S.pickedGroups.delete(id); },
-    onCreate: async label => {
-      const color = COLORS[S.groups.length % COLORS.length];
-      const { data, error } = await sb.from('groups').insert({name: label, color}).select().single();
-      if(error){ toast('추가 실패: '+error.message, true); return null; }
-      S.groups.push(data);
-      return data.id;
+    onToggle: (id, on) => { on ? S.pickedGroups.add(id) : S.pickedGroups.delete(id); },
+    onDelete: async id => {
+      const { error } = await sb.from('groups').delete().eq('id', id);
+      if(error) return toast('삭제 실패: '+error.message, true);
+      S.groups = S.groups.filter(g=>g.id!==id);
+      S.pickedGroups.delete(id);
+      toast('삭제됨');
     },
-    placeholder: '무리 검색 또는 새로 추가',
-  });
+  };
 }
+function renderCategoryGrid(){ renderToggleGrid('grid-분류', catGridConfig()); }
+function renderGroupGrid(){ renderToggleGrid('grid-groups', groupGridConfig()); }
+function renderFrTagBlocksWizard(){
+  const wrap = $('#frTagBlocks');
+  wrap.innerHTML = NON_CATEGORY_ORDER.map(tn => `
+    <div class="tagblock">
+      <div class="tagblock-head"><label>${esc(tn)} (복수 선택 가능)</label></div>
+      <div class="toggle-grid" id="grid-${esc(tn)}"></div>
+      <div class="tagblock-add">
+        <input type="text" id="add-${esc(tn)}" placeholder="새 ${esc(tn)} 추가">
+        <button class="btn sm" data-addtag="${esc(tn)}">추가</button>
+      </div>
+    </div>`).join('');
+  NON_CATEGORY_ORDER.forEach(tn => renderToggleGrid('grid-'+tn, tagGridConfig(tn)));
+  wrap.querySelectorAll('[data-addtag]').forEach(btn => btn.addEventListener('click', async () => {
+    const tn = btn.dataset.addtag;
+    const inp = $('#add-'+tn);
+    const label = inp.value.trim(); if(!label) return;
+    const tt = tagTypeByName(tn); if(!tt) return toast('태그 유형이 없습니다: '+tn, true);
+    const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
+    if(error) return toast('추가 실패: '+error.message, true);
+    tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
+    S.pickedTags[tn] = S.pickedTags[tn] || new Set(); S.pickedTags[tn].add(data.id);
+    inp.value = '';
+    renderToggleGrid('grid-'+tn, tagGridConfig(tn));
+    toast('추가 및 선택됨');
+  }));
+}
+$('[data-addcat]').addEventListener('click', async () => {
+  const inp = $('#add-분류');
+  const label = inp.value.trim(); if(!label) return;
+  const tt = tagTypeByName('분류'); if(!tt) return toast('분류 태그유형이 없습니다', true);
+  const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
+  if(error) return toast('추가 실패: '+error.message, true);
+  tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
+  S.pickedCategory = data.id;
+  inp.value = '';
+  renderCategoryGrid();
+  toast('추가 및 선택됨');
+});
+$('[data-addgroup]').addEventListener('click', async () => {
+  const inp = $('#add-groups');
+  const label = inp.value.trim(); if(!label) return;
+  const color = COLORS[S.groups.length % COLORS.length];
+  const { data, error } = await sb.from('groups').insert({name: label, color}).select().single();
+  if(error) return toast('추가 실패: '+error.message, true);
+  S.groups.push(data);
+  S.pickedGroups.add(data.id);
+  inp.value = '';
+  renderGroupGrid();
+  toast('추가 및 선택됨');
+});
+
+/* ---- wizard step navigation ---- */
+const WIZARD_STEPS = ['기본정보','태그','무리','인간관계','메모·평가'];
+function renderWizardSteps(){
+  $('#frSteps').innerHTML = WIZARD_STEPS.map((s,i) => `<button type="button" class="wizard-step ${S.wizardStep===i?'on':''}" data-i="${i}">${i+1}. ${esc(s)}</button>`).join('');
+  $('#frSteps').querySelectorAll('.wizard-step').forEach(b => b.addEventListener('click', () => { S.wizardStep = Number(b.dataset.i); showWizardStep(); }));
+}
+function showWizardStep(){
+  document.querySelectorAll('#ovFriend .wizard-panel').forEach(p => p.classList.toggle('on', Number(p.dataset.step)===S.wizardStep));
+  renderWizardSteps();
+  const last = S.wizardStep === WIZARD_STEPS.length - 1;
+  $('#frPrev').style.display = S.wizardStep===0 ? 'none' : '';
+  $('#frNext').style.display = last ? 'none' : '';
+  $('#frSave').style.display = last ? '' : 'none';
+}
+$('#frPrev').addEventListener('click', () => { S.wizardStep = Math.max(0, S.wizardStep-1); showWizardStep(); });
+$('#frNext').addEventListener('click', () => { S.wizardStep = Math.min(WIZARD_STEPS.length-1, S.wizardStep+1); showWizardStep(); });
+
 function renderFrStars(){
   const box = $('#frStars');
   box.innerHTML = [1,2,3,4,5].map(i => `<span class="${i<=S.starVal?'on':''}" data-v="${i}">★</span>`).join('');
@@ -848,6 +888,7 @@ $('#frFavToggle').addEventListener('click', () => { S.favVal = !S.favVal; $('#fr
 
 function openFriendModal(f = null){
   S.editingFriendId = f ? f.id : null;
+  S.pickedCategory = f ? f.category_tag_id : null;
   S.pickedTags = {};
   for(const tn of NON_CATEGORY_ORDER) S.pickedTags[tn] = new Set(f ? (f.tagsByType[tn]||[]).map(t=>t.id) : []);
   S.pickedGroups = new Set(f ? f.groups.map(g=>g.id) : []);
@@ -864,11 +905,13 @@ function openFriendModal(f = null){
   $('#frEtc').value = f?.etc_note || '';
   $('#frFavToggle').classList.toggle('on', S.favVal);
 
-  renderFrCategoryCombo(f?.category_tag_id);
-  renderFrTagPickers();
-  renderFrGroupCombo();
+  renderCategoryGrid();
+  renderFrTagBlocksWizard();
+  renderGroupGrid();
   renderFrStars();
   renderFrRelList();
+  S.wizardStep = 0;
+  showWizardStep();
   openOv('ovFriend');
   $('#frName').focus();
 }
