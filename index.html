@@ -3,832 +3,1102 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>인간관계 분석</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<title>FRIEND ANALYSIS — 인간관계 분석</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
-  --bg:#0F1115;
-  --bg-elevated:#15181E;
-  --card:#1A1D23;
-  --card-border:#262A32;
-  --text:#E8E9ED;
-  --text-dim:#8A8F98;
-  --text-faint:#565B66;
-  --accent:#5B8CFF;
-  --accent-dim:#5B8CFF33;
-  --accent2:#2ED9C3;
-  --accent2-dim:#2ED9C333;
-  --gold:#F2B93B;
-  --danger:#FF5C5C;
-  --radius:14px;
-  --shadow:0 8px 24px rgba(0,0,0,.35);
-  --font-display:'Manrope',sans-serif;
-  --font-body:'Inter',sans-serif;
+  --bg:#13151b; --bg2:#181b23; --panel:#1e2230; --panel2:#252a3a; --line:#2e3447;
+  --text:#e8eaf2; --muted:#8d93a8; --accent:#6366f1; --accent2:#818cf8; --danger:#ef5d5d;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
+  --star:#e8b341;
 }
-:root:not([data-theme="light"]){ }
-@media (prefers-color-scheme: light){
-  :root:not([data-theme="dark"]){
-    --bg:#F3F4F7;
-    --bg-elevated:#FFFFFF;
-    --card:#FFFFFF;
-    --card-border:#E3E5EA;
-    --text:#1B1D22;
-    --text-dim:#666B75;
-    --text-faint:#9A9EA8;
-    --shadow:0 8px 24px rgba(20,22,30,.10);
-  }
-}
-:root[data-theme="light"]{
-  --bg:#F3F4F7;--bg-elevated:#FFFFFF;--card:#FFFFFF;--card-border:#E3E5EA;
-  --text:#1B1D22;--text-dim:#666B75;--text-faint:#9A9EA8;--shadow:0 8px 24px rgba(20,22,30,.10);
-}
-*{box-sizing:border-box;}
-html,body{margin:0;padding:0;}
-body{
-  background:var(--bg); color:var(--text); font-family:var(--font-body);
-  min-height:100vh; overflow-x:hidden;
-}
-h1,h2,h3,.brand,.card-name,.section-title{font-family:var(--font-display);}
-button{font-family:var(--font-body); cursor:pointer;}
-input,select,textarea{font-family:var(--font-body);}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;font-size:14px}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:14px;color:var(--text)}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:#333a50;border-radius:5px}
+::-webkit-scrollbar-track{background:transparent}
 
-/* ---- Topbar ---- */
-.topbar{
-  position:sticky; top:0; z-index:20;
-  display:flex; align-items:center; gap:12px;
-  padding:14px 20px; background:color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter:blur(10px); border-bottom:1px solid var(--card-border);
-}
-.icon-btn{
-  width:40px;height:40px;border-radius:10px;border:1px solid var(--card-border);
-  background:var(--card); color:var(--text); display:flex;align-items:center;justify-content:center;
-  font-size:18px; flex:none; transition:.15s;
-}
-.icon-btn:hover{border-color:var(--accent); color:var(--accent);}
-.brand{font-weight:800; font-size:18px; letter-spacing:-.02em; margin-right:4px; white-space:nowrap;}
-.search-wrap{flex:1; position:relative; min-width:120px;}
-.search-wrap input{
-  width:100%; padding:10px 14px 10px 38px; border-radius:10px; border:1px solid var(--card-border);
-  background:var(--card); color:var(--text); font-size:14px; outline:none;
-}
-.search-wrap input:focus{border-color:var(--accent);}
-.search-wrap::before{content:"⌕"; position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-faint); font-size:16px;}
-.view-toggle{display:flex; background:var(--card); border:1px solid var(--card-border); border-radius:10px; overflow:hidden; flex:none;}
-.view-toggle button{
-  padding:9px 14px; border:none; background:transparent; color:var(--text-dim); font-size:13px; font-weight:600;
-}
-.view-toggle button.active{background:var(--accent); color:#fff;}
-.add-btn{
-  background:var(--accent); color:#fff; border:none; border-radius:10px; padding:0 16px; height:40px;
-  font-weight:700; font-size:14px; flex:none; display:flex; align-items:center; gap:6px;
-}
-.add-btn:hover{filter:brightness(1.08);}
+header{display:flex;align-items:center;gap:14px;padding:0 22px;height:58px;background:var(--bg2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;overflow-x:auto}
+.logo{font-weight:800;font-size:16px;letter-spacing:.04em;white-space:nowrap}
+.logo b{color:var(--accent2);font-family:var(--mono)}
+nav{display:flex;gap:4px;margin-left:8px}
+.tab-btn{padding:8px 13px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap;transition:.15s}
+.tab-btn:hover{color:var(--text);background:var(--panel)}
+.tab-btn.on{color:var(--text);background:var(--panel2);box-shadow:inset 0 0 0 1px var(--line)}
+.hd-right{margin-left:auto;display:flex;gap:8px;align-items:center;white-space:nowrap}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:#666;transition:.3s}
+.conn-dot.ok{background:#4ade80;box-shadow:0 0 8px #4ade8088}
+.conn-dot.bad{background:var(--danger)}
+.conn-label{font-size:11.5px;color:var(--muted);font-family:var(--mono)}
 
-/* ---- Layout ---- */
-.layout{display:flex;}
-.drawer{
-  width:280px; flex:none; background:var(--bg-elevated); border-right:1px solid var(--card-border);
-  height:calc(100vh - 69px); position:sticky; top:69px; overflow-y:auto; padding:18px 16px;
-  transform:translateX(-100%); transition:transform .22s ease; position:fixed; z-index:19; left:0;
-}
-.drawer.open{transform:translateX(0);}
-.drawer-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.45); z-index:18; display:none;}
-.drawer-backdrop.open{display:block;}
-.filter-group{margin-bottom:20px;}
-.filter-group h4{margin:0 0 10px; font-size:12px; text-transform:none; color:var(--text-dim); font-weight:700; letter-spacing:.02em;}
-.chip-row{display:flex; flex-wrap:wrap; gap:6px;}
-.chip{
-  padding:6px 11px; border-radius:999px; border:1px solid var(--card-border); background:var(--card);
-  font-size:12.5px; color:var(--text-dim); user-select:none; transition:.15s;
-}
-.chip.selected{background:var(--accent2-dim); border-color:var(--accent2); color:var(--accent2);}
-.chip:hover{border-color:var(--accent);}
-select.plain, input.plain{
-  width:100%; padding:8px 10px; border-radius:8px; border:1px solid var(--card-border); background:var(--card);
-  color:var(--text); font-size:13px;
-}
-.star-mini{cursor:pointer; font-size:16px; color:var(--text-faint);}
-.star-mini.on{color:var(--gold);}
-.toggle-row{display:flex; align-items:center; justify-content:space-between; font-size:13px; color:var(--text-dim);}
-.reset-link{font-size:12px; color:var(--accent); background:none; border:none; padding:0; text-decoration:underline;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;font-weight:700;font-size:13px;background:var(--panel2);border:1px solid var(--line);transition:.15s;white-space:nowrap}
+.btn:hover{border-color:#48506e;background:#2b3146}
+.btn.primary{background:var(--accent);border-color:var(--accent)}
+.btn.primary:hover{background:var(--accent2);border-color:var(--accent2)}
+.btn.danger{color:#ffb4b4;border-color:#5a3340}
+.btn.danger:hover{background:#3a2030;border-color:var(--danger)}
+.btn.sm{padding:5px 10px;font-size:12px;border-radius:7px}
+.tab-page{display:none;padding:20px 22px;max-width:1400px;margin:0 auto}
+.tab-page.on{display:block}
+.page-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.page-head h2{font-size:18px;font-weight:800}
+.page-head .count{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--panel);padding:3px 9px;border-radius:20px;border:1px solid var(--line)}
+.page-head .spacer{flex:1}
+.empty-note{color:var(--muted);text-align:center;padding:50px 0;font-size:13.5px;line-height:1.8}
+.search-input{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 12px;outline:none;font-size:13px;min-width:150px;transition:border-color .15s}
+.search-input:focus{border-color:var(--accent)}
+select.search-input{cursor:pointer}
 
-.main{flex:1; padding:24px; min-width:0;}
-.empty-state{text-align:center; padding:80px 20px; color:var(--text-faint);}
-.grid{
-  display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px;
-}
-.fcard{
-  background:var(--card); border:1px solid var(--card-border); border-radius:var(--radius);
-  padding:16px; cursor:pointer; transition:.15s; position:relative; box-shadow:var(--shadow);
-}
-.fcard:hover{border-color:var(--accent); transform:translateY(-2px);}
-.fcard .fav{position:absolute; top:12px; right:12px; color:var(--accent); font-size:15px;}
-.fcard .avatar{
-  width:52px;height:52px;border-radius:14px; background:var(--bg-elevated); display:flex;align-items:center;justify-content:center;
-  font-size:26px; margin-bottom:12px; overflow:hidden; border:1px solid var(--card-border);
-}
-.fcard .avatar img{width:100%;height:100%;object-fit:cover;}
-.card-name{font-weight:700; font-size:15px; margin:0 0 4px;}
-.card-cat{font-size:12px; color:var(--accent2); margin:0 0 8px;}
-.card-stars{font-size:12px; color:var(--gold); letter-spacing:1px; margin-bottom:8px;}
-.card-tags{display:flex; flex-wrap:wrap; gap:4px;}
-.card-tags span{font-size:10.5px; padding:2px 7px; border-radius:999px; background:var(--bg-elevated); color:var(--text-dim);}
+/* toolbar */
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.filter-pop-wrap{position:relative}
+.filter-pop{position:absolute;top:calc(100% + 6px);left:0;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;width:260px;box-shadow:0 12px 32px #000a;z-index:40;display:none;max-height:340px;overflow-y:auto}
+.filter-pop.on{display:block}
+.filter-sec{margin-bottom:10px}
+.filter-sec:last-child{margin-bottom:0}
+.filter-sec .lbl{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.04em;margin-bottom:6px}
+.filter-chip-row{display:flex;flex-wrap:wrap;gap:5px}
+.filter-chip{font-size:12px;padding:4px 9px;border-radius:20px;background:var(--panel);border:1px solid var(--line);color:var(--muted);transition:.13s}
+.filter-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.toggle-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:9px;background:var(--panel);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted)}
+.toggle-chip.on{color:var(--star);border-color:#5a4a2a;background:#2a2415}
 
-/* ---- Modal ---- */
-.modal-backdrop{position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:40; padding:20px;}
-.modal-backdrop.open{display:flex;}
-.modal{
-  background:var(--bg-elevated); border:1px solid var(--card-border); border-radius:18px; width:100%; max-width:560px;
-  max-height:88vh; overflow-y:auto; box-shadow:var(--shadow);
-}
-.modal-head{display:flex; align-items:center; gap:14px; padding:20px 22px; border-bottom:1px solid var(--card-border); position:sticky; top:0; background:var(--bg-elevated); z-index:2;}
-.modal-head .avatar-lg{width:56px;height:56px;border-radius:16px; background:var(--card); display:flex;align-items:center;justify-content:center; font-size:28px; border:1px solid var(--card-border); overflow:hidden;}
-.modal-head .avatar-lg img{width:100%;height:100%;object-fit:cover;}
-.modal-head input.name-input{font-family:var(--font-display); font-weight:800; font-size:19px; background:none; border:none; color:var(--text); width:100%; outline:none; border-bottom:1px dashed transparent;}
-.modal-head input.name-input:focus{border-color:var(--accent);}
-.modal-body{padding:20px 22px;}
-.field{margin-bottom:18px;}
-.field label{display:block; font-size:12px; font-weight:700; color:var(--text-dim); margin-bottom:7px;}
-.field textarea{width:100%; min-height:64px; padding:10px 12px; border-radius:10px; border:1px solid var(--card-border); background:var(--card); color:var(--text); font-size:13.5px; resize:vertical; outline:none;}
-.field textarea:focus{border-color:var(--accent);}
-.tagpicker{display:flex; flex-wrap:wrap; gap:6px; align-items:center;}
-.tagpicker .chip{cursor:pointer;}
-.addtag-inline{display:flex; gap:6px; margin-top:8px;}
-.addtag-inline input{flex:1; padding:6px 9px; border-radius:8px; border:1px dashed var(--card-border); background:transparent; color:var(--text); font-size:12.5px;}
-.addtag-inline button{padding:6px 10px; border-radius:8px; border:none; background:var(--accent2-dim); color:var(--accent2); font-size:12px; font-weight:700;}
-.star-picker{font-size:22px; color:var(--text-faint); display:flex; gap:3px;}
-.star-picker span{cursor:pointer;}
-.star-picker span.on{color:var(--gold);}
-.rel-list{display:flex; flex-direction:column; gap:8px; margin-bottom:10px;}
-.rel-item{display:flex; align-items:center; gap:8px; background:var(--card); border:1px solid var(--card-border); border-radius:10px; padding:8px 10px; font-size:12.5px;}
-.rel-item .dot{width:8px;height:8px;border-radius:50%; flex:none;}
-.rel-item .rname{font-weight:700; flex:1;}
-.rel-item .rdetail{color:var(--text-dim); font-size:11.5px;}
-.rel-item .rm{color:var(--danger); border:none; background:none; font-size:14px;}
-.rel-add{display:grid; grid-template-columns:1fr 1fr auto; gap:6px; margin-bottom:6px;}
-.rel-add input.detail{grid-column:1/3;}
-.modal-foot{display:flex; gap:10px; padding:16px 22px; border-top:1px solid var(--card-border); position:sticky; bottom:0; background:var(--bg-elevated);}
-.btn{padding:10px 16px; border-radius:10px; border:none; font-weight:700; font-size:13.5px; flex:1;}
-.btn-primary{background:var(--accent); color:#fff;}
-.btn-ghost{background:var(--card); color:var(--text-dim); border:1px solid var(--card-border); flex:none;}
-.btn-danger{background:none; color:var(--danger); border:1px solid var(--danger); flex:none;}
-.fav-toggle{margin-left:auto; font-size:20px; background:none; border:none; color:var(--text-faint); flex:none;}
-.fav-toggle.on{color:var(--accent);}
+/* friend cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.fcard2{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px;cursor:pointer;transition:.15s;position:relative;display:flex;flex-direction:column;gap:8px}
+.fcard2:hover{border-color:#48506e;transform:translateY(-1px)}
+.fcard2 .top{display:flex;align-items:center;gap:10px}
+.avatar{width:42px;height:42px;border-radius:12px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;border:1px solid var(--line)}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.fcard2 .nm{font-weight:800;font-size:14.5px}
+.fcard2 .cat{font-size:11.5px;color:var(--muted)}
+.fav-btn{position:absolute;top:10px;right:10px;font-size:15px;color:#454c66;transition:.13s}
+.fav-btn.on{color:var(--star)}
+.stars{font-size:12px;color:var(--star);letter-spacing:1px}
+.stars .off{color:#3a3f52}
+.fcard2 .tagrow{display:flex;flex-wrap:wrap;gap:4px}
+.mini-tag{font-size:10.5px;padding:2px 7px;border-radius:20px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
 
-/* ---- Graph ---- */
-.graph-wrap{padding:0; position:relative;}
-#graphCanvas{width:100%; height:calc(100vh - 69px); display:block; background:var(--bg);}
-.graph-legend{position:absolute; top:16px; left:16px; background:var(--bg-elevated); border:1px solid var(--card-border); border-radius:12px; padding:12px 14px; font-size:12px; max-width:200px;}
-.graph-legend .row{display:flex; align-items:center; gap:7px; margin:5px 0;}
-.graph-legend .dot{width:9px;height:9px;border-radius:50%;flex:none;}
-.graph-hint{position:absolute; bottom:16px; left:16px; font-size:11.5px; color:var(--text-faint);}
+/* generic item cards (mgmt pages) */
+.item-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;display:flex;flex-direction:column;gap:7px}
+.item-card:hover{border-color:#444c6c}
+.item-card .top{display:flex;align-items:flex-start;gap:8px}
+.item-card h3{font-size:14.5px;font-weight:800;flex:1;line-height:1.35;display:flex;align-items:center;gap:8px}
+.item-card .desc{font-size:12.5px;color:#c6cad8;line-height:1.5}
+.icon-btn{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid transparent;font-size:13px}
+.icon-btn:hover{background:var(--panel2);color:var(--text);border-color:var(--line)}
+.icon-btn.del:hover{color:var(--danger);border-color:#5a3340}
+.color-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;border:1px solid #0004}
+.tag-type-block{margin-bottom:22px}
+.tag-type-block h3{font-size:14px;font-weight:800;margin-bottom:9px;display:flex;align-items:center;gap:8px}
 
-.toast{position:fixed; bottom:22px; left:50%; transform:translateX(-50%); background:var(--card); border:1px solid var(--card-border); color:var(--text); padding:10px 18px; border-radius:10px; font-size:13px; box-shadow:var(--shadow); z-index:60; opacity:0; transition:.2s;}
-.toast.show{opacity:1;}
-.hidden{display:none !important;}
-::-webkit-scrollbar{width:8px; height:8px;}
-::-webkit-scrollbar-thumb{background:var(--card-border); border-radius:8px;}
-@media (max-width:640px){
-  .brand{display:none;}
-  .drawer{width:82vw;}
+/* modals */
+.overlay{position:fixed;inset:0;background:#0009;backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 16px;overflow-y:auto}
+.overlay.on{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--line);border-radius:16px;width:100%;max-width:600px;padding:22px 22px 20px;animation:pop .18s ease;box-shadow:0 20px 60px #000a}
+@keyframes pop{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.modal h2{font-size:17px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.modal h2 .x{margin-left:auto}
+.field{margin-bottom:13px}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:.03em}
+.field input[type=text],.field input[type=number],.field textarea,.field select{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;outline:none;transition:border-color .15s}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
+.field textarea{resize:vertical;min-height:60px;line-height:1.5}
+.field-row{display:flex;gap:10px}
+.field-row .field{flex:1}
+.color-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.color-sw{width:26px;height:26px;border-radius:8px;border:2px solid transparent;cursor:pointer}
+.color-sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
+.modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+.modal-foot .left{margin-right:auto}
+.pick-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;max-height:150px;overflow-y:auto;padding:6px}
+.pick-row{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:8px;cursor:pointer;font-size:13px}
+.pick-row:hover{background:var(--panel2)}
+.pick-row input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
+.inline-new{display:flex;gap:6px;margin-top:7px}
+.inline-new input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;outline:none;font-size:12.5px}
+.star-pick{display:flex;gap:4px;font-size:22px;color:#3a3f52;cursor:pointer}
+.star-pick span.on{color:var(--star)}
+.rel-row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
+.rel-row .rr-top{display:flex;gap:8px;margin-bottom:8px}
+.rel-row select,.rel-row input{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;font-size:12.5px}
+.rel-row .rr-del{margin-left:auto}
+
+/* detail modal */
+.detail-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.detail-head h2{margin:0;font-size:19px}
+.detail-sec{margin-bottom:14px}
+.detail-sec .sec-label{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--muted);margin-bottom:7px}
+.detail-sec p{font-size:13.5px;line-height:1.65;color:#d4d8e4;white-space:pre-wrap}
+.detail-sec p.dim{color:var(--muted);font-size:12.5px}
+.chip-row{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:20px;background:var(--panel2);border:1px solid var(--line)}
+.chip.click{cursor:pointer}
+.chip.click:hover{border-color:var(--accent);color:#fff}
+.rel-chip{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:6px 10px;border-radius:9px;background:var(--panel);border:1px solid var(--line);cursor:pointer}
+.rel-chip:hover{border-color:var(--accent)}
+.rel-chip .rt{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:20px}
+
+/* viz */
+#vizWrap{border:1px solid var(--line);border-radius:14px;background:var(--bg2);position:relative;overflow:hidden}
+#vizSvg{width:100%;display:block;cursor:grab}
+#vizSvg:active{cursor:grabbing}
+.viz-legend{position:absolute;top:12px;left:12px;background:#181b23dd;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:11.5px;max-width:220px}
+.viz-legend .lg-sec{margin-bottom:6px}
+.viz-legend .lg-title{font-weight:800;color:var(--muted);margin-bottom:4px;font-size:10.5px;letter-spacing:.05em}
+.viz-legend .lg-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.node-label{font-size:11px;font-weight:700;fill:var(--text);pointer-events:none;paint-order:stroke;stroke:#13151b;stroke-width:3px}
+
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;opacity:0;transition:.25s;z-index:200;pointer-events:none;box-shadow:0 8px 24px #000a}
+#toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+#toast.err{border-color:var(--danger);color:#ffc2c2}
+
+@media (pointer:coarse){
+  .icon-btn{width:36px;height:36px;font-size:15px}
+  .search-input{font-size:16px;padding:10px 13px}
+  .btn{padding:11px 17px;font-size:13.5px}
+  .field input[type=text],.field input[type=number],.field textarea,.field select,.inline-new input{font-size:16px}
+  .color-sw{width:32px;height:32px}
 }
+@media(max-width:700px){
+  header{padding:0 12px}
+  .tab-page{padding:14px 12px 26px}
+  .grid{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <button class="icon-btn" id="hamburgerBtn" title="필터">☰</button>
-  <div class="brand">인간관계 분석</div>
-  <div class="search-wrap"><input id="searchInput" placeholder="이름으로 검색"></div>
-  <div class="view-toggle">
-    <button id="gridViewBtn" class="active">목록</button>
-    <button id="graphViewBtn">관계도</button>
+<header>
+  <div class="logo">FRIEND<b>::</b>ANALYSIS</div>
+  <nav>
+    <button class="tab-btn on" data-tab="main">메인</button>
+    <button class="tab-btn" data-tab="viz">인간관계 시각화</button>
+    <button class="tab-btn" data-tab="tags">태그 관리</button>
+    <button class="tab-btn" data-tab="groups">무리 관리</button>
+    <button class="tab-btn" data-tab="reltypes">관계유형 관리</button>
+  </nav>
+  <div class="hd-right">
+    <span class="conn-dot" id="connDot"></span>
+    <span class="conn-label" id="connLabel">connecting…</span>
   </div>
-  <button class="add-btn" id="addFriendBtn">＋ 추가</button>
-</div>
+</header>
 
-<div class="drawer-backdrop" id="drawerBackdrop"></div>
-<aside class="drawer" id="drawer">
-  <div class="filter-group">
-    <h4>정렬</h4>
-    <select class="plain" id="sortSelect">
+<!-- ===== 메인 ===== -->
+<section class="tab-page on" id="page-main">
+  <div class="page-head">
+    <h2>친구</h2><span class="count" id="mainCount">0</span>
+    <div class="spacer"></div>
+    <button class="btn primary" id="btnAddFriend">＋ 친구 추가</button>
+  </div>
+  <div class="toolbar">
+    <input type="text" class="search-input" id="qSearch" placeholder="이름 검색" style="flex:1;min-width:160px">
+    <select class="search-input" id="qCategory"><option value="">분류: 전체</option></select>
+    <div class="filter-pop-wrap">
+      <button class="btn" id="btnTagFilter">태그 필터<span id="tagFilterBadge"></span></button>
+      <div class="filter-pop" id="tagFilterPop"></div>
+    </div>
+    <button class="toggle-chip" id="btnFavFilter">★ 즐겨찾기만</button>
+    <select class="search-input" id="qSort">
+      <option value="rating_desc">평점 높은순</option>
+      <option value="rating_asc">평점 낮은순</option>
       <option value="name">이름순</option>
-      <option value="rating">별점 높은순</option>
-      <option value="updated">최근 수정순</option>
+      <option value="recent">최근 수정순</option>
     </select>
   </div>
-  <div class="filter-group">
-    <h4>분류</h4>
-    <select class="plain" id="categoryFilter"><option value="">전체</option></select>
-  </div>
-  <div class="filter-group">
-    <h4>무리</h4>
-    <div class="chip-row" id="groupFilterRow"></div>
-  </div>
-  <div class="filter-group" id="tagFilterGroups"></div>
-  <div class="filter-group">
-    <h4>최소 별점</h4>
-    <div class="star-picker" id="minRatingStars">
-      <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
-    </div>
-  </div>
-  <div class="filter-group toggle-row">
-    <span>즐겨찾기만</span>
-    <input type="checkbox" id="favOnlyCheck">
-  </div>
-  <button class="reset-link" id="resetFiltersBtn">필터 초기화</button>
-</aside>
+  <div class="grid" id="mainList"></div>
+</section>
 
-<div class="layout">
-  <div class="main" id="gridView">
-    <div class="grid" id="cardGrid"></div>
-    <div class="empty-state hidden" id="emptyState">조건에 맞는 사람이 없어요.</div>
+<!-- ===== 시각화 ===== -->
+<section class="tab-page" id="page-viz">
+  <div class="page-head">
+    <h2>인간관계 시각화</h2>
+    <div class="spacer"></div>
+    <span style="font-size:12px;color:var(--muted)">노드 드래그로 위치 조정 · 클릭 시 상세보기 · 휠로 확대/축소</span>
   </div>
-  <div class="graph-wrap hidden" id="graphView" style="flex:1;">
-    <canvas id="graphCanvas"></canvas>
-    <div class="graph-legend" id="graphLegend"></div>
-    <div class="graph-hint">드래그로 이동 · 클릭하면 카드가 열려요</div>
+  <div id="vizWrap">
+    <svg id="vizSvg" height="640"></svg>
+    <div class="viz-legend" id="vizLegend"></div>
   </div>
-</div>
+</section>
 
-<div class="modal-backdrop" id="modalBackdrop">
-  <div class="modal">
-    <div class="modal-head">
-      <div class="avatar-lg" id="modalAvatar">🙂</div>
-      <input class="name-input" id="modalName" placeholder="이름">
-      <button class="fav-toggle" id="modalFav">♥</button>
-    </div>
-    <div class="modal-body">
+<!-- ===== 태그 관리 ===== -->
+<section class="tab-page" id="page-tags">
+  <div class="page-head">
+    <h2>태그 관리</h2>
+    <div class="spacer"></div>
+    <input type="text" class="search-input" id="tagSearch" placeholder="태그 검색">
+  </div>
+  <div id="tagTypeBlocks"></div>
+</section>
+
+<!-- ===== 무리 관리 ===== -->
+<section class="tab-page" id="page-groups">
+  <div class="page-head">
+    <h2>무리</h2><span class="count" id="groupCount">0</span>
+    <div class="spacer"></div>
+    <input type="text" class="search-input" id="groupSearch" placeholder="무리 검색">
+    <button class="btn primary" id="btnAddGroup">＋ 무리 추가</button>
+  </div>
+  <div class="grid" id="groupList"></div>
+</section>
+
+<!-- ===== 관계유형 관리 ===== -->
+<section class="tab-page" id="page-reltypes">
+  <div class="page-head">
+    <h2>관계유형</h2><span class="count" id="relTypeCount">0</span>
+    <div class="spacer"></div>
+    <button class="btn primary" id="btnAddRelType">＋ 관계유형 추가</button>
+  </div>
+  <div class="grid" id="relTypeList"></div>
+</section>
+
+<!-- ===== 친구 편집 모달 ===== -->
+<div class="overlay" id="ovFriend">
+  <div class="modal" style="max-width:640px">
+    <h2 id="frTitle">친구 추가 <button class="icon-btn x" data-close="ovFriend">✕</button></h2>
+
+    <div class="field-row">
+      <div class="field" style="flex:2">
+        <label>이름</label>
+        <input type="text" id="frName" placeholder="이름">
+      </div>
       <div class="field">
         <label>분류</label>
-        <select class="plain" id="modalCategory"></select>
-      </div>
-      <div class="field">
-        <label>별점</label>
-        <div class="star-picker" id="modalStars"><span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span></div>
-      </div>
-      <div id="tagFieldsContainer"></div>
-      <div class="field">
-        <label>무리</label>
-        <div class="tagpicker" id="modalGroups"></div>
-        <div class="addtag-inline"><input id="newGroupInput" placeholder="새 무리 이름"><button id="addGroupBtn">추가</button></div>
-      </div>
-      <div class="field">
-        <label>본문</label>
-        <textarea id="modalDesc" placeholder="이 사람에 대한 설명"></textarea>
-      </div>
-      <div class="field">
-        <label>관계 (글)</label>
-        <textarea id="modalRelNote" placeholder="관계에 대한 서술"></textarea>
-      </div>
-      <div class="field">
-        <label>인간관계</label>
-        <div class="rel-list" id="relList"></div>
-        <div class="rel-add">
-          <select class="plain" id="relFriendSelect"></select>
-          <select class="plain" id="relTypeSelect"></select>
-          <input class="plain detail" id="relDetailInput" placeholder="관계 설명 (선택)">
-        </div>
-        <div class="addtag-inline"><input id="newRelTypeInput" placeholder="새 관계 유형"><button id="addRelTypeBtn">유형 추가</button><button id="addRelBtn" style="background:var(--accent-dim);color:var(--accent);">관계 추가</button></div>
-      </div>
-      <div class="field">
-        <label>기타사항</label>
-        <textarea id="modalEtc" placeholder="기타 메모"></textarea>
+        <select id="frCategory"><option value="">선택 안 함</option></select>
       </div>
     </div>
+    <div class="field-row">
+      <div class="field">
+        <label>아바타 이모지</label>
+        <input type="text" id="frEmoji" placeholder="🙂 (비우면 분류 기본값)">
+      </div>
+      <div class="field" style="flex:2">
+        <label>아바타 이미지 URL (선택)</label>
+        <input type="text" id="frImg" placeholder="https://...">
+      </div>
+    </div>
+
+    <div class="field">
+      <label>본문</label>
+      <textarea id="frDesc" placeholder="이 친구에 대한 소개"></textarea>
+    </div>
+
+    <div id="frTagPickers"></div>
+
+    <div class="field">
+      <label>무리</label>
+      <div class="pick-box" id="frGroupPick"></div>
+    </div>
+
+    <div class="field">
+      <label>인간관계</label>
+      <div id="frRelList"></div>
+      <button class="btn sm" id="frAddRel">＋ 관계 추가</button>
+    </div>
+
+    <div class="field">
+      <label>관계(글)</label>
+      <textarea id="frRelNote" placeholder="관계에 대한 자유 서술"></textarea>
+    </div>
+    <div class="field">
+      <label>기타사항</label>
+      <textarea id="frEtc"></textarea>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>별점</label>
+        <div class="star-pick" id="frStars"></div>
+      </div>
+      <div class="field">
+        <label>즐겨찾기</label>
+        <button class="toggle-chip" id="frFavToggle" style="margin-top:2px">★ 즐겨찾기</button>
+      </div>
+    </div>
+
     <div class="modal-foot">
-      <button class="btn btn-danger hidden" id="deleteFriendBtn">삭제</button>
-      <button class="btn btn-ghost" id="closeModalBtn">닫기</button>
-      <button class="btn btn-primary" id="saveFriendBtn">저장</button>
+      <button class="btn" data-close="ovFriend">취소</button>
+      <button class="btn primary" id="frSave">저장</button>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- ===== 친구 상세 모달 ===== -->
+<div class="overlay" id="ovDetail">
+  <div class="modal">
+    <div class="detail-head">
+      <div class="avatar" id="dAvatar" style="width:46px;height:46px;font-size:22px"></div>
+      <h2 id="dName"></h2>
+      <span class="stars" id="dStars"></span>
+      <button class="icon-btn x" data-close="ovDetail" style="margin-left:auto">✕</button>
+    </div>
+    <div class="detail-sec" id="dCatSec">
+      <div class="sec-label">분류</div>
+      <p id="dCat"></p>
+    </div>
+    <div class="detail-sec">
+      <div class="sec-label">본문</div>
+      <p id="dDesc"></p>
+    </div>
+    <div class="detail-sec"><div class="sec-label" id="dTagLabel-특징"></div><div class="chip-row" id="dTags-특징"></div></div>
+    <div class="detail-sec"><div class="sec-label" id="dTagLabel-관심분야"></div><div class="chip-row" id="dTags-관심분야"></div></div>
+    <div class="detail-sec"><div class="sec-label" id="dTagLabel-성격"></div><div class="chip-row" id="dTags-성격"></div></div>
+    <div class="detail-sec"><div class="sec-label" id="dTagLabel-키워드"></div><div class="chip-row" id="dTags-키워드"></div></div>
+    <div class="detail-sec">
+      <div class="sec-label">무리</div>
+      <div class="chip-row" id="dGroups"></div>
+    </div>
+    <div class="detail-sec">
+      <div class="sec-label">인간관계</div>
+      <div id="dRels" style="display:flex;flex-direction:column;gap:6px"></div>
+    </div>
+    <div class="detail-sec" id="dRelNoteSec">
+      <div class="sec-label">관계(글)</div>
+      <p id="dRelNote"></p>
+    </div>
+    <div class="detail-sec" id="dEtcSec">
+      <div class="sec-label">기타사항</div>
+      <p class="dim" id="dEtc"></p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn danger left" id="dDelete">삭제</button>
+      <button class="btn" data-close="ovDetail">닫기</button>
+      <button class="btn primary" id="dEdit">수정</button>
+    </div>
+  </div>
+</div>
 
+<!-- ===== 태그 추가/수정 모달 ===== -->
+<div class="overlay" id="ovTag">
+  <div class="modal">
+    <h2 id="tagModalTitle">태그 추가 <button class="icon-btn x" data-close="ovTag">✕</button></h2>
+    <div class="field">
+      <label>이름</label>
+      <input type="text" id="tagName" placeholder="예: 눈치빠름">
+    </div>
+    <div class="field" id="tagEmojiField">
+      <label>기본 이모지 (이 분류를 가진 친구의 기본 아바타)</label>
+      <input type="text" id="tagEmoji" placeholder="🙂">
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close="ovTag">취소</button>
+      <button class="btn primary" id="tagSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 무리 추가/수정 모달 ===== -->
+<div class="overlay" id="ovGroup">
+  <div class="modal">
+    <h2 id="groupModalTitle">무리 추가 <button class="icon-btn x" data-close="ovGroup">✕</button></h2>
+    <div class="field">
+      <label>이름</label>
+      <input type="text" id="groupName" placeholder="예: 동아리 친구들">
+    </div>
+    <div class="field">
+      <label>색상</label>
+      <div class="color-row" id="groupColors"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close="ovGroup">취소</button>
+      <button class="btn primary" id="groupSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 관계유형 추가/수정 모달 ===== -->
+<div class="overlay" id="ovRelType">
+  <div class="modal">
+    <h2 id="relTypeModalTitle">관계유형 추가 <button class="icon-btn x" data-close="ovRelType">✕</button></h2>
+    <div class="field">
+      <label>이름</label>
+      <input type="text" id="relTypeName" placeholder="예: 절친">
+    </div>
+    <div class="field">
+      <label>색상</label>
+      <div class="color-row" id="relTypeColors"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn" data-close="ovRelType">취소</button>
+      <button class="btn primary" id="relTypeSave">저장</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script>
+/* =====================================================
+   SUPABASE
+===================================================== */
 const SUPABASE_URL = 'https://hlvpffypajsoythbfrvb.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_lGroGfmZE91oueKBLlgerQ_Ja8Fwhmz';
-const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-let db = { tagTypes:[], tags:[], groups:[], relTypes:[], friends:[], friendTags:[], friendGroups:[], friendRels:[] };
-let filters = { search:'', category:'', tagIds:new Set(), groupIds:new Set(), minRating:0, favOnly:false };
-let sortMode = 'name';
-let editingId = null; // null = new
-let modalTagSelections = {}; // tagTypeId -> Set of tagIds
-let modalGroupSelections = new Set();
-let graphState = { nodes:[], edges:[], raf:null, dragging:null, offsetX:0, offsetY:0 };
+const COLORS = ['#6366f1','#e8b341','#4ade80','#60a5fa','#c084fc','#f472b6','#fb923c','#2dd4bf','#94a3b8','#e06c6c'];
+const NON_CATEGORY_ORDER = ['특징','관심분야','성격','키워드'];
 
-function toast(msg){
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  clearTimeout(t._h); t._h = setTimeout(()=>t.classList.remove('show'), 2200);
+const S = {
+  tagTypes: [],      // [{id,name,tags:[{id,label,default_emoji}]}]
+  groups: [],
+  relTypes: [],
+  friends: [],        // enriched: {..., tagsByType:{name:[tag,...]}, category, groups:[...], relOut:[...], relIn:[...]}
+  editingFriendId: null,
+  pickedTags: {},     // tagTypeName -> Set(tagId)
+  pickedGroups: new Set(),
+  relDraft: [],        // [{related_friend_id, relationship_type_id, detail, strength, _existingId}]
+  favToggle: false,
+  tagFilter: new Set(), // selected tag ids across non-category types
+  starVal: 0,
+  favVal: false,
+  detailFriendId: null,
+  editingTag: null,   // {typeName, typeId, row}
+  editingGroup: null,
+  editingRelType: null,
+  groupColor: COLORS[0],
+  relTypeColor: COLORS[0],
+};
+
+const $ = s => document.querySelector(s);
+const esc = s => (s ?? '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function toast(msg, err=false){
+  const t = $('#toast');
+  t.textContent = msg; t.className = err ? 'on err' : 'on';
+  clearTimeout(t._tm); t._tm = setTimeout(()=> t.className='', 2200);
 }
+function openOv(id){ $('#'+id).classList.add('on'); }
+function closeOv(id){ $('#'+id).classList.remove('on'); }
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeOv(b.dataset.close)));
+document.querySelectorAll('.overlay').forEach(ov => ov.addEventListener('mousedown', e => { if(e.target === ov) ov.classList.remove('on'); }));
+document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.tab-btn').forEach(x => x.classList.toggle('on', x === b));
+  document.querySelectorAll('.tab-page').forEach(p => p.classList.toggle('on', p.id === 'page-' + b.dataset.tab));
+  try{ localStorage.setItem('fa_last_tab', b.dataset.tab); }catch(e){}
+  if(b.dataset.tab === 'viz') renderViz();
+}));
 
+/* =====================================================
+   DATA LOAD
+===================================================== */
 async function loadAll(){
   try{
-    const [tt, tg, gr, rt, fr, ft, fg, frl] = await Promise.all([
-      sb.from('tag_types').select('*'),
-      sb.from('tags').select('*'),
-      sb.from('groups').select('*'),
-      sb.from('relationship_types').select('*'),
-      sb.from('friends').select('*').order('name'),
-      sb.from('friend_tags').select('*'),
-      sb.from('friend_groups').select('*'),
-      sb.from('friend_relationships').select('*'),
+    const [tt, gr, rt, fr, relRes] = await Promise.all([
+      sb.from('tag_types').select('*, tags(*)').order('name'),
+      sb.from('groups').select('*').order('name'),
+      sb.from('relationship_types').select('*').order('label'),
+      sb.from('friends').select(`
+        *,
+        category:tags!category_tag_id(*),
+        friend_tags(tags(*, tag_types(id,name))),
+        friend_groups(groups(*))
+      `).order('name'),
+      sb.from('friend_relationships').select(`
+        *,
+        type:relationship_types(*),
+        from:friends!friend_id(id,name,avatar_emoji,avatar_image_url),
+        to:friends!related_friend_id(id,name,avatar_emoji,avatar_image_url)
+      `),
     ]);
-    for(const r of [tt,tg,gr,rt,fr,ft,fg,frl]) if(r.error) throw r.error;
-    db.tagTypes = tt.data; db.tags = tg.data; db.groups = gr.data; db.relTypes = rt.data;
-    db.friends = fr.data; db.friendTags = ft.data; db.friendGroups = fg.data; db.friendRels = frl.data;
-    renderFilterPanel();
-    renderGrid();
+    for(const r of [tt, gr, rt, fr, relRes]) if(r.error) throw r.error;
+
+    S.tagTypes = (tt.data || []).map(t => ({...t, tags: (t.tags||[]).filter(x=>!x.is_deleted).sort((a,b)=>a.label.localeCompare(b.label))}));
+    S.groups = gr.data || [];
+    S.relTypes = rt.data || [];
+
+    const relations = relRes.data || [];
+    S.friends = (fr.data || []).map(p => {
+      const tagsByType = {};
+      for(const link of (p.friend_tags||[])){
+        const tg = link.tags; if(!tg) continue;
+        const tn = tg.tag_types?.name; if(!tn) continue;
+        (tagsByType[tn] = tagsByType[tn] || []).push(tg);
+      }
+      return {
+        ...p,
+        tagsByType,
+        groups: (p.friend_groups||[]).map(l => l.groups).filter(Boolean),
+        relOut: relations.filter(r => r.friend_id === p.id),
+        relIn: relations.filter(r => r.related_friend_id === p.id),
+      };
+    });
+    setConn(true);
+    renderAll();
   }catch(e){
     console.error(e);
-    toast('데이터를 불러오지 못했어요: ' + (e.message||e));
+    setConn(false);
+    toast('데이터 로드 실패: ' + (e.message || e), true);
   }
 }
-
-function tagsOfType(typeName){
-  const t = db.tagTypes.find(x=>x.name===typeName);
-  if(!t) return [];
-  return db.tags.filter(x=>x.tag_type_id===t.id);
+function setConn(ok){
+  $('#connDot').className = 'conn-dot ' + (ok ? 'ok' : 'bad');
+  $('#connLabel').textContent = ok ? 'supabase 연결됨' : '연결 오류';
 }
-function friendTagIds(friendId){ return db.friendTags.filter(x=>x.friend_id===friendId).map(x=>x.tag_id); }
-function friendGroupIds(friendId){ return db.friendGroups.filter(x=>x.friend_id===friendId).map(x=>x.group_id); }
-function tagLabel(id){ const t = db.tags.find(x=>x.id===id); return t? t.label : ''; }
-function groupById(id){ return db.groups.find(g=>g.id===id); }
+function tagTypeByName(name){ return S.tagTypes.find(t => t.name === name); }
+function friendById(id){ return S.friends.find(f => f.id === id); }
 
-/* ---------- Filter panel ---------- */
-function renderFilterPanel(){
-  const catSel = document.getElementById('categoryFilter');
-  catSel.innerHTML = '<option value="">전체</option>' + tagsOfType('분류').map(t=>`<option value="${t.id}">${t.label}</option>`).join('');
+let rtTm = null;
+sb.channel('friend_analysis_rt').on('postgres_changes', {event:'*', schema:'public'}, () => {
+  clearTimeout(rtTm); rtTm = setTimeout(loadAll, 400);
+}).subscribe();
 
-  const grow = document.getElementById('groupFilterRow');
-  grow.innerHTML = db.groups.map(g=>`<span class="chip" data-gid="${g.id}" style="border-color:${g.color||'var(--card-border)'}">${g.name}</span>`).join('') || '<span style="color:var(--text-faint);font-size:12px;">무리 없음</span>';
-  grow.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
-    const id=c.dataset.gid;
-    filters.groupIds.has(id)?filters.groupIds.delete(id):filters.groupIds.add(id);
-    c.classList.toggle('selected'); renderGrid();
-  });
-
-  const tagTypesForFilter = db.tagTypes.filter(t=>t.name!=='분류');
-  const container = document.getElementById('tagFieldsContainer_filter') || document.getElementById('tagFilterGroups');
-  container.innerHTML = tagTypesForFilter.map(tt=>{
-    const opts = db.tags.filter(x=>x.tag_type_id===tt.id);
-    if(!opts.length) return '';
-    return `<div class="filter-group"><h4>${tt.name}</h4><div class="chip-row" data-tagtype="${tt.id}">${opts.map(o=>`<span class="chip" data-tid="${o.id}">${o.label}</span>`).join('')}</div></div>`;
-  }).join('');
-  container.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
-    const id=c.dataset.tid;
-    filters.tagIds.has(id)?filters.tagIds.delete(id):filters.tagIds.add(id);
-    c.classList.toggle('selected'); renderGrid();
-  });
+function renderAll(){
+  renderCategoryFilterOptions();
+  renderTagFilterPop();
+  renderMain();
+  renderTagsPage();
+  renderGroupsPage();
+  renderRelTypesPage();
+  if($('#page-viz').classList.contains('on')) renderViz();
 }
 
-/* ---------- Grid ---------- */
-function applyFilters(list){
-  return list.filter(f=>{
-    if(filters.search && !f.name.toLowerCase().includes(filters.search.toLowerCase())) return false;
-    if(filters.category && f.category_tag_id !== filters.category) return false;
-    if(filters.favOnly && !f.favorite) return false;
-    if(filters.minRating>0 && (f.rating||0) < filters.minRating) return false;
-    if(filters.groupIds.size){
-      const gids = friendGroupIds(f.id);
-      if(![...filters.groupIds].every(g=>gids.includes(g))) return false;
-    }
-    if(filters.tagIds.size){
-      const tids = friendTagIds(f.id);
-      if(![...filters.tagIds].every(t=>tids.includes(t))) return false;
+/* =====================================================
+   메인 페이지
+===================================================== */
+function renderCategoryFilterOptions(){
+  const cat = tagTypeByName('분류');
+  const sel = $('#qCategory');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">분류: 전체</option>' + (cat ? cat.tags.map(t => `<option value="${t.id}">${esc(t.label)}</option>`).join('') : '');
+  sel.value = cur;
+}
+function renderTagFilterPop(){
+  const pop = $('#tagFilterPop');
+  pop.innerHTML = NON_CATEGORY_ORDER.map(tn => {
+    const tt = tagTypeByName(tn);
+    if(!tt || !tt.tags.length) return '';
+    return `<div class="filter-sec"><div class="lbl">${esc(tn)}</div><div class="filter-chip-row">
+      ${tt.tags.map(t => `<button class="filter-chip ${S.tagFilter.has(t.id)?'on':''}" data-tid="${t.id}">${esc(t.label)}</button>`).join('')}
+    </div></div>`;
+  }).join('') || '<div style="color:var(--muted);font-size:12.5px">등록된 태그가 없습니다.</div>';
+  pop.querySelectorAll('.filter-chip').forEach(b => b.addEventListener('click', () => {
+    const id = b.dataset.tid;
+    S.tagFilter.has(id) ? S.tagFilter.delete(id) : S.tagFilter.add(id);
+    renderTagFilterPop();
+    renderMain();
+  }));
+  $('#tagFilterBadge').textContent = S.tagFilter.size ? ` (${S.tagFilter.size})` : '';
+}
+$('#btnTagFilter').addEventListener('click', () => $('#tagFilterPop').classList.toggle('on'));
+document.addEventListener('click', e => {
+  if(!e.target.closest('.filter-pop-wrap')) $('#tagFilterPop').classList.remove('on');
+});
+$('#btnFavFilter').addEventListener('click', () => { S.favToggle = !S.favToggle; $('#btnFavFilter').classList.toggle('on', S.favToggle); renderMain(); });
+$('#qSearch').addEventListener('input', renderMain);
+$('#qCategory').addEventListener('change', renderMain);
+$('#qSort').addEventListener('change', renderMain);
+
+function starsHtml(rating, size){
+  let h = '';
+  for(let i=1;i<=5;i++) h += `<span class="${i<=rating?'':'off'}">★</span>`;
+  return h;
+}
+function renderMain(){
+  const q = $('#qSearch').value.trim().toLowerCase();
+  const catId = $('#qCategory').value;
+  let rows = S.friends.filter(f => {
+    if(q && !f.name.toLowerCase().includes(q)) return false;
+    if(catId && f.category_tag_id !== catId) return false;
+    if(S.favToggle && !f.favorite) return false;
+    if(S.tagFilter.size){
+      const allTagIds = new Set(Object.values(f.tagsByType).flat().map(t=>t.id));
+      for(const id of S.tagFilter) if(!allTagIds.has(id)) return false;
     }
     return true;
   });
-}
-function sortList(list){
-  const arr = [...list];
-  if(sortMode==='name') arr.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
-  else if(sortMode==='rating') arr.sort((a,b)=>(b.rating||0)-(a.rating||0));
-  else if(sortMode==='updated') arr.sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at));
-  return arr;
-}
-function renderGrid(){
-  const list = sortList(applyFilters(db.friends));
-  const grid = document.getElementById('cardGrid');
-  const empty = document.getElementById('emptyState');
-  if(!list.length){ grid.innerHTML=''; empty.classList.remove('hidden'); return; }
-  empty.classList.add('hidden');
-  grid.innerHTML = list.map(f=>{
-    const cat = f.category_tag_id ? tagLabel(f.category_tag_id) : '';
-    const tids = friendTagIds(f.id).slice(0,3).map(id=>`<span>${tagLabel(id)}</span>`).join('');
-    const avatar = f.avatar_image_url ? `<img src="${f.avatar_image_url}">` : (f.avatar_emoji||'🙂');
-    return `<div class="fcard" data-id="${f.id}">
-      ${f.favorite?'<span class="fav">♥</span>':''}
-      <div class="avatar">${avatar}</div>
-      <p class="card-name">${f.name}</p>
-      ${cat?`<p class="card-cat">${cat}</p>`:''}
-      <div class="card-stars">${'★'.repeat(f.rating||0)}${'☆'.repeat(5-(f.rating||0))}</div>
-      <div class="card-tags">${tids}</div>
-    </div>`;
-  }).join('');
-  grid.querySelectorAll('.fcard').forEach(c=>c.onclick=()=>openModal(c.dataset.id));
-}
-
-/* ---------- Modal ---------- */
-function fillSelect(sel, options, placeholder){
-  sel.innerHTML = (placeholder?`<option value="">${placeholder}</option>`:'') + options.map(o=>`<option value="${o.id}">${o.label||o.name}</option>`).join('');
-}
-
-function openModal(id){
-  editingId = id;
-  const f = id ? db.friends.find(x=>x.id===id) : { name:'', avatar_emoji:'🙂', rating:0, favorite:false, description:'', relationship_note:'', etc_note:'' };
-  document.getElementById('modalName').value = f.name||'';
-  document.getElementById('modalAvatar').innerHTML = f.avatar_image_url ? `<img src="${f.avatar_image_url}">` : (f.avatar_emoji||'🙂');
-  document.getElementById('modalFav').classList.toggle('on', !!f.favorite);
-  document.getElementById('modalFav').dataset.on = f.favorite? '1':'0';
-
-  const catSel = document.getElementById('modalCategory');
-  fillSelect(catSel, tagsOfType('분류'), '분류 선택 안함');
-  catSel.value = f.category_tag_id || '';
-
-  setStars('modalStars', f.rating||0);
-
-  modalTagSelections = {};
-  db.tagTypes.filter(t=>t.name!=='분류').forEach(tt=>{
-    modalTagSelections[tt.id] = new Set(id? friendTagIds(id).filter(tid=>{const t=db.tags.find(x=>x.id===tid);return t&&t.tag_type_id===tt.id;}) : []);
+  const sort = $('#qSort').value;
+  rows = rows.slice().sort((a,b) => {
+    if(sort==='rating_desc') return (b.rating||0)-(a.rating||0);
+    if(sort==='rating_asc') return (a.rating||0)-(b.rating||0);
+    if(sort==='name') return a.name.localeCompare(b.name);
+    if(sort==='recent') return new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at);
+    return 0;
   });
-  renderTagFields();
-
-  modalGroupSelections = new Set(id? friendGroupIds(id) : []);
-  renderModalGroups();
-
-  document.getElementById('modalDesc').value = f.description||'';
-  document.getElementById('modalRelNote').value = f.relationship_note||'';
-  document.getElementById('modalEtc').value = f.etc_note||'';
-
-  const relSel = document.getElementById('relFriendSelect');
-  fillSelect(relSel, db.friends.filter(x=>x.id!==id).map(x=>({id:x.id,label:x.name})), '친구 선택');
-  const relTypeSel = document.getElementById('relTypeSelect');
-  fillSelect(relTypeSel, db.relTypes, '유형 선택');
-  renderRelList();
-
-  document.getElementById('deleteFriendBtn').classList.toggle('hidden', !id);
-  document.getElementById('modalBackdrop').classList.add('open');
-}
-function closeModal(){ document.getElementById('modalBackdrop').classList.remove('open'); editingId=null; }
-
-function setStars(containerId, value){
-  const c = document.getElementById(containerId);
-  c.dataset.value = value;
-  c.querySelectorAll('span').forEach(s=>s.classList.toggle('on', +s.dataset.v<=value));
-}
-document.getElementById('modalStars').addEventListener('click', e=>{
-  if(e.target.tagName==='SPAN') setStars('modalStars', +e.target.dataset.v);
-});
-document.getElementById('minRatingStars').addEventListener('click', e=>{
-  if(e.target.tagName==='SPAN'){
-    const v = +e.target.dataset.v;
-    filters.minRating = filters.minRating===v ? 0 : v;
-    setStars('minRatingStars', filters.minRating);
-    renderGrid();
-  }
-});
-document.getElementById('modalFav').onclick = ()=>{
-  const b = document.getElementById('modalFav');
-  const on = b.dataset.on==='1';
-  b.dataset.on = on? '0':'1';
-  b.classList.toggle('on', !on);
-};
-
-function renderTagFields(){
-  const wrap = document.getElementById('tagFieldsContainer');
-  const types = db.tagTypes.filter(t=>t.name!=='분류');
-  wrap.innerHTML = types.map(tt=>{
-    const opts = db.tags.filter(x=>x.tag_type_id===tt.id);
-    const sel = modalTagSelections[tt.id]||new Set();
-    return `<div class="field">
-      <label>${tt.name}</label>
-      <div class="tagpicker" data-tt="${tt.id}">
-        ${opts.map(o=>`<span class="chip ${sel.has(o.id)?'selected':''}" data-tid="${o.id}">${o.label}</span>`).join('')}
+  $('#mainCount').textContent = rows.length + (rows.length!==S.friends.length ? ' / '+S.friends.length : '');
+  $('#mainList').innerHTML = rows.length ? rows.map(f => {
+    const tagPreview = NON_CATEGORY_ORDER.flatMap(tn => f.tagsByType[tn]||[]).slice(0,3);
+    return `<div class="fcard2" onclick="openDetail('${f.id}')">
+      <button class="fav-btn ${f.favorite?'on':''}" onclick="event.stopPropagation();toggleFav('${f.id}')">★</button>
+      <div class="top">
+        <div class="avatar">${f.avatar_image_url ? `<img src="${esc(f.avatar_image_url)}">` : esc(f.avatar_emoji||'🙂')}</div>
+        <div>
+          <div class="nm">${esc(f.name)}</div>
+          <div class="cat">${f.category ? esc(f.category.label) : '분류 없음'}</div>
+        </div>
       </div>
-      <div class="addtag-inline"><input placeholder="새 ${tt.name} 태그" data-newtag="${tt.id}"><button data-addtagbtn="${tt.id}">추가</button></div>
+      <div class="stars">${starsHtml(f.rating||0)}</div>
+      ${tagPreview.length ? `<div class="tagrow">${tagPreview.map(t=>`<span class="mini-tag">${esc(t.label)}</span>`).join('')}</div>` : ''}
+    </div>`;
+  }).join('') : `<div class="empty-note" style="grid-column:1/-1">${S.friends.length? '조건에 맞는 친구가 없습니다.':'아직 등록된 친구가 없습니다. 「＋ 친구 추가」로 시작하세요.'}</div>`;
+}
+window.toggleFav = async (id) => {
+  const f = friendById(id); if(!f) return;
+  const { error } = await sb.from('friends').update({favorite: !f.favorite}).eq('id', id);
+  if(error) return toast('실패: '+error.message, true);
+  f.favorite = !f.favorite;
+  renderMain();
+};
+
+/* =====================================================
+   친구 편집 모달
+===================================================== */
+function renderFrCategorySelect(selId){
+  const cat = tagTypeByName('분류');
+  const sel = $('#frCategory');
+  sel.innerHTML = '<option value="">선택 안 함</option>' + (cat ? cat.tags.map(t=>`<option value="${t.id}">${esc(t.label)}</option>`).join('') : '');
+  sel.value = selId || '';
+}
+function renderFrTagPickers(){
+  const wrap = $('#frTagPickers');
+  wrap.innerHTML = NON_CATEGORY_ORDER.map(tn => {
+    const tt = tagTypeByName(tn);
+    const tagId = tt?.id;
+    const items = tt ? tt.tags : [];
+    return `<div class="field">
+      <label>${esc(tn)}</label>
+      <div class="pick-box" data-typename="${esc(tn)}">
+        ${items.length ? items.map(t => `<label class="pick-row"><input type="checkbox" data-tid="${t.id}" data-typename="${esc(tn)}" ${S.pickedTags[tn]?.has(t.id)?'checked':''}><b>${esc(t.label)}</b></label>`).join('')
+          : `<div style="padding:8px;color:var(--muted);font-size:12px">아직 없음</div>`}
+      </div>
+      <div class="inline-new">
+        <input type="text" placeholder="새 ${esc(tn)} 추가" data-newfor="${esc(tn)}">
+        <button class="btn sm" data-addfor="${esc(tn)}">추가</button>
+      </div>
     </div>`;
   }).join('');
-  wrap.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
-    const tt = c.parentElement.dataset.tt; const tid = c.dataset.tid;
-    if(modalTagSelections[tt].has(tid)) modalTagSelections[tt].delete(tid); else modalTagSelections[tt].add(tid);
-    c.classList.toggle('selected');
-  });
-  wrap.querySelectorAll('[data-addtagbtn]').forEach(btn=>btn.onclick=async ()=>{
-    const ttId = btn.dataset.addtagbtn;
-    const input = wrap.querySelector(`[data-newtag="${ttId}"]`);
-    const label = input.value.trim();
+  wrap.querySelectorAll('input[type=checkbox]').forEach(ch => ch.addEventListener('change', () => {
+    const tn = ch.dataset.typename;
+    S.pickedTags[tn] = S.pickedTags[tn] || new Set();
+    ch.checked ? S.pickedTags[tn].add(ch.dataset.tid) : S.pickedTags[tn].delete(ch.dataset.tid);
+  }));
+  wrap.querySelectorAll('[data-addfor]').forEach(btn => btn.addEventListener('click', async () => {
+    const tn = btn.dataset.addfor;
+    const inp = wrap.querySelector(`input[data-newfor="${tn}"]`);
+    const label = inp.value.trim();
     if(!label) return;
-    try{
-      const {data,error} = await sb.from('tags').insert({tag_type_id:ttId, label}).select().single();
-      if(error) throw error;
-      db.tags.push(data);
-      modalTagSelections[ttId].add(data.id);
-      input.value='';
-      renderTagFields(); renderFilterPanel();
-      toast('태그를 추가했어요');
-    }catch(e){ toast('태그 추가 실패: '+e.message); }
+    let tt = tagTypeByName(tn);
+    if(!tt){ toast('태그 유형이 없습니다: '+tn, true); return; }
+    const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
+    if(error) return toast('추가 실패: '+error.message, true);
+    tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
+    S.pickedTags[tn] = S.pickedTags[tn] || new Set(); S.pickedTags[tn].add(data.id);
+    inp.value = '';
+    renderFrTagPickers();
+    toast('추가 및 선택됨');
+  }));
+}
+function renderFrGroupPick(){
+  const box = $('#frGroupPick');
+  box.innerHTML = S.groups.length ? S.groups.map(g => `
+    <label class="pick-row"><input type="checkbox" data-gid="${g.id}" ${S.pickedGroups.has(g.id)?'checked':''}>
+      <span class="color-dot" style="background:${esc(g.color||'#666')}"></span><b>${esc(g.name)}</b></label>`).join('')
+    : `<div style="padding:8px;color:var(--muted);font-size:12px">등록된 무리가 없습니다. 「무리 관리」 탭에서 추가하세요.</div>`;
+  box.querySelectorAll('input').forEach(ch => ch.addEventListener('change', () => {
+    ch.checked ? S.pickedGroups.add(ch.dataset.gid) : S.pickedGroups.delete(ch.dataset.gid);
+  }));
+}
+function renderFrStars(){
+  const box = $('#frStars');
+  box.innerHTML = [1,2,3,4,5].map(i => `<span class="${i<=S.starVal?'on':''}" data-v="${i}">★</span>`).join('');
+  box.querySelectorAll('span').forEach(sp => sp.addEventListener('click', () => {
+    S.starVal = (S.starVal === Number(sp.dataset.v)) ? Number(sp.dataset.v)-1 : Number(sp.dataset.v);
+    renderFrStars();
+  }));
+}
+function relTypeOptionsHtml(sel){
+  return S.relTypes.map(t => `<option value="${t.id}" ${t.id===sel?'selected':''}>${esc(t.label)}</option>`).join('');
+}
+function friendOptionsHtml(excludeId, sel){
+  return S.friends.filter(f=>f.id!==excludeId).map(f => `<option value="${f.id}" ${f.id===sel?'selected':''}>${esc(f.name)}</option>`).join('');
+}
+function renderFrRelList(){
+  const wrap = $('#frRelList');
+  const excludeId = S.editingFriendId;
+  wrap.innerHTML = S.relDraft.map((r, idx) => `
+    <div class="rel-row" data-idx="${idx}">
+      <div class="rr-top">
+        <select data-f="friend">${friendOptionsHtml(excludeId, r.related_friend_id)}</select>
+        <select data-f="type">${relTypeOptionsHtml(r.relationship_type_id)}</select>
+        <button class="icon-btn del rr-del" data-f="del">🗑</button>
+      </div>
+      <div class="rr-top">
+        <input type="text" data-f="detail" placeholder="관계 설명" value="${esc(r.detail||'')}" style="flex:1">
+        <input type="number" data-f="strength" min="1" max="5" value="${r.strength||3}" style="width:56px" title="강도(1-5)">
+      </div>
+    </div>`).join('') || `<div style="color:var(--muted);font-size:12.5px;padding:6px 0">등록된 관계가 없습니다.</div>`;
+  wrap.querySelectorAll('.rel-row').forEach(row => {
+    const idx = Number(row.dataset.idx);
+    row.querySelector('[data-f=friend]').addEventListener('change', e => S.relDraft[idx].related_friend_id = e.target.value);
+    row.querySelector('[data-f=type]').addEventListener('change', e => S.relDraft[idx].relationship_type_id = e.target.value);
+    row.querySelector('[data-f=detail]').addEventListener('input', e => S.relDraft[idx].detail = e.target.value);
+    row.querySelector('[data-f=strength]').addEventListener('input', e => S.relDraft[idx].strength = Number(e.target.value)||3);
+    row.querySelector('[data-f=del]').addEventListener('click', () => { S.relDraft.splice(idx,1); renderFrRelList(); });
   });
 }
+$('#frAddRel').addEventListener('click', () => {
+  if(S.friends.filter(f=>f.id!==S.editingFriendId).length === 0){ toast('다른 친구를 먼저 추가하세요', true); return; }
+  if(S.relTypes.length === 0){ toast('관계유형을 먼저 추가하세요', true); return; }
+  S.relDraft.push({related_friend_id: S.friends.find(f=>f.id!==S.editingFriendId).id, relationship_type_id: S.relTypes[0].id, detail:'', strength:3});
+  renderFrRelList();
+});
+$('#frFavToggle').addEventListener('click', () => { S.favVal = !S.favVal; $('#frFavToggle').classList.toggle('on', S.favVal); });
 
-function renderModalGroups(){
-  const wrap = document.getElementById('modalGroups');
-  wrap.innerHTML = db.groups.map(g=>`<span class="chip ${modalGroupSelections.has(g.id)?'selected':''}" data-gid="${g.id}" style="border-color:${g.color||'var(--card-border)'}">${g.name}</span>`).join('');
-  wrap.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{
-    const id=c.dataset.gid;
-    modalGroupSelections.has(id)?modalGroupSelections.delete(id):modalGroupSelections.add(id);
-    c.classList.toggle('selected');
-  });
+function openFriendModal(f = null){
+  S.editingFriendId = f ? f.id : null;
+  S.pickedTags = {};
+  for(const tn of NON_CATEGORY_ORDER) S.pickedTags[tn] = new Set(f ? (f.tagsByType[tn]||[]).map(t=>t.id) : []);
+  S.pickedGroups = new Set(f ? f.groups.map(g=>g.id) : []);
+  S.relDraft = f ? f.relOut.map(r => ({related_friend_id:r.related_friend_id, relationship_type_id:r.relationship_type_id, detail:r.detail||'', strength:r.strength||3, _existingId:r.id})) : [];
+  S.starVal = f ? (f.rating||0) : 0;
+  S.favVal = f ? !!f.favorite : false;
+
+  $('#frTitle').childNodes[0].textContent = f ? `수정: ${f.name} ` : '친구 추가 ';
+  $('#frName').value = f?.name || '';
+  $('#frEmoji').value = f?.avatar_emoji || '';
+  $('#frImg').value = f?.avatar_image_url || '';
+  $('#frDesc').value = f?.description || '';
+  $('#frRelNote').value = f?.relationship_note || '';
+  $('#frEtc').value = f?.etc_note || '';
+  $('#frFavToggle').classList.toggle('on', S.favVal);
+
+  renderFrCategorySelect(f?.category_tag_id);
+  renderFrTagPickers();
+  renderFrGroupPick();
+  renderFrStars();
+  renderFrRelList();
+  openOv('ovFriend');
+  $('#frName').focus();
 }
-document.getElementById('addGroupBtn').onclick = async ()=>{
-  const input = document.getElementById('newGroupInput');
-  const name = input.value.trim();
-  if(!name) return;
-  try{
-    const colors=['#5B8CFF','#2ED9C3','#F2B93B','#FF8A5B','#C879FF','#5BD97E'];
-    const color = colors[db.groups.length % colors.length];
-    const {data,error} = await sb.from('groups').insert({name, color}).select().single();
-    if(error) throw error;
-    db.groups.push(data); modalGroupSelections.add(data.id);
-    input.value=''; renderModalGroups(); renderFilterPanel();
-    toast('무리를 추가했어요');
-  }catch(e){ toast('무리 추가 실패: '+e.message); }
+$('#btnAddFriend').addEventListener('click', () => openFriendModal());
+window.editFriend = id => { closeOv('ovDetail'); openFriendModal(friendById(id)); };
+window.delFriend = async id => {
+  const f = friendById(id);
+  if(!f || !confirm(`'${f.name}' 삭제할까요?`)) return;
+  const { error } = await sb.from('friends').delete().eq('id', id);
+  if(error) return toast('삭제 실패: '+error.message, true);
+  closeOv('ovDetail');
+  toast('삭제됨');
+  loadAll();
 };
 
-function renderRelList(){
-  const wrap = document.getElementById('relList');
-  if(!editingId){ wrap.innerHTML = '<span style="color:var(--text-faint); font-size:12px;">저장 후 관계를 추가할 수 있어요</span>'; return; }
-  const rels = db.friendRels.filter(r=>r.friend_id===editingId || r.related_friend_id===editingId);
-  if(!rels.length){ wrap.innerHTML = '<span style="color:var(--text-faint); font-size:12px;">등록된 관계가 없어요</span>'; return; }
-  wrap.innerHTML = rels.map(r=>{
-    const otherId = r.friend_id===editingId ? r.related_friend_id : r.friend_id;
-    const other = db.friends.find(x=>x.id===otherId);
-    const rt = db.relTypes.find(x=>x.id===r.relationship_type_id);
-    return `<div class="rel-item">
-      <span class="dot" style="background:${rt?.color||'#888'}"></span>
-      <span class="rname">${other? other.name:'?'}</span>
-      <span class="rdetail">${rt?rt.label:''}${r.detail?(' · '+r.detail):''}</span>
-      <button class="rm" data-relid="${r.id}">✕</button>
-    </div>`;
-  }).join('');
-  wrap.querySelectorAll('.rm').forEach(b=>b.onclick=async ()=>{
-    try{
-      const {error} = await sb.from('friend_relationships').delete().eq('id', b.dataset.relid);
-      if(error) throw error;
-      db.friendRels = db.friendRels.filter(r=>r.id!==b.dataset.relid);
-      renderRelList();
-      toast('관계를 삭제했어요');
-    }catch(e){ toast('삭제 실패: '+e.message); }
-  });
-}
-document.getElementById('addRelTypeBtn').onclick = async ()=>{
-  const input = document.getElementById('newRelTypeInput');
-  const label = input.value.trim();
-  if(!label) return;
-  try{
-    const colors=['#5B8CFF','#2ED9C3','#F2B93B','#FF8A5B','#C879FF','#5BD97E','#FF5C5C'];
-    const color = colors[db.relTypes.length % colors.length];
-    const {data,error} = await sb.from('relationship_types').insert({label, color}).select().single();
-    if(error) throw error;
-    db.relTypes.push(data);
-    fillSelect(document.getElementById('relTypeSelect'), db.relTypes, '유형 선택');
-    input.value=''; toast('관계 유형을 추가했어요');
-  }catch(e){ toast('추가 실패: '+e.message); }
-};
-document.getElementById('addRelBtn').onclick = async ()=>{
-  if(!editingId){ toast('먼저 저장한 뒤 관계를 추가해주세요'); return; }
-  const otherId = document.getElementById('relFriendSelect').value;
-  const typeId = document.getElementById('relTypeSelect').value;
-  const detail = document.getElementById('relDetailInput').value.trim();
-  if(!otherId || !typeId){ toast('친구와 유형을 선택해주세요'); return; }
-  try{
-    const {data,error} = await sb.from('friend_relationships').insert({friend_id:editingId, related_friend_id:otherId, relationship_type_id:typeId, detail:detail||null}).select().single();
-    if(error) throw error;
-    db.friendRels.push(data);
-    document.getElementById('relDetailInput').value='';
-    renderRelList();
-    toast('관계를 추가했어요');
-  }catch(e){ toast('관계 추가 실패: '+e.message); }
-};
-
-document.getElementById('saveFriendBtn').onclick = async ()=>{
-  const name = document.getElementById('modalName').value.trim();
-  if(!name){ toast('이름을 입력해주세요'); return; }
+$('#frSave').addEventListener('click', async () => {
+  const name = $('#frName').value.trim();
+  if(!name) return toast('이름을 입력하세요', true);
   const payload = {
     name,
-    category_tag_id: document.getElementById('modalCategory').value || null,
-    rating: +document.getElementById('modalStars').dataset.value || 0,
-    favorite: document.getElementById('modalFav').dataset.on==='1',
-    description: document.getElementById('modalDesc').value || null,
-    relationship_note: document.getElementById('modalRelNote').value || null,
-    etc_note: document.getElementById('modalEtc').value || null,
+    avatar_emoji: $('#frEmoji').value.trim() || null,
+    avatar_image_url: $('#frImg').value.trim() || null,
+    category_tag_id: $('#frCategory').value || null,
+    description: $('#frDesc').value.trim() || null,
+    relationship_note: $('#frRelNote').value.trim() || null,
+    etc_note: $('#frEtc').value.trim() || null,
+    favorite: S.favVal,
+    rating: S.starVal,
   };
-  try{
-    let friendId = editingId;
-    if(editingId){
-      const {error} = await sb.from('friends').update(payload).eq('id', editingId);
-      if(error) throw error;
-    }else{
-      const {data,error} = await sb.from('friends').insert(payload).select().single();
-      if(error) throw error;
-      friendId = data.id; db.friends.push(data);
-    }
-    // sync tags
-    const allTagIds = Object.values(modalTagSelections).flatMap(s=>[...s]);
-    await sb.from('friend_tags').delete().eq('friend_id', friendId);
-    db.friendTags = db.friendTags.filter(x=>x.friend_id!==friendId);
-    if(allTagIds.length){
-      const rows = allTagIds.map(tid=>({friend_id:friendId, tag_id:tid}));
-      const {data,error} = await sb.from('friend_tags').insert(rows).select();
-      if(error) throw error;
-      db.friendTags.push(...data);
-    }
-    // sync groups
-    await sb.from('friend_groups').delete().eq('friend_id', friendId);
-    db.friendGroups = db.friendGroups.filter(x=>x.friend_id!==friendId);
-    if(modalGroupSelections.size){
-      const rows = [...modalGroupSelections].map(gid=>({friend_id:friendId, group_id:gid}));
-      const {data,error} = await sb.from('friend_groups').insert(rows).select();
-      if(error) throw error;
-      db.friendGroups.push(...data);
-    }
-    if(editingId){
-      const idx = db.friends.findIndex(x=>x.id===friendId);
-      db.friends[idx] = {...db.friends[idx], ...payload};
-    }
-    closeModal(); renderGrid();
-    toast('저장했어요');
-  }catch(e){ console.error(e); toast('저장 실패: '+e.message); }
-};
-
-document.getElementById('deleteFriendBtn').onclick = async ()=>{
-  if(!editingId) return;
-  if(!confirm('정말 삭제할까요? 관련된 관계도 함께 삭제됩니다.')) return;
-  try{
-    const {error} = await sb.from('friends').delete().eq('id', editingId);
-    if(error) throw error;
-    db.friends = db.friends.filter(x=>x.id!==editingId);
-    db.friendTags = db.friendTags.filter(x=>x.friend_id!==editingId);
-    db.friendGroups = db.friendGroups.filter(x=>x.friend_id!==editingId);
-    db.friendRels = db.friendRels.filter(x=>x.friend_id!==editingId && x.related_friend_id!==editingId);
-    closeModal(); renderGrid();
-    toast('삭제했어요');
-  }catch(e){ toast('삭제 실패: '+e.message); }
-};
-
-document.getElementById('closeModalBtn').onclick = closeModal;
-document.getElementById('modalBackdrop').onclick = e=>{ if(e.target.id==='modalBackdrop') closeModal(); };
-document.getElementById('addFriendBtn').onclick = ()=>openModal(null);
-
-/* ---------- Drawer / search / sort ---------- */
-document.getElementById('hamburgerBtn').onclick = ()=>{
-  document.getElementById('drawer').classList.add('open');
-  document.getElementById('drawerBackdrop').classList.add('open');
-};
-document.getElementById('drawerBackdrop').onclick = ()=>{
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('drawerBackdrop').classList.remove('open');
-};
-document.getElementById('searchInput').oninput = e=>{ filters.search = e.target.value; renderGrid(); };
-document.getElementById('sortSelect').onchange = e=>{ sortMode = e.target.value; renderGrid(); };
-document.getElementById('categoryFilter').onchange = e=>{ filters.category = e.target.value; renderGrid(); };
-document.getElementById('favOnlyCheck').onchange = e=>{ filters.favOnly = e.target.checked; renderGrid(); };
-document.getElementById('resetFiltersBtn').onclick = ()=>{
-  filters = { search:'', category:'', tagIds:new Set(), groupIds:new Set(), minRating:0, favOnly:false };
-  document.getElementById('searchInput').value='';
-  document.getElementById('categoryFilter').value='';
-  document.getElementById('favOnlyCheck').checked=false;
-  setStars('minRatingStars',0);
-  renderFilterPanel();
-  renderGrid();
-};
-
-/* ---------- View toggle ---------- */
-document.getElementById('gridViewBtn').onclick = ()=>switchView('grid');
-document.getElementById('graphViewBtn').onclick = ()=>switchView('graph');
-function switchView(v){
-  document.getElementById('gridView').classList.toggle('hidden', v!=='grid');
-  document.getElementById('graphView').classList.toggle('hidden', v!=='graph');
-  document.getElementById('gridViewBtn').classList.toggle('active', v==='grid');
-  document.getElementById('graphViewBtn').classList.toggle('active', v==='graph');
-  if(v==='graph') initGraph();
-  else if(graphState.raf) cancelAnimationFrame(graphState.raf);
-}
-
-/* ---------- Graph ---------- */
-function initGraph(){
-  const canvas = document.getElementById('graphCanvas');
-  const dpr = window.devicePixelRatio||1;
-  const w = canvas.clientWidth, h = canvas.clientHeight;
-  canvas.width = w*dpr; canvas.height = h*dpr;
-  const ctx = canvas.getContext('2d'); ctx.scale(dpr,dpr);
-
-  graphState.nodes = db.friends.map((f,i)=>{
-    const gids = friendGroupIds(f.id);
-    const g = gids.length? groupById(gids[0]) : null;
-    const angle = (i/db.friends.length)*Math.PI*2;
-    return { id:f.id, name:f.name, avatar:f.avatar_emoji||'🙂', color:g?g.color:'#5B8CFF',
-      x: w/2 + Math.cos(angle)*Math.min(w,h)*0.3, y: h/2 + Math.sin(angle)*Math.min(w,h)*0.3,
-      vx:0, vy:0 };
-  });
-  graphState.edges = db.friendRels.map(r=>{
-    const rt = db.relTypes.find(x=>x.id===r.relationship_type_id);
-    return { a:r.friend_id, b:r.related_friend_id, color: rt?rt.color:'#666', strength:r.strength||3, label: rt?rt.label:'' };
-  }).filter(e=>graphState.nodes.find(n=>n.id===e.a) && graphState.nodes.find(n=>n.id===e.b));
-
-  // legend
-  const legendEl = document.getElementById('graphLegend');
-  const usedTypes = [...new Set(graphState.edges.map(e=>e.label).filter(Boolean))];
-  legendEl.innerHTML = usedTypes.length? ('<b>관계 유형</b>' + usedTypes.map(l=>{
-    const rt = db.relTypes.find(x=>x.label===l);
-    return `<div class="row"><span class="dot" style="background:${rt?.color||'#888'}"></span>${l}</div>`;
-  }).join('')) : '';
-
-  function tick(){
-    const n = graphState.nodes;
-    // repulsion
-    for(let i=0;i<n.length;i++){
-      for(let j=i+1;j<n.length;j++){
-        const dx=n[j].x-n[i].x, dy=n[j].y-n[i].y;
-        let dist=Math.sqrt(dx*dx+dy*dy)||1;
-        const force = Math.min(2000/(dist*dist), 3);
-        const fx=dx/dist*force, fy=dy/dist*force;
-        n[i].vx-=fx; n[i].vy-=fy; n[j].vx+=fx; n[j].vy+=fy;
-      }
-      // center pull
-      n[i].vx += (w/2-n[i].x)*0.001;
-      n[i].vy += (h/2-n[i].y)*0.001;
-    }
-    // edges spring
-    graphState.edges.forEach(e=>{
-      const a=n.find(x=>x.id===e.a), b=n.find(x=>x.id===e.b);
-      if(!a||!b) return;
-      const dx=b.x-a.x, dy=b.y-a.y;
-      const dist=Math.sqrt(dx*dx+dy*dy)||1;
-      const target=110;
-      const force=(dist-target)*0.02;
-      const fx=dx/dist*force, fy=dy/dist*force;
-      a.vx+=fx; a.vy+=fy; b.vx-=fx; b.vy-=fy;
-    });
-    n.forEach(node=>{
-      if(graphState.dragging===node) return;
-      node.vx*=0.85; node.vy*=0.85;
-      node.x+=node.vx; node.y+=node.vy;
-      node.x = Math.max(30, Math.min(w-30, node.x));
-      node.y = Math.max(30, Math.min(h-30, node.y));
-    });
-
-    ctx.clearRect(0,0,w,h);
-    graphState.edges.forEach(e=>{
-      const a=n.find(x=>x.id===e.a), b=n.find(x=>x.id===e.b);
-      if(!a||!b) return;
-      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
-      ctx.strokeStyle=e.color; ctx.lineWidth=Math.max(1,e.strength/1.5); ctx.globalAlpha=0.6;
-      ctx.stroke(); ctx.globalAlpha=1;
-    });
-    n.forEach(node=>{
-      ctx.beginPath(); ctx.arc(node.x,node.y,22,0,Math.PI*2);
-      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--card');
-      ctx.fill();
-      ctx.lineWidth=2; ctx.strokeStyle=node.color; ctx.stroke();
-      ctx.font='18px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(node.avatar, node.x, node.y);
-      ctx.font='12px Inter, sans-serif';
-      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text');
-      ctx.fillText(node.name, node.x, node.y+36);
-    });
-    graphState.raf = requestAnimationFrame(tick);
+  let friendId;
+  if(S.editingFriendId){
+    const { error } = await sb.from('friends').update(payload).eq('id', S.editingFriendId);
+    if(error) return toast('저장 실패: '+error.message, true);
+    friendId = S.editingFriendId;
+  }else{
+    const { data, error } = await sb.from('friends').insert(payload).select().single();
+    if(error) return toast('저장 실패: '+error.message, true);
+    friendId = data.id;
   }
-  cancelAnimationFrame(graphState.raf);
-  tick();
 
-  canvas.onmousedown = e=>{
-    const rect=canvas.getBoundingClientRect();
-    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
-    const hit = graphState.nodes.find(n=>Math.hypot(n.x-mx,n.y-my)<22);
-    if(hit){ graphState.dragging=hit; graphState._moved=false; }
-  };
-  canvas.onmousemove = e=>{
-    if(!graphState.dragging) return;
-    graphState._moved=true;
-    const rect=canvas.getBoundingClientRect();
-    graphState.dragging.x = e.clientX-rect.left;
-    graphState.dragging.y = e.clientY-rect.top;
-    graphState.dragging.vx=0; graphState.dragging.vy=0;
-  };
-  window.addEventListener('mouseup', ()=>{
-    if(graphState.dragging && !graphState._moved) openModal(graphState.dragging.id);
-    graphState.dragging=null;
+  const allTagIds = NON_CATEGORY_ORDER.flatMap(tn => [...(S.pickedTags[tn]||[])]);
+  await sb.from('friend_tags').delete().eq('friend_id', friendId);
+  if(allTagIds.length){
+    const { error } = await sb.from('friend_tags').insert(allTagIds.map(tid => ({friend_id: friendId, tag_id: tid})));
+    if(error) toast('태그 연결 실패: '+error.message, true);
+  }
+  await sb.from('friend_groups').delete().eq('friend_id', friendId);
+  if(S.pickedGroups.size){
+    const { error } = await sb.from('friend_groups').insert([...S.pickedGroups].map(gid => ({friend_id: friendId, group_id: gid})));
+    if(error) toast('무리 연결 실패: '+error.message, true);
+  }
+  await sb.from('friend_relationships').delete().eq('friend_id', friendId);
+  const validRel = S.relDraft.filter(r => r.related_friend_id && r.relationship_type_id);
+  if(validRel.length){
+    const { error } = await sb.from('friend_relationships').insert(validRel.map(r => ({
+      friend_id: friendId, related_friend_id: r.related_friend_id, relationship_type_id: r.relationship_type_id,
+      detail: r.detail || null, strength: r.strength || 3,
+    })));
+    if(error) toast('관계 저장 실패: '+error.message, true);
+  }
+
+  closeOv('ovFriend');
+  toast('저장됨');
+  loadAll();
+});
+
+/* =====================================================
+   상세 모달
+===================================================== */
+window.openDetail = id => {
+  const f = friendById(id);
+  if(!f) return;
+  S.detailFriendId = id;
+  $('#dAvatar').innerHTML = f.avatar_image_url ? `<img src="${esc(f.avatar_image_url)}">` : esc(f.avatar_emoji||'🙂');
+  $('#dName').textContent = f.name;
+  $('#dStars').innerHTML = starsHtml(f.rating||0);
+  $('#dCat').textContent = f.category ? f.category.label : '설정 안 됨';
+  $('#dDesc').textContent = f.description || '내용 없음';
+  for(const tn of NON_CATEGORY_ORDER){
+    $('#dTagLabel-'+tn).textContent = tn;
+    const items = f.tagsByType[tn]||[];
+    $('#dTags-'+tn).innerHTML = items.length ? items.map(t=>`<span class="chip">${esc(t.label)}</span>`).join('') : '<span style="color:var(--muted);font-size:12px">없음</span>';
+  }
+  $('#dGroups').innerHTML = f.groups.length ? f.groups.map(g=>`<span class="chip" style="border-color:${esc(g.color||'#666')}"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</span>`).join('') : '<span style="color:var(--muted);font-size:12px">없음</span>';
+
+  const relHtml = [];
+  for(const r of f.relOut){
+    relHtml.push(`<div class="rel-chip" onclick="openDetail('${r.related_friend_id}')">
+      <span class="rt" style="background:${esc(r.type?.color||'#666')}22;color:${esc(r.type?.color||'#ccc')}">${esc(r.type?.label||'?')}</span>
+      → ${esc(r.to?.name||'?')} ${r.detail?`· ${esc(r.detail)}`:''} <span style="color:var(--muted);margin-left:auto">강도 ${r.strength||3}</span>
+    </div>`);
+  }
+  for(const r of f.relIn){
+    relHtml.push(`<div class="rel-chip" onclick="openDetail('${r.friend_id}')">
+      <span class="rt" style="background:${esc(r.type?.color||'#666')}22;color:${esc(r.type?.color||'#ccc')}">${esc(r.type?.label||'?')}</span>
+      ← ${esc(r.from?.name||'?')} ${r.detail?`· ${esc(r.detail)}`:''} <span style="color:var(--muted);margin-left:auto">강도 ${r.strength||3}</span>
+    </div>`);
+  }
+  $('#dRels').innerHTML = relHtml.join('') || '<span style="color:var(--muted);font-size:12px">등록된 관계가 없습니다.</span>';
+
+  $('#dRelNoteSec').style.display = f.relationship_note ? '' : 'none';
+  $('#dRelNote').textContent = f.relationship_note || '';
+  $('#dEtcSec').style.display = f.etc_note ? '' : 'none';
+  $('#dEtc').textContent = f.etc_note || '';
+  openOv('ovDetail');
+};
+$('#dEdit').addEventListener('click', () => editFriend(S.detailFriendId));
+$('#dDelete').addEventListener('click', () => delFriend(S.detailFriendId));
+
+/* =====================================================
+   태그 관리 페이지
+===================================================== */
+function renderTagsPage(){
+  const q = $('#tagSearch').value.trim().toLowerCase();
+  $('#tagTypeBlocks').innerHTML = S.tagTypes.map(tt => {
+    const rows = q ? tt.tags.filter(t => t.label.toLowerCase().includes(q)) : tt.tags;
+    return `<div class="tag-type-block">
+      <h3>${esc(tt.name)} <span class="count">${tt.tags.length}</span> <button class="btn sm" data-addtag="${tt.id}" data-typename="${esc(tt.name)}">＋ 추가</button></h3>
+      <div class="grid">
+        ${rows.length ? rows.map(t => `
+          <div class="item-card">
+            <div class="top">
+              <h3>${tt.name==='분류' ? `<span style="font-size:16px">${esc(t.default_emoji||'🙂')}</span>` : ''}${esc(t.label)}</h3>
+              <button class="icon-btn" data-edittag="${t.id}" data-typeid="${tt.id}" data-typename="${esc(tt.name)}">✎</button>
+              <button class="icon-btn del" data-deltag="${t.id}">🗑</button>
+            </div>
+          </div>`).join('') : `<div class="empty-note" style="grid-column:1/-1">${q?'검색 결과 없음':'등록된 태그가 없습니다.'}</div>`}
+      </div>
+    </div>`;
+  }).join('');
+  $('#tagTypeBlocks').querySelectorAll('[data-addtag]').forEach(b => b.addEventListener('click', () => openTagModal(b.dataset.typename, b.dataset.addtag, null)));
+  $('#tagTypeBlocks').querySelectorAll('[data-edittag]').forEach(b => {
+    const tt = S.tagTypes.find(x=>x.id===b.dataset.typeid);
+    const row = tt?.tags.find(t=>t.id===b.dataset.edittag);
+    b.addEventListener('click', () => openTagModal(b.dataset.typename, b.dataset.typeid, row));
   });
+  $('#tagTypeBlocks').querySelectorAll('[data-deltag]').forEach(b => b.addEventListener('click', () => delTag(b.dataset.deltag)));
 }
-window.addEventListener('resize', ()=>{ if(!document.getElementById('graphView').classList.contains('hidden')) initGraph(); });
+$('#tagSearch').addEventListener('input', renderTagsPage);
+function openTagModal(typeName, typeId, row){
+  S.editingTag = { typeName, typeId, row };
+  $('#tagModalTitle').childNodes[0].textContent = (row?'수정: ':'추가: ') + typeName + ' ';
+  $('#tagName').value = row?.label || '';
+  $('#tagEmojiField').style.display = typeName === '분류' ? '' : 'none';
+  $('#tagEmoji').value = row?.default_emoji || '';
+  openOv('ovTag');
+  $('#tagName').focus();
+}
+$('#tagSave').addEventListener('click', async () => {
+  const { typeId, row, typeName } = S.editingTag;
+  const label = $('#tagName').value.trim();
+  if(!label) return toast('이름을 입력하세요', true);
+  const payload = { tag_type_id: typeId, label };
+  if(typeName === '분류') payload.default_emoji = $('#tagEmoji').value.trim() || null;
+  const q = row ? sb.from('tags').update(payload).eq('id', row.id) : sb.from('tags').insert(payload);
+  const { error } = await q;
+  if(error) return toast('저장 실패: '+error.message, true);
+  closeOv('ovTag'); toast('저장됨'); loadAll();
+});
+window.delTag = async id => {
+  if(!confirm('삭제할까요? 부여된 친구에게서도 사라집니다.')) return;
+  const { error } = await sb.from('tags').delete().eq('id', id);
+  if(error) return toast('삭제 실패: '+error.message, true);
+  toast('삭제됨'); loadAll();
+};
 
+/* =====================================================
+   무리 관리 페이지
+===================================================== */
+function renderGroupsPage(){
+  const q = $('#groupSearch').value.trim().toLowerCase();
+  const rows = q ? S.groups.filter(g=>g.name.toLowerCase().includes(q)) : S.groups;
+  $('#groupCount').textContent = S.groups.length;
+  $('#groupList').innerHTML = rows.length ? rows.map(g => `
+    <div class="item-card">
+      <div class="top"><h3><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</h3>
+        <button class="icon-btn" onclick="editGroup('${g.id}')">✎</button>
+        <button class="icon-btn del" onclick="delGroup('${g.id}')">🗑</button>
+      </div>
+      <div class="desc">${S.friends.filter(f=>f.groups.some(x=>x.id===g.id)).length}명 소속</div>
+    </div>`).join('') : `<div class="empty-note" style="grid-column:1/-1">${q?'검색 결과 없음':'등록된 무리가 없습니다.'}</div>`;
+}
+$('#groupSearch').addEventListener('input', renderGroupsPage);
+function renderColorRow(elId, current, onPick){
+  $('#'+elId).innerHTML = COLORS.map(c => `<div class="color-sw ${c===current?'on':''}" style="background:${c}" data-c="${c}"></div>`).join('');
+  $('#'+elId).querySelectorAll('.color-sw').forEach(sw => sw.addEventListener('click', () => { onPick(sw.dataset.c); renderColorRow(elId, sw.dataset.c, onPick); }));
+}
+function openGroupModal(row=null){
+  S.editingGroup = row;
+  S.groupColor = row?.color || COLORS[0];
+  $('#groupModalTitle').childNodes[0].textContent = row ? '수정: 무리 ' : '무리 추가 ';
+  $('#groupName').value = row?.name || '';
+  renderColorRow('groupColors', S.groupColor, c => S.groupColor = c);
+  openOv('ovGroup');
+  $('#groupName').focus();
+}
+window.editGroup = id => openGroupModal(S.groups.find(g=>g.id===id));
+window.delGroup = async id => {
+  if(!confirm('삭제할까요? 부여된 친구에게서도 사라집니다.')) return;
+  const { error } = await sb.from('groups').delete().eq('id', id);
+  if(error) return toast('삭제 실패: '+error.message, true);
+  toast('삭제됨'); loadAll();
+};
+$('#btnAddGroup').addEventListener('click', () => openGroupModal());
+$('#groupSave').addEventListener('click', async () => {
+  const name = $('#groupName').value.trim();
+  if(!name) return toast('이름을 입력하세요', true);
+  const payload = { name, color: S.groupColor };
+  const q = S.editingGroup ? sb.from('groups').update(payload).eq('id', S.editingGroup.id) : sb.from('groups').insert(payload);
+  const { error } = await q;
+  if(error) return toast('저장 실패: '+error.message, true);
+  closeOv('ovGroup'); toast('저장됨'); loadAll();
+});
+
+/* =====================================================
+   관계유형 관리 페이지
+===================================================== */
+function renderRelTypesPage(){
+  $('#relTypeCount').textContent = S.relTypes.length;
+  $('#relTypeList').innerHTML = S.relTypes.length ? S.relTypes.map(t => `
+    <div class="item-card">
+      <div class="top"><h3><span class="color-dot" style="background:${esc(t.color||'#666')}"></span>${esc(t.label)}</h3>
+        <button class="icon-btn" onclick="editRelType('${t.id}')">✎</button>
+        <button class="icon-btn del" onclick="delRelType('${t.id}')">🗑</button>
+      </div>
+    </div>`).join('') : `<div class="empty-note" style="grid-column:1/-1">등록된 관계유형이 없습니다.</div>`;
+}
+function openRelTypeModal(row=null){
+  S.editingRelType = row;
+  S.relTypeColor = row?.color || COLORS[0];
+  $('#relTypeModalTitle').childNodes[0].textContent = row ? '수정: 관계유형 ' : '관계유형 추가 ';
+  $('#relTypeName').value = row?.label || '';
+  renderColorRow('relTypeColors', S.relTypeColor, c => S.relTypeColor = c);
+  openOv('ovRelType');
+  $('#relTypeName').focus();
+}
+window.editRelType = id => openRelTypeModal(S.relTypes.find(t=>t.id===id));
+window.delRelType = async id => {
+  if(!confirm('삭제할까요? 이 유형을 사용하는 관계도 사라집니다.')) return;
+  const { error } = await sb.from('relationship_types').delete().eq('id', id);
+  if(error) return toast('삭제 실패: '+error.message, true);
+  toast('삭제됨'); loadAll();
+};
+$('#btnAddRelType').addEventListener('click', () => openRelTypeModal());
+$('#relTypeSave').addEventListener('click', async () => {
+  const label = $('#relTypeName').value.trim();
+  if(!label) return toast('이름을 입력하세요', true);
+  const payload = { label, color: S.relTypeColor };
+  const q = S.editingRelType ? sb.from('relationship_types').update(payload).eq('id', S.editingRelType.id) : sb.from('relationship_types').insert(payload);
+  const { error } = await q;
+  if(error) return toast('저장 실패: '+error.message, true);
+  closeOv('ovRelType'); toast('저장됨'); loadAll();
+});
+
+/* =====================================================
+   인간관계 시각화 (d3 force)
+===================================================== */
+let vizSim = null;
+function renderViz(){
+  const svgEl = d3.select('#vizSvg');
+  const wrap = $('#vizWrap');
+  const w = wrap.clientWidth, h = 640;
+  svgEl.attr('viewBox', [0,0,w,h]);
+  svgEl.selectAll('*').remove();
+
+  const nodes = S.friends.map(f => ({ id: f.id, name: f.name, emoji: f.avatar_emoji||'🙂', color: (f.groups[0]?.color) || '#6366f1' }));
+  const links = [];
+  for(const f of S.friends) for(const r of f.relOut){
+    links.push({ source: f.id, target: r.related_friend_id, color: r.type?.color||'#888', label: r.type?.label||'', strength: r.strength||3 });
+  }
+
+  if(!nodes.length){
+    svgEl.append('text').attr('x', w/2).attr('y', h/2).attr('text-anchor','middle').attr('fill','var(--muted)').text('등록된 친구가 없습니다.');
+    return;
+  }
+
+  const g = svgEl.append('g');
+  svgEl.call(d3.zoom().scaleExtent([0.3,3]).on('zoom', (ev) => g.attr('transform', ev.transform)));
+
+  if(vizSim) vizSim.stop();
+  vizSim = d3.forceSimulation(nodes)
+    .force('link', d3.forceLink(links).id(d=>d.id).distance(110).strength(0.5))
+    .force('charge', d3.forceManyBody().strength(-260))
+    .force('center', d3.forceCenter(w/2, h/2))
+    .force('collide', d3.forceCollide(34));
+
+  const link = g.append('g').selectAll('line').data(links).join('line')
+    .attr('stroke', d=>d.color).attr('stroke-width', d=>1+d.strength*0.8).attr('stroke-opacity', 0.7);
+
+  const node = g.append('g').selectAll('g').data(nodes).join('g')
+    .style('cursor','pointer')
+    .call(d3.drag()
+      .on('start', (ev,d) => { if(!ev.active) vizSim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag', (ev,d) => { d.fx=ev.x; d.fy=ev.y; })
+      .on('end', (ev,d) => { if(!ev.active) vizSim.alphaTarget(0); d.fx=null; d.fy=null; }))
+    .on('click', (ev,d) => openDetail(d.id));
+
+  node.append('circle').attr('r', 20).attr('fill', 'var(--panel)').attr('stroke', d=>d.color).attr('stroke-width', 3);
+  node.append('text').attr('text-anchor','middle').attr('dy','0.32em').attr('font-size','16px').text(d=>d.emoji);
+  node.append('text').attr('class','node-label').attr('text-anchor','middle').attr('dy', 34).text(d=>d.name);
+
+  vizSim.on('tick', () => {
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    node.attr('transform', d=>`translate(${d.x},${d.y})`);
+  });
+
+  const legend = $('#vizLegend');
+  legend.innerHTML = `
+    <div class="lg-sec"><div class="lg-title">관계유형</div>
+      ${S.relTypes.map(t=>`<div class="lg-row"><span class="color-dot" style="background:${esc(t.color||'#666')}"></span>${esc(t.label)}</div>`).join('') || '<div style="color:var(--muted)">없음</div>'}
+    </div>
+    <div class="lg-sec"><div class="lg-title">무리 (노드 테두리)</div>
+      ${S.groups.map(g=>`<div class="lg-row"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</div>`).join('') || '<div style="color:var(--muted)">없음</div>'}
+    </div>`;
+}
+window.addEventListener('resize', () => { if($('#page-viz').classList.contains('on')) renderViz(); });
+
+/* init */
+(function(){
+  try{
+    const last = localStorage.getItem('fa_last_tab');
+    if(last){
+      const b = document.querySelector(`.tab-btn[data-tab="${last}"]`);
+      if(b) b.click();
+    }
+  }catch(e){}
+})();
 loadAll();
 </script>
 </body>
