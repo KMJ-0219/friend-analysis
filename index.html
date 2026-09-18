@@ -2,206 +2,249 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FRIEND ANALYSIS — 인간관계 분석</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>인간관계 분석</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 :root{
   --bg:#13151b; --bg2:#181b23; --panel:#1e2230; --panel2:#252a3a; --line:#2e3447;
   --text:#e8eaf2; --muted:#8d93a8; --accent:#6366f1; --accent2:#818cf8; --danger:#ef5d5d;
+  --star:#e8b341; --ok:#4ade80;
   --mono:'JetBrains Mono',ui-monospace,'SF Mono',Consolas,monospace;
-  --star:#e8b341;
+  --navh:64px;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;font-size:14px}
+body{background:var(--bg);color:var(--text);font-family:'Pretendard Variable',Pretendard,-apple-system,'Apple SD Gothic Neo','Noto Sans KR',sans-serif;font-size:14px;-webkit-tap-highlight-color:transparent}
 button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 input,textarea,select{font-family:inherit;font-size:14px;color:var(--text)}
 ::-webkit-scrollbar{width:9px;height:9px}
 ::-webkit-scrollbar-thumb{background:#333a50;border-radius:5px}
 ::-webkit-scrollbar-track{background:transparent}
 
-header{display:flex;align-items:center;gap:14px;padding:0 22px;height:58px;background:var(--bg2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;overflow-x:auto}
-.logo{font-weight:800;font-size:16px;letter-spacing:.04em;white-space:nowrap}
-.logo b{color:var(--accent2);font-family:var(--mono)}
-nav{display:flex;gap:4px;margin-left:8px}
-.tab-btn{padding:8px 13px;border-radius:8px;color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap;transition:.15s}
-.tab-btn:hover{color:var(--text);background:var(--panel)}
-.tab-btn.on{color:var(--text);background:var(--panel2);box-shadow:inset 0 0 0 1px var(--line)}
-.hd-right{margin-left:auto;display:flex;gap:8px;align-items:center;white-space:nowrap}
-.conn-dot{width:8px;height:8px;border-radius:50%;background:#666;transition:.3s}
-.conn-dot.ok{background:#4ade80;box-shadow:0 0 8px #4ade8088}
+/* ===== header / nav ===== */
+header{display:flex;align-items:center;gap:16px;padding:0 20px;height:56px;background:var(--bg2);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+.logo{font-weight:800;font-size:15px;letter-spacing:.02em;white-space:nowrap}
+.logo b{color:var(--accent2)}
+nav.top{display:flex;gap:3px}
+.nav-btn{padding:8px 15px;border-radius:9px;color:var(--muted);font-weight:700;font-size:13.5px;transition:.15s}
+.nav-btn:hover{color:var(--text);background:var(--panel)}
+.nav-btn.on{color:var(--text);background:var(--panel2);box-shadow:inset 0 0 0 1px var(--line)}
+.hd-right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.conn-dot{width:8px;height:8px;border-radius:50%;background:#666;transition:.3s;flex-shrink:0}
+.conn-dot.ok{background:var(--ok);box-shadow:0 0 8px #4ade8088}
 .conn-dot.bad{background:var(--danger)}
 .conn-label{font-size:11.5px;color:var(--muted);font-family:var(--mono)}
 
-.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;font-weight:700;font-size:13px;background:var(--panel2);border:1px solid var(--line);transition:.15s;white-space:nowrap}
+nav.bottom{display:none}
+
+.page{display:none;padding:20px;max-width:1300px;margin:0 auto}
+.page.on{display:block}
+.page-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.page-head h2{font-size:19px;font-weight:800}
+.count{font-family:var(--mono);font-size:11.5px;color:var(--muted);background:var(--panel);padding:3px 9px;border-radius:20px;border:1px solid var(--line)}
+.spacer{flex:1}
+.empty-note{color:var(--muted);text-align:center;padding:40px 0;font-size:13.5px;line-height:1.8}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 15px;border-radius:9px;font-weight:700;font-size:13px;background:var(--panel2);border:1px solid var(--line);transition:.15s;white-space:nowrap}
 .btn:hover{border-color:#48506e;background:#2b3146}
 .btn.primary{background:var(--accent);border-color:var(--accent)}
 .btn.primary:hover{background:var(--accent2);border-color:var(--accent2)}
 .btn.danger{color:#ffb4b4;border-color:#5a3340}
 .btn.danger:hover{background:#3a2030;border-color:var(--danger)}
-.btn.sm{padding:5px 10px;font-size:12px;border-radius:7px}
-.tab-page{display:none;padding:20px 22px;max-width:1400px;margin:0 auto}
-.tab-page.on{display:block}
-.page-head{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
-.page-head h2{font-size:18px;font-weight:800}
-.page-head .count{font-family:var(--mono);font-size:12px;color:var(--muted);background:var(--panel);padding:3px 9px;border-radius:20px;border:1px solid var(--line)}
-.page-head .spacer{flex:1}
-.empty-note{color:var(--muted);text-align:center;padding:50px 0;font-size:13.5px;line-height:1.8}
-.search-input{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:8px 12px;outline:none;font-size:13px;min-width:150px;transition:border-color .15s}
-.search-input:focus{border-color:var(--accent)}
-select.search-input{cursor:pointer}
-
-/* toolbar */
-.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.filter-pop-wrap{position:relative}
-.filter-pop{position:absolute;top:calc(100% + 6px);left:0;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px;width:260px;box-shadow:0 12px 32px #000a;z-index:40;display:none;max-height:340px;overflow-y:auto}
-.filter-pop.on{display:block}
-.filter-sec{margin-bottom:10px}
-.filter-sec:last-child{margin-bottom:0}
-.filter-sec .lbl{font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.04em;margin-bottom:6px}
-.filter-chip-row{display:flex;flex-wrap:wrap;gap:5px}
-.filter-chip{font-size:12px;padding:4px 9px;border-radius:20px;background:var(--panel);border:1px solid var(--line);color:var(--muted);transition:.13s}
-.filter-chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.toggle-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:9px;background:var(--panel);border:1px solid var(--line);font-size:13px;font-weight:600;color:var(--muted)}
-.toggle-chip.on{color:var(--star);border-color:#5a4a2a;background:#2a2415}
-
-/* friend cards */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
-.fcard2{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px;cursor:pointer;transition:.15s;position:relative;display:flex;flex-direction:column;gap:8px}
-.fcard2:hover{border-color:#48506e;transform:translateY(-1px)}
-.fcard2 .top{display:flex;align-items:center;gap:10px}
-.avatar{width:42px;height:42px;border-radius:12px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;border:1px solid var(--line)}
-.avatar img{width:100%;height:100%;object-fit:cover}
-.fcard2 .nm{font-weight:800;font-size:14.5px}
-.fcard2 .cat{font-size:11.5px;color:var(--muted)}
-.fav-btn{position:absolute;top:10px;right:10px;font-size:15px;color:#454c66;transition:.13s}
-.fav-btn.on{color:var(--star)}
-.stars{font-size:12px;color:var(--star);letter-spacing:1px}
-.stars .off{color:#3a3f52}
-.fcard2 .tagrow{display:flex;flex-wrap:wrap;gap:4px}
-.mini-tag{font-size:10.5px;padding:2px 7px;border-radius:20px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
-
-/* generic item cards (mgmt pages) */
-.item-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 15px;display:flex;flex-direction:column;gap:7px}
-.item-card:hover{border-color:#444c6c}
-.item-card .top{display:flex;align-items:flex-start;gap:8px}
-.item-card h3{font-size:14.5px;font-weight:800;flex:1;line-height:1.35;display:flex;align-items:center;gap:8px}
-.item-card .desc{font-size:12.5px;color:#c6cad8;line-height:1.5}
-.icon-btn{width:28px;height:28px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid transparent;font-size:13px}
+.btn.sm{padding:6px 11px;font-size:12px;border-radius:7px}
+.btn.ghost{background:transparent}
+.icon-btn{width:30px;height:30px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:var(--muted);border:1px solid transparent;font-size:13px;flex-shrink:0}
 .icon-btn:hover{background:var(--panel2);color:var(--text);border-color:var(--line)}
 .icon-btn.del:hover{color:var(--danger);border-color:#5a3340}
-.color-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;border:1px solid #0004}
-.tag-type-block{margin-bottom:22px}
-.tag-type-block h3{font-size:14px;font-weight:800;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.search-input{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;outline:none;font-size:13px;transition:border-color .15s}
+.search-input:focus{border-color:var(--accent)}
+select.search-input{cursor:pointer}
+.color-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1px solid #0004}
+.stars{font-size:12.5px;color:var(--star);letter-spacing:1px;white-space:nowrap}
+.stars .off{color:#3a3f52}
 
-/* modals */
-.overlay{position:fixed;inset:0;background:#0009;backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 16px;overflow-y:auto}
+/* ===== dashboard ===== */
+.dash-section{margin-bottom:26px}
+.dash-head{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.dash-head h3{font-size:14px;font-weight:800}
+.dash-head .sub{font-size:11.5px;color:var(--muted)}
+.dash-head .more{margin-left:auto;font-size:12px;color:var(--accent2);font-weight:700}
+.hscroll{display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scroll-snap-type:x proximity}
+.hscroll::-webkit-scrollbar{height:6px}
+.mini-card{flex:0 0 auto;width:132px;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:13px 12px;cursor:pointer;transition:.15s;scroll-snap-align:start;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;position:relative}
+.mini-card:hover{border-color:#4a5273;transform:translateY(-2px)}
+.mini-card .av{width:44px;height:44px;border-radius:14px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:21px;overflow:hidden;border:1px solid var(--line)}
+.mini-card .av img{width:100%;height:100%;object-fit:cover}
+.mini-card .nm{font-weight:800;font-size:13.5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini-card .sub{font-size:11px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini-card .badge{position:absolute;top:8px;right:9px;font-size:10.5px;color:var(--star)}
+.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:24px}
+.stat-box{background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:14px}
+.stat-box .v{font-size:23px;font-weight:800;font-family:var(--mono);line-height:1.1}
+.stat-box .k{font-size:11.5px;color:var(--muted);margin-top:4px}
+.group-strip{display:flex;gap:8px;flex-wrap:wrap}
+.group-pill{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:11px;background:var(--panel);border:1px solid var(--line);font-size:13px;font-weight:700;cursor:pointer;transition:.15s}
+.group-pill:hover{border-color:#4a5273}
+.group-pill .n{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+/* list rows */
+.row-list{display:flex;flex-direction:column;gap:8px}
+.frow{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:11px 14px;cursor:pointer;transition:.15s}
+.frow:hover{border-color:#4a5273}
+.frow .av{width:38px;height:38px;border-radius:12px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:18px;overflow:hidden;flex-shrink:0;border:1px solid var(--line)}
+.frow .av img{width:100%;height:100%;object-fit:cover}
+.frow .main{flex:1;min-width:0}
+.frow .nm{font-weight:800;font-size:14px;display:flex;align-items:center;gap:7px}
+.frow .meta{font-size:11.5px;color:var(--muted);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.frow .right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.mini-tag{font-size:10.5px;padding:2px 7px;border-radius:20px;background:var(--panel2);color:var(--muted);border:1px solid var(--line)}
+.fav-star{color:#454c66;font-size:15px}
+.fav-star.on{color:var(--star)}
+
+/* filter bar */
+.filterbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.filterbar .search-input{flex:1;min-width:150px}
+.pop-wrap{position:relative}
+.pop{position:absolute;top:calc(100% + 6px);left:0;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:13px;width:265px;box-shadow:0 14px 34px #000b;z-index:40;display:none;max-height:330px;overflow-y:auto}
+.pop.on{display:block}
+.pop .sec{margin-bottom:12px}
+.pop .sec:last-child{margin-bottom:0}
+.pop .lbl{font-size:10.5px;font-weight:800;color:var(--muted);letter-spacing:.06em;margin-bottom:7px}
+.toggle-grid{display:flex;flex-wrap:wrap;gap:6px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:20px;background:var(--panel);border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--muted);transition:.13s;position:relative}
+.pill:hover{border-color:#48506e;color:var(--text)}
+.pill.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.pill.wdel{padding-right:26px}
+.pill .del{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;opacity:.45}
+.pill .del:hover{opacity:1;background:#0005}
+
+/* ===== graph ===== */
+#graphWrap{position:relative;border:1px solid var(--line);border-radius:14px;background:var(--bg2);overflow:hidden}
+#graphSvg{width:100%;display:block;cursor:grab;touch-action:none}
+#graphSvg:active{cursor:grabbing}
+.graph-ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.chkbox{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border-radius:9px;background:var(--panel);border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.chkbox.on{color:var(--text);border-color:var(--accent);background:#232842}
+.chkbox input{accent-color:var(--accent);width:14px;height:14px;cursor:pointer}
+.slider-ctl{display:inline-flex;align-items:center;gap:9px;padding:7px 13px;border-radius:9px;background:var(--panel);border:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+.slider-ctl input{width:90px;accent-color:var(--accent)}
+.graph-legend{position:absolute;top:12px;left:12px;background:#181b23e8;border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-size:11.5px;max-width:190px;max-height:calc(100% - 24px);overflow-y:auto}
+.graph-legend .lg-title{font-weight:800;color:var(--muted);margin-bottom:5px;font-size:10px;letter-spacing:.07em}
+.graph-legend .lg-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.graph-legend .lg-sec{margin-bottom:9px}
+.graph-legend .lg-sec:last-child{margin-bottom:0}
+.graph-info{position:absolute;bottom:12px;left:12px;right:12px;background:#181b23e8;border:1px solid var(--line);border-radius:11px;padding:11px 14px;font-size:12.5px;display:none}
+.graph-info.on{display:flex;align-items:center;gap:11px;flex-wrap:wrap}
+.graph-info .gi-name{font-weight:800;font-size:14px}
+.node-label{font-size:11px;font-weight:700;fill:var(--text);pointer-events:none;paint-order:stroke;stroke:#13151b;stroke-width:3.5px}
+.edge-label{font-size:9.5px;font-weight:700;fill:var(--muted);pointer-events:none;paint-order:stroke;stroke:#181b23;stroke-width:3px}
+
+/* ===== modals ===== */
+.overlay{position:fixed;inset:0;background:#000a;backdrop-filter:blur(3px);display:none;align-items:flex-start;justify-content:center;z-index:100;padding:40px 16px;overflow-y:auto}
 .overlay.on{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--line);border-radius:16px;width:100%;max-width:600px;padding:22px 22px 20px;animation:pop .18s ease;box-shadow:0 20px 60px #000a}
-@keyframes pop{from{transform:translateY(10px);opacity:0}to{transform:none;opacity:1}}
+.modal{background:var(--bg2);border:1px solid var(--line);border-radius:17px;width:100%;max-width:560px;padding:22px;animation:pop .18s ease;box-shadow:0 20px 60px #000b}
+@keyframes pop{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
 .modal h2{font-size:17px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:10px}
 .modal h2 .x{margin-left:auto}
 .field{margin-bottom:13px}
-.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:.03em}
-.field input[type=text],.field input[type=number],.field textarea,.field select{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:9px 12px;outline:none;transition:border-color .15s}
+.field label{display:block;font-size:11.5px;font-weight:700;color:var(--muted);margin-bottom:6px}
+.field input[type=text],.field textarea,.field select{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:10px 12px;outline:none;transition:border-color .15s}
 .field input:focus,.field textarea:focus,.field select:focus{border-color:var(--accent)}
-.field textarea{resize:vertical;min-height:60px;line-height:1.5}
+.field textarea{resize:vertical;min-height:70px;line-height:1.55}
 .field-row{display:flex;gap:10px}
 .field-row .field{flex:1}
-.color-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-.color-sw{width:26px;height:26px;border-radius:8px;border:2px solid transparent;cursor:pointer}
-.color-sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
 .modal-foot{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
 .modal-foot .left{margin-right:auto}
-.pick-box{background:var(--panel);border:1px solid var(--line);border-radius:10px;max-height:150px;overflow-y:auto;padding:6px}
-.pick-row{display:flex;align-items:center;gap:9px;padding:6px 9px;border-radius:8px;cursor:pointer;font-size:13px}
-.pick-row:hover{background:var(--panel2)}
-.pick-row input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer}
-.inline-new{display:flex;gap:6px;margin-top:7px}
-.inline-new input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;outline:none;font-size:12.5px}
-.star-pick{display:flex;gap:4px;font-size:22px;color:#3a3f52;cursor:pointer}
+.star-pick{display:flex;gap:5px;font-size:24px;color:#3a3f52;cursor:pointer}
 .star-pick span.on{color:var(--star)}
-
-/* form sections */
-.form-section{background:#171a24;border:1px solid var(--line);border-radius:12px;padding:15px 16px 3px;margin-bottom:12px}
-.form-section-title{font-size:11.5px;font-weight:800;color:var(--accent2);letter-spacing:.04em;margin-bottom:13px;display:flex;align-items:center;gap:7px}
-.form-section-title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent2);flex-shrink:0}
-
-/* wizard */
-.wizard-steps{display:flex;gap:4px;margin-bottom:18px;overflow-x:auto;padding-bottom:2px}
-.wizard-step{flex:1;min-width:76px;text-align:center;padding:9px 6px;border-radius:9px;font-size:11px;font-weight:700;color:var(--muted);background:var(--panel);border:1px solid var(--line);cursor:pointer;white-space:nowrap;transition:.13s}
-.wizard-step:hover{border-color:#48506e;color:var(--text)}
-.wizard-step.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.wizard-panel{display:none}
-.wizard-panel.on{display:block}
-.modal-foot .btn.left{margin-right:auto}
-
-/* tag/category/group toggle-grid picker with inline add + delete */
-.tagblock{margin-bottom:20px}
-.tagblock:last-child{margin-bottom:0}
-.tagblock-head{margin-bottom:9px}
-.tagblock-head label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.02em}
-.toggle-grid{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}
-.toggle-pill{position:relative;display:inline-flex;align-items:center;gap:6px;padding:8px 27px 8px 14px;border-radius:20px;background:var(--panel);border:1px solid var(--line);font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer;transition:.13s}
-.toggle-pill:hover{border-color:#48506e}
-.toggle-pill.on{background:var(--accent);border-color:var(--accent);color:#fff}
-.toggle-pill .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.toggle-pill .del{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;opacity:.5}
-.toggle-pill .del:hover{opacity:1;background:#0004}
-.tagblock-add{display:flex;gap:6px}
-.tagblock-add input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;outline:none;font-size:12.5px}
-.tagblock-add input:focus{border-color:var(--accent)}
-
-/* relationship builder */
-.rel-row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;position:relative}
-.rel-row .rr-del{position:absolute;top:9px;right:9px}
-.rel-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;padding-right:30px}
-.rel-detail-row{display:grid;grid-template-columns:1fr 92px;gap:9px}
-.rel-row .rf label{font-size:10.5px;color:var(--muted);font-weight:700;display:block;margin-bottom:4px}
-.rel-row select,.rel-row input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:12.5px;outline:none}
-.rel-row select:focus,.rel-row input:focus{border-color:var(--accent)}
+.inline-add{display:flex;gap:6px;margin-top:8px}
+.inline-add input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 11px;outline:none;font-size:12.5px}
+.inline-add input:focus{border-color:var(--accent)}
+.hint{font-size:11.5px;color:var(--muted);line-height:1.55}
 
 /* detail modal */
-.detail-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.detail-head h2{margin:0;font-size:19px}
-.detail-sec{margin-bottom:14px}
-.detail-sec .sec-label{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--muted);margin-bottom:7px}
-.detail-sec p{font-size:13.5px;line-height:1.65;color:#d4d8e4;white-space:pre-wrap}
-.detail-sec p.dim{color:var(--muted);font-size:12.5px}
+.detail-hero{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.detail-hero .av{width:56px;height:56px;border-radius:17px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:27px;overflow:hidden;border:1px solid var(--line);flex-shrink:0}
+.detail-hero .av img{width:100%;height:100%;object-fit:cover}
+.detail-hero .hname{font-size:20px;font-weight:800;display:flex;align-items:center;gap:9px}
+.detail-hero .hsub{font-size:12px;color:var(--muted);margin-top:4px}
+.summary-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.sbox{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px;text-align:center}
+.sbox .v{font-size:16px;font-weight:800;font-family:var(--mono)}
+.sbox .k{font-size:10.5px;color:var(--muted);margin-top:3px}
+.dtabs{display:flex;gap:4px;margin-bottom:16px;background:var(--panel);padding:4px;border-radius:11px}
+.dtab{flex:1;padding:9px;border-radius:8px;font-size:12.5px;font-weight:700;color:var(--muted);transition:.13s}
+.dtab.on{background:var(--panel2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line)}
+.dpanel{display:none}
+.dpanel.on{display:block}
+.dsec{margin-bottom:16px}
+.dsec .sl{font-size:10.5px;font-weight:800;letter-spacing:.09em;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:7px}
+.dsec .sl .ed{margin-left:auto;font-size:11px;color:var(--accent2);font-weight:700;letter-spacing:0}
+.dsec p{font-size:13.5px;line-height:1.65;color:#d4d8e4;white-space:pre-wrap}
+.dsec p.dim{color:var(--muted);font-size:12.5px}
 .chip-row{display:flex;flex-wrap:wrap;gap:6px}
-.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:4px 10px;border-radius:20px;background:var(--panel2);border:1px solid var(--line)}
-.chip.click{cursor:pointer}
-.chip.click:hover{border-color:var(--accent);color:#fff}
-.rel-chip{display:flex;align-items:center;gap:7px;font-size:12.5px;padding:6px 10px;border-radius:9px;background:var(--panel);border:1px solid var(--line);cursor:pointer}
-.rel-chip:hover{border-color:var(--accent)}
-.rel-chip .rt{font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:20px}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:20px;background:var(--panel2);border:1px solid var(--line)}
+.rel-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--panel);border:1px solid var(--line);cursor:pointer;margin-bottom:7px}
+.rel-item:hover{border-color:var(--accent)}
+.rel-item .rt{font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:20px;flex-shrink:0}
+.rel-item .rn{font-weight:700;font-size:13px}
+.rel-item .rd{font-size:11.5px;color:var(--muted)}
+.rel-item .dir{font-family:var(--mono);color:var(--muted);font-size:13px;flex-shrink:0}
+.rel-edit{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:12px;margin-bottom:8px;position:relative}
+.rel-edit .rr-del{position:absolute;top:8px;right:8px}
+.rel-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;padding-right:32px}
+.rel-grid2{display:grid;grid-template-columns:1fr 88px;gap:9px}
+.rel-edit label{font-size:10px;color:var(--muted);font-weight:700;display:block;margin-bottom:4px}
+.rel-edit select,.rel-edit input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:8px 9px;font-size:12.5px;outline:none}
+.rel-edit select:focus,.rel-edit input:focus{border-color:var(--accent)}
 
-/* viz */
-#vizWrap{border:1px solid var(--line);border-radius:14px;background:var(--bg2);position:relative;overflow:hidden}
-#vizSvg{width:100%;display:block;cursor:grab}
-#vizSvg:active{cursor:grabbing}
-.viz-legend{position:absolute;top:12px;left:12px;background:#181b23dd;border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:11.5px;max-width:220px}
-.viz-legend .lg-sec{margin-bottom:6px}
-.viz-legend .lg-title{font-weight:800;color:var(--muted);margin-bottom:4px;font-size:10.5px;letter-spacing:.05em}
-.viz-legend .lg-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
-.node-label{font-size:11px;font-weight:700;fill:var(--text);pointer-events:none;paint-order:stroke;stroke:#13151b;stroke-width:3px}
+/* settings */
+.set-block{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 17px;margin-bottom:14px}
+.set-block h3{font-size:14px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:9px}
+.color-row{display:flex;gap:7px;flex-wrap:wrap}
+.color-sw{width:27px;height:27px;border-radius:9px;border:2px solid transparent;cursor:pointer}
+.color-sw.on{border-color:#fff;box-shadow:0 0 0 2px var(--accent)}
 
-#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 18px;font-size:13px;font-weight:600;opacity:0;transition:.25s;z-index:200;pointer-events:none;box-shadow:0 8px 24px #000a}
+/* analysis */
+.bar-list{display:flex;flex-direction:column;gap:9px}
+.bar-item{display:flex;align-items:center;gap:11px;font-size:12.5px}
+.bar-item .bl{width:92px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.bar-item .bt{flex:1;height:9px;background:var(--panel);border-radius:5px;overflow:hidden}
+.bar-item .bf{height:100%;border-radius:5px;background:var(--accent)}
+.bar-item .bv{width:34px;text-align:right;font-family:var(--mono);font-size:11.5px;color:var(--muted);flex-shrink:0}
+
+#toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:11px 19px;font-size:13px;font-weight:600;opacity:0;transition:.25s;z-index:200;pointer-events:none;box-shadow:0 8px 24px #000b}
 #toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 #toast.err{border-color:var(--danger);color:#ffc2c2}
 
+.fab{position:fixed;right:20px;bottom:calc(24px + env(safe-area-inset-bottom));width:54px;height:54px;border-radius:50%;background:var(--accent);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px #6366f188;z-index:60}
+.fab:active{transform:scale(.94)}
+
 @media (pointer:coarse){
-  .icon-btn{width:36px;height:36px;font-size:15px}
-  .search-input{font-size:16px;padding:10px 13px}
-  .btn{padding:11px 17px;font-size:13.5px}
-  .field input[type=text],.field input[type=number],.field textarea,.field select,.inline-new input{font-size:16px}
-  .color-sw{width:32px;height:32px}
+  .icon-btn{width:38px;height:38px;font-size:15px}
+  .search-input,.field input[type=text],.field textarea,.field select,.inline-add input{font-size:16px}
+  .btn{padding:11px 17px}
 }
-@media(max-width:700px){
-  header{padding:0 12px}
-  .tab-page{padding:14px 12px 26px}
-  .grid{grid-template-columns:1fr 1fr}
+@media(max-width:820px){
+  header{padding:0 14px;height:52px}
+  nav.top{display:none}
+  .conn-label{display:none}
+  nav.bottom{
+    display:flex;position:fixed;left:0;right:0;bottom:0;z-index:70;
+    background:#181b23f2;backdrop-filter:blur(12px);border-top:1px solid var(--line);
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  nav.bottom .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 9px;border-radius:0;font-size:10.5px;font-weight:700}
+  nav.bottom .nav-btn .ic{font-size:19px;line-height:1}
+  nav.bottom .nav-btn.on{background:transparent;box-shadow:none;color:var(--accent2)}
+  .page{padding:16px 14px calc(var(--navh) + 30px)}
+  .fab{bottom:calc(var(--navh) + 18px + env(safe-area-inset-bottom));right:16px}
+  #toast{bottom:calc(var(--navh) + 18px + env(safe-area-inset-bottom))}
+  .summary-row{grid-template-columns:repeat(2,1fr)}
+  .overlay{padding:16px 12px 40px}
+  .graph-legend{max-width:132px;font-size:10.5px;padding:8px 10px}
+  .rel-grid{grid-template-columns:1fr}
 }
 @media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -209,13 +252,12 @@ select.search-input{cursor:pointer}
 <body>
 
 <header>
-  <div class="logo">FRIEND<b>::</b>ANALYSIS</div>
-  <nav>
-    <button class="tab-btn on" data-tab="main">메인</button>
-    <button class="tab-btn" data-tab="viz">인간관계 시각화</button>
-    <button class="tab-btn" data-tab="tags">태그 관리</button>
-    <button class="tab-btn" data-tab="groups">무리 관리</button>
-    <button class="tab-btn" data-tab="reltypes">관계유형 관리</button>
+  <div class="logo">인간관계<b>·</b>분석</div>
+  <nav class="top">
+    <button class="nav-btn on" data-page="friends">친구</button>
+    <button class="nav-btn" data-page="graph">관계망</button>
+    <button class="nav-btn" data-page="stats">분석</button>
+    <button class="nav-btn" data-page="settings">설정</button>
   </nav>
   <div class="hd-right">
     <span class="conn-dot" id="connDot"></span>
@@ -223,259 +265,172 @@ select.search-input{cursor:pointer}
   </div>
 </header>
 
-<!-- ===== 메인 ===== -->
-<section class="tab-page on" id="page-main">
-  <div class="page-head">
-    <h2>친구</h2><span class="count" id="mainCount">0</span>
-    <div class="spacer"></div>
-    <button class="btn primary" id="btnAddFriend">＋ 친구 추가</button>
-  </div>
-  <div class="toolbar">
-    <input type="text" class="search-input" id="qSearch" placeholder="이름 검색" style="flex:1;min-width:160px">
-    <select class="search-input" id="qCategory"><option value="">분류: 전체</option></select>
-    <div class="filter-pop-wrap">
-      <button class="btn" id="btnTagFilter">태그 필터<span id="tagFilterBadge"></span></button>
-      <div class="filter-pop" id="tagFilterPop"></div>
+<!-- ===== 친구 ===== -->
+<section class="page on" id="page-friends">
+  <div id="dashView">
+    <div class="stat-row" id="dashStats"></div>
+    <div id="dashSections"></div>
+    <div class="dash-section">
+      <div class="dash-head"><h3>전체 친구</h3><span class="count" id="allCount">0</span>
+        <button class="more" id="toBrowse">검색·필터 →</button></div>
+      <div class="row-list" id="dashAllList"></div>
     </div>
-    <button class="toggle-chip" id="btnFavFilter">★ 즐겨찾기만</button>
-    <select class="search-input" id="qSort">
-      <option value="rating_desc">평점 높은순</option>
-      <option value="rating_asc">평점 낮은순</option>
-      <option value="name">이름순</option>
-      <option value="recent">최근 수정순</option>
-    </select>
   </div>
-  <div class="grid" id="mainList"></div>
+
+  <div id="browseView" style="display:none">
+    <div class="page-head">
+      <button class="btn ghost sm" id="backToDash">← 대시보드</button>
+      <div class="spacer"></div>
+      <span class="count" id="browseCount">0</span>
+    </div>
+    <div class="filterbar">
+      <input type="text" class="search-input" id="qSearch" placeholder="이름 검색">
+      <div class="pop-wrap">
+        <button class="btn" id="btnFilter">필터<span id="filterBadge"></span></button>
+        <div class="pop" id="filterPop"></div>
+      </div>
+      <select class="search-input" id="qSort">
+        <option value="rating_desc">평점 높은순</option>
+        <option value="rating_asc">평점 낮은순</option>
+        <option value="rel_desc">관계 많은순</option>
+        <option value="name">이름순</option>
+        <option value="recent">최근 수정순</option>
+      </select>
+    </div>
+    <div class="row-list" id="browseList"></div>
+  </div>
 </section>
 
-<!-- ===== 시각화 ===== -->
-<section class="tab-page" id="page-viz">
-  <div class="page-head">
-    <h2>인간관계 시각화</h2>
-    <div class="spacer"></div>
-    <span style="font-size:12px;color:var(--muted)">노드 드래그로 위치 조정 · 클릭 시 상세보기 · 휠로 확대/축소</span>
+<!-- ===== 관계망 ===== -->
+<section class="page" id="page-graph">
+  <div class="page-head"><h2>관계망</h2><div class="spacer"></div>
+    <span class="hint">노드 클릭 = 주변만 강조 · 더블클릭 = 상세</span>
   </div>
-  <div id="vizWrap">
-    <svg id="vizSvg" height="640"></svg>
-    <div class="viz-legend" id="vizLegend"></div>
+  <div class="graph-ctl">
+    <select class="search-input" id="gFocus" style="min-width:150px"><option value="">중심 인물: 전체 보기</option></select>
+    <select class="search-input" id="gDepth"><option value="1">1촌까지</option><option value="2">2촌까지</option><option value="99">전체 연결</option></select>
+    <div class="pop-wrap">
+      <button class="btn" id="gBtnFilter">필터<span id="gFilterBadge"></span></button>
+      <div class="pop" id="gFilterPop"></div>
+    </div>
+    <label class="slider-ctl">최소 강도 <input type="range" id="gStrength" min="1" max="5" value="1"><span id="gStrengthVal" style="font-family:var(--mono)">1</span></label>
+    <label class="chkbox" id="gLabelsBox"><input type="checkbox" id="gLabels">관계 라벨</label>
+    <label class="chkbox on" id="gIsoBox"><input type="checkbox" id="gIso" checked>고립 숨기기</label>
+    <button class="btn" id="gFit">전체 맞춤</button>
+  </div>
+  <div id="graphWrap">
+    <svg id="graphSvg" height="620"></svg>
+    <div class="graph-legend" id="graphLegend"></div>
+    <div class="graph-info" id="graphInfo"></div>
   </div>
 </section>
 
-<!-- ===== 태그 관리 ===== -->
-<section class="tab-page" id="page-tags">
-  <div class="page-head">
-    <h2>태그 관리</h2>
-    <div class="spacer"></div>
-    <input type="text" class="search-input" id="tagSearch" placeholder="태그 검색">
-  </div>
-  <div id="tagTypeBlocks"></div>
+<!-- ===== 분석 ===== -->
+<section class="page" id="page-stats">
+  <div class="page-head"><h2>분석</h2></div>
+  <div id="statsBody"></div>
 </section>
 
-<!-- ===== 무리 관리 ===== -->
-<section class="tab-page" id="page-groups">
-  <div class="page-head">
-    <h2>무리</h2><span class="count" id="groupCount">0</span>
-    <div class="spacer"></div>
-    <input type="text" class="search-input" id="groupSearch" placeholder="무리 검색">
-    <button class="btn primary" id="btnAddGroup">＋ 무리 추가</button>
+<!-- ===== 설정 ===== -->
+<section class="page" id="page-settings">
+  <div class="page-head"><h2>설정</h2></div>
+  <div id="setTags"></div>
+  <div class="set-block">
+    <h3>무리 <span class="count" id="setGroupCount">0</span></h3>
+    <div class="toggle-grid" id="setGroupGrid"></div>
+    <div class="inline-add">
+      <input type="text" id="setGroupNew" placeholder="새 무리 이름">
+      <button class="btn sm" id="setGroupAdd">추가</button>
+    </div>
+    <div class="hint" style="margin-top:8px">항목을 클릭하면 색상을 바꿀 수 있고, ✕ 로 삭제합니다.</div>
   </div>
-  <div class="grid" id="groupList"></div>
+  <div class="set-block">
+    <h3>관계유형 <span class="count" id="setRelCount">0</span></h3>
+    <div class="toggle-grid" id="setRelGrid"></div>
+    <div class="inline-add">
+      <input type="text" id="setRelNew" placeholder="새 관계유형 이름">
+      <button class="btn sm" id="setRelAdd">추가</button>
+    </div>
+    <div class="hint" style="margin-top:8px">항목을 클릭하면 색상을 바꿀 수 있고, ✕ 로 삭제합니다.</div>
+  </div>
 </section>
 
-<!-- ===== 관계유형 관리 ===== -->
-<section class="tab-page" id="page-reltypes">
-  <div class="page-head">
-    <h2>관계유형</h2><span class="count" id="relTypeCount">0</span>
-    <div class="spacer"></div>
-    <button class="btn primary" id="btnAddRelType">＋ 관계유형 추가</button>
-  </div>
-  <div class="grid" id="relTypeList"></div>
-</section>
+<nav class="bottom">
+  <button class="nav-btn on" data-page="friends"><span class="ic">👥</span>친구</button>
+  <button class="nav-btn" data-page="graph"><span class="ic">🕸</span>관계망</button>
+  <button class="nav-btn" data-page="stats"><span class="ic">📊</span>분석</button>
+  <button class="nav-btn" data-page="settings"><span class="ic">⚙️</span>설정</button>
+</nav>
 
-<!-- ===== 친구 편집 모달 ===== -->
-<div class="overlay" id="ovFriend">
-  <div class="modal" style="max-width:640px">
-    <h2 id="frTitle">친구 추가 <button class="icon-btn x" data-close="ovFriend">✕</button></h2>
+<button class="fab" id="fabAdd" title="친구 추가">＋</button>
 
-    <div class="wizard-steps" id="frSteps"></div>
-
-    <div class="wizard-panel" data-step="0">
-      <div class="field">
-        <label>이름</label>
-        <input type="text" id="frName" placeholder="이름">
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>아바타 이모지</label>
-          <input type="text" id="frEmoji" placeholder="🙂 (비우면 분류 기본값)">
-        </div>
-        <div class="field" style="flex:2">
-          <label>아바타 이미지 URL (선택)</label>
-          <input type="text" id="frImg" placeholder="https://...">
-        </div>
-      </div>
-      <div class="field">
-        <label>본문</label>
-        <textarea id="frDesc" placeholder="이 친구에 대한 소개"></textarea>
-      </div>
-      <div class="tagblock">
-        <div class="tagblock-head"><label>분류 (하나만 선택)</label></div>
-        <div class="toggle-grid" id="grid-분류"></div>
-        <div class="tagblock-add">
-          <input type="text" id="add-분류" placeholder="새 분류 추가">
-          <button class="btn sm" data-addcat="1">추가</button>
-        </div>
+<!-- ===== 빠른 추가 ===== -->
+<div class="overlay" id="ovQuick">
+  <div class="modal" style="max-width:430px">
+    <h2>친구 추가 <button class="icon-btn x" data-close="ovQuick">✕</button></h2>
+    <div class="field">
+      <label>이름</label>
+      <input type="text" id="qName" placeholder="이름만 있으면 바로 저장돼요">
+    </div>
+    <div class="field">
+      <label>분류 (선택)</label>
+      <div class="toggle-grid" id="qCatGrid"></div>
+      <div class="inline-add">
+        <input type="text" id="qCatNew" placeholder="새 분류 추가">
+        <button class="btn sm" id="qCatAdd">추가</button>
       </div>
     </div>
-
-    <div class="wizard-panel" data-step="1">
-      <div id="frTagBlocks"></div>
-    </div>
-
-    <div class="wizard-panel" data-step="2">
-      <div class="tagblock">
-        <div class="tagblock-head"><label>무리 (복수 선택 가능)</label></div>
-        <div class="toggle-grid" id="grid-groups"></div>
-        <div class="tagblock-add">
-          <input type="text" id="add-groups" placeholder="새 무리 추가">
-          <button class="btn sm" data-addgroup="1">추가</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="wizard-panel" data-step="3">
-      <div id="frRelList"></div>
-      <button class="btn sm" id="frAddRel">＋ 관계 추가</button>
-    </div>
-
-    <div class="wizard-panel" data-step="4">
-      <div class="field">
-        <label>관계(글)</label>
-        <textarea id="frRelNote" placeholder="관계에 대한 자유 서술"></textarea>
-      </div>
-      <div class="field">
-        <label>기타사항</label>
-        <textarea id="frEtc"></textarea>
-      </div>
-      <div class="field-row">
-        <div class="field">
-          <label>별점</label>
-          <div class="star-pick" id="frStars"></div>
-        </div>
-        <div class="field">
-          <label>즐겨찾기</label>
-          <button class="toggle-chip" id="frFavToggle" style="margin-top:2px">★ 즐겨찾기</button>
-        </div>
-      </div>
-    </div>
-
+    <div class="hint">나머지 정보(태그·무리·관계·메모)는 저장 후 상세 화면에서 채우면 됩니다.</div>
     <div class="modal-foot">
-      <button class="btn" data-close="ovFriend">취소</button>
-      <button class="btn left" id="frPrev">이전</button>
-      <button class="btn primary" id="frNext">다음</button>
-      <button class="btn primary" id="frSave" style="display:none">저장</button>
+      <button class="btn" data-close="ovQuick">취소</button>
+      <button class="btn primary" id="qSave">저장하고 상세 열기</button>
     </div>
   </div>
 </div>
 
-<!-- ===== 친구 상세 모달 ===== -->
+<!-- ===== 상세 ===== -->
 <div class="overlay" id="ovDetail">
-  <div class="modal">
-    <div class="detail-head">
-      <div class="avatar" id="dAvatar" style="width:46px;height:46px;font-size:22px"></div>
-      <h2 id="dName"></h2>
-      <span class="stars" id="dStars"></span>
-      <button class="icon-btn x" data-close="ovDetail" style="margin-left:auto">✕</button>
+  <div class="modal" style="max-width:600px">
+    <div class="detail-hero">
+      <div class="av" id="dAv"></div>
+      <div style="flex:1;min-width:0">
+        <div class="hname"><span id="dName"></span><button class="fav-star" id="dFav">★</button></div>
+        <div class="hsub" id="dSub"></div>
+      </div>
+      <button class="icon-btn x" data-close="ovDetail">✕</button>
     </div>
-    <div class="detail-sec" id="dCatSec">
-      <div class="sec-label">분류</div>
-      <p id="dCat"></p>
+    <div class="summary-row" id="dSummary"></div>
+    <div class="dtabs">
+      <button class="dtab on" data-dtab="0">개요</button>
+      <button class="dtab" data-dtab="1">관계</button>
+      <button class="dtab" data-dtab="2">메모</button>
     </div>
-    <div class="detail-sec">
-      <div class="sec-label">본문</div>
-      <p id="dDesc"></p>
-    </div>
-    <div class="detail-sec"><div class="sec-label" id="dTagLabel-특징"></div><div class="chip-row" id="dTags-특징"></div></div>
-    <div class="detail-sec"><div class="sec-label" id="dTagLabel-관심분야"></div><div class="chip-row" id="dTags-관심분야"></div></div>
-    <div class="detail-sec"><div class="sec-label" id="dTagLabel-성격"></div><div class="chip-row" id="dTags-성격"></div></div>
-    <div class="detail-sec"><div class="sec-label" id="dTagLabel-키워드"></div><div class="chip-row" id="dTags-키워드"></div></div>
-    <div class="detail-sec">
-      <div class="sec-label">무리</div>
-      <div class="chip-row" id="dGroups"></div>
-    </div>
-    <div class="detail-sec">
-      <div class="sec-label">인간관계</div>
-      <div id="dRels" style="display:flex;flex-direction:column;gap:6px"></div>
-    </div>
-    <div class="detail-sec" id="dRelNoteSec">
-      <div class="sec-label">관계(글)</div>
-      <p id="dRelNote"></p>
-    </div>
-    <div class="detail-sec" id="dEtcSec">
-      <div class="sec-label">기타사항</div>
-      <p class="dim" id="dEtc"></p>
-    </div>
+    <div class="dpanel on" data-dpanel="0" id="dPanel0"></div>
+    <div class="dpanel" data-dpanel="1" id="dPanel1"></div>
+    <div class="dpanel" data-dpanel="2" id="dPanel2"></div>
     <div class="modal-foot">
       <button class="btn danger left" id="dDelete">삭제</button>
       <button class="btn" data-close="ovDetail">닫기</button>
-      <button class="btn primary" id="dEdit">수정</button>
+      <button class="btn primary" id="dSave">저장</button>
     </div>
   </div>
 </div>
 
-<!-- ===== 태그 추가/수정 모달 ===== -->
-<div class="overlay" id="ovTag">
-  <div class="modal">
-    <h2 id="tagModalTitle">태그 추가 <button class="icon-btn x" data-close="ovTag">✕</button></h2>
+<!-- ===== 색상 선택 ===== -->
+<div class="overlay" id="ovColor">
+  <div class="modal" style="max-width:340px">
+    <h2 id="colorTitle">색상 변경 <button class="icon-btn x" data-close="ovColor">✕</button></h2>
     <div class="field">
       <label>이름</label>
-      <input type="text" id="tagName" placeholder="예: 눈치빠름">
-    </div>
-    <div class="field" id="tagEmojiField">
-      <label>기본 이모지 (이 분류를 가진 친구의 기본 아바타)</label>
-      <input type="text" id="tagEmoji" placeholder="🙂">
-    </div>
-    <div class="modal-foot">
-      <button class="btn" data-close="ovTag">취소</button>
-      <button class="btn primary" id="tagSave">저장</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== 무리 추가/수정 모달 ===== -->
-<div class="overlay" id="ovGroup">
-  <div class="modal">
-    <h2 id="groupModalTitle">무리 추가 <button class="icon-btn x" data-close="ovGroup">✕</button></h2>
-    <div class="field">
-      <label>이름</label>
-      <input type="text" id="groupName" placeholder="예: 동아리 친구들">
+      <input type="text" id="colorName">
     </div>
     <div class="field">
       <label>색상</label>
-      <div class="color-row" id="groupColors"></div>
+      <div class="color-row" id="colorRow"></div>
     </div>
     <div class="modal-foot">
-      <button class="btn" data-close="ovGroup">취소</button>
-      <button class="btn primary" id="groupSave">저장</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== 관계유형 추가/수정 모달 ===== -->
-<div class="overlay" id="ovRelType">
-  <div class="modal">
-    <h2 id="relTypeModalTitle">관계유형 추가 <button class="icon-btn x" data-close="ovRelType">✕</button></h2>
-    <div class="field">
-      <label>이름</label>
-      <input type="text" id="relTypeName" placeholder="예: 절친">
-    </div>
-    <div class="field">
-      <label>색상</label>
-      <div class="color-row" id="relTypeColors"></div>
-    </div>
-    <div class="modal-foot">
-      <button class="btn" data-close="ovRelType">취소</button>
-      <button class="btn primary" id="relTypeSave">저장</button>
+      <button class="btn" data-close="ovColor">취소</button>
+      <button class="btn primary" id="colorSave">저장</button>
     </div>
   </div>
 </div>
@@ -485,761 +440,739 @@ select.search-input{cursor:pointer}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
 <script>
-/* =====================================================
-   SUPABASE
-===================================================== */
 const SUPABASE_URL = 'https://hlvpffypajsoythbfrvb.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_lGroGfmZE91oueKBLlgerQ_Ja8Fwhmz';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const COLORS = ['#6366f1','#e8b341','#4ade80','#60a5fa','#c084fc','#f472b6','#fb923c','#2dd4bf','#94a3b8','#e06c6c'];
-const NON_CATEGORY_ORDER = ['특징','관심분야','성격','키워드'];
+const TAG_KINDS = ['특징','관심분야','성격','키워드'];
 
 const S = {
-  tagTypes: [],      // [{id,name,tags:[{id,label,default_emoji}]}]
-  groups: [],
-  relTypes: [],
-  friends: [],        // enriched: {..., tagsByType:{name:[tag,...]}, category, groups:[...], relOut:[...], relIn:[...]}
-  editingFriendId: null,
-  wizardStep: 0,
-  pickedCategory: null,
-  pickedTags: {},     // tagTypeName -> Set(tagId)
-  pickedGroups: new Set(),
-  relDraft: [],        // [{related_friend_id, relationship_type_id, detail, strength, _existingId}]
-  favToggle: false,
-  tagFilter: new Set(), // selected tag ids across non-category types
-  starVal: 0,
-  favVal: false,
-  detailFriendId: null,
-  editingTag: null,   // {typeName, typeId, row}
-  editingGroup: null,
-  editingRelType: null,
-  groupColor: COLORS[0],
-  relTypeColor: COLORS[0],
+  tagTypes:[], groups:[], relTypes:[], friends:[], relations:[],
+  page:'friends', browse:false,
+  filterTags:new Set(), filterGroups:new Set(), filterFav:false,
+  detailId:null, dTab:0, dDraft:null, dRelDraft:[],
+  quickCat:null,
+  gFilterGroups:new Set(), gFilterTypes:new Set(),
+  gSelected:null, gSim:null, gZoom:null, gSvgG:null,
+  colorCtx:null, colorPick:COLORS[0],
+  recent: JSON.parse(localStorage.getItem('fa_recent')||'[]'),
 };
 
 const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
 const esc = s => (s ?? '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-function toast(msg, err=false){
-  const t = $('#toast');
-  t.textContent = msg; t.className = err ? 'on err' : 'on';
-  clearTimeout(t._tm); t._tm = setTimeout(()=> t.className='', 2200);
-}
+function toast(m, err=false){ const t=$('#toast'); t.textContent=m; t.className=err?'on err':'on'; clearTimeout(t._tm); t._tm=setTimeout(()=>t.className='',2200); }
 function openOv(id){ $('#'+id).classList.add('on'); }
 function closeOv(id){ $('#'+id).classList.remove('on'); }
-document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => closeOv(b.dataset.close)));
-document.querySelectorAll('.overlay').forEach(ov => ov.addEventListener('mousedown', e => { if(e.target === ov) ov.classList.remove('on'); }));
-document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', () => {
-  document.querySelectorAll('.tab-btn').forEach(x => x.classList.toggle('on', x === b));
-  document.querySelectorAll('.tab-page').forEach(p => p.classList.toggle('on', p.id === 'page-' + b.dataset.tab));
-  try{ localStorage.setItem('fa_last_tab', b.dataset.tab); }catch(e){}
-  if(b.dataset.tab === 'viz') renderViz();
-}));
+$$('[data-close]').forEach(b=>b.addEventListener('click',()=>closeOv(b.dataset.close)));
+$$('.overlay').forEach(ov=>ov.addEventListener('mousedown',e=>{ if(e.target===ov) ov.classList.remove('on'); }));
+function starsHtml(r){ let h=''; for(let i=1;i<=5;i++) h+=`<span class="${i<=r?'':'off'}">★</span>`; return h; }
+function tagType(n){ return S.tagTypes.find(t=>t.name===n); }
+function friendById(id){ return S.friends.find(f=>f.id===id); }
+function relCount(f){ return f.relOut.length + f.relIn.length; }
+function avatarHtml(f){ return f.avatar_image_url ? `<img src="${esc(f.avatar_image_url)}">` : esc(f.avatar_emoji||'🙂'); }
 
-/* =====================================================
-   DATA LOAD
-===================================================== */
+/* ---------- nav ---------- */
+function gotoPage(p){
+  S.page = p;
+  $$('.nav-btn').forEach(b=>b.classList.toggle('on', b.dataset.page===p));
+  $$('.page').forEach(s=>s.classList.toggle('on', s.id==='page-'+p));
+  $('#fabAdd').style.display = (p==='friends') ? '' : 'none';
+  try{ localStorage.setItem('fa_page', p); }catch(e){}
+  if(p==='graph') renderGraph();
+  if(p==='stats') renderStats();
+}
+$$('.nav-btn').forEach(b=>b.addEventListener('click',()=>gotoPage(b.dataset.page)));
+
+/* ---------- load ---------- */
 async function loadAll(){
   try{
-    const [tt, gr, rt, fr, relRes] = await Promise.all([
+    const [tt,gr,rt,fr,rl] = await Promise.all([
       sb.from('tag_types').select('*, tags(*)').order('name'),
       sb.from('groups').select('*').order('name'),
       sb.from('relationship_types').select('*').order('label'),
-      sb.from('friends').select(`
-        *,
-        category:tags!category_tag_id(*),
-        friend_tags(tags(*, tag_types(id,name))),
-        friend_groups(groups(*))
-      `).order('name'),
-      sb.from('friend_relationships').select(`
-        *,
-        type:relationship_types(*),
-        from:friends!friend_id(id,name,avatar_emoji,avatar_image_url),
-        to:friends!related_friend_id(id,name,avatar_emoji,avatar_image_url)
-      `),
+      sb.from('friends').select(`*, category:tags!category_tag_id(*), friend_tags(tags(*, tag_types(id,name))), friend_groups(groups(*))`).order('name'),
+      sb.from('friend_relationships').select(`*, type:relationship_types(*), from:friends!friend_id(id,name), to:friends!related_friend_id(id,name)`),
     ]);
-    for(const r of [tt, gr, rt, fr, relRes]) if(r.error) throw r.error;
-
-    S.tagTypes = (tt.data || []).map(t => ({...t, tags: (t.tags||[]).filter(x=>!x.is_deleted).sort((a,b)=>a.label.localeCompare(b.label))}));
-    S.groups = gr.data || [];
-    S.relTypes = rt.data || [];
-
-    const relations = relRes.data || [];
-    S.friends = (fr.data || []).map(p => {
-      const tagsByType = {};
-      for(const link of (p.friend_tags||[])){
-        const tg = link.tags; if(!tg) continue;
-        const tn = tg.tag_types?.name; if(!tn) continue;
-        (tagsByType[tn] = tagsByType[tn] || []).push(tg);
-      }
-      return {
-        ...p,
-        tagsByType,
-        groups: (p.friend_groups||[]).map(l => l.groups).filter(Boolean),
-        relOut: relations.filter(r => r.friend_id === p.id),
-        relIn: relations.filter(r => r.related_friend_id === p.id),
-      };
+    for(const r of [tt,gr,rt,fr,rl]) if(r.error) throw r.error;
+    S.tagTypes = (tt.data||[]).map(t=>({...t, tags:(t.tags||[]).sort((a,b)=>a.label.localeCompare(b.label))}));
+    S.groups = gr.data||[]; S.relTypes = rt.data||[]; S.relations = rl.data||[];
+    S.friends = (fr.data||[]).map(p=>{
+      const tagsByType={};
+      for(const l of (p.friend_tags||[])){ const tg=l.tags; if(!tg) continue; const n=tg.tag_types?.name; if(!n) continue; (tagsByType[n]=tagsByType[n]||[]).push(tg); }
+      return {...p, tagsByType, groups:(p.friend_groups||[]).map(l=>l.groups).filter(Boolean),
+        relOut:S.relations.filter(r=>r.friend_id===p.id), relIn:S.relations.filter(r=>r.related_friend_id===p.id)};
     });
-    setConn(true);
+    $('#connDot').className='conn-dot ok'; $('#connLabel').textContent='연결됨';
     renderAll();
   }catch(e){
     console.error(e);
-    setConn(false);
-    toast('데이터 로드 실패: ' + (e.message || e), true);
+    $('#connDot').className='conn-dot bad'; $('#connLabel').textContent='연결 오류';
+    toast('데이터 로드 실패: '+(e.message||e), true);
   }
 }
-function setConn(ok){
-  $('#connDot').className = 'conn-dot ' + (ok ? 'ok' : 'bad');
-  $('#connLabel').textContent = ok ? 'supabase 연결됨' : '연결 오류';
-}
-function tagTypeByName(name){ return S.tagTypes.find(t => t.name === name); }
-function friendById(id){ return S.friends.find(f => f.id === id); }
-
-let rtTm = null;
-sb.channel('friend_analysis_rt').on('postgres_changes', {event:'*', schema:'public'}, () => {
-  clearTimeout(rtTm); rtTm = setTimeout(loadAll, 400);
-}).subscribe();
+let rtTm=null;
+sb.channel('fa_rt').on('postgres_changes',{event:'*',schema:'public'},()=>{ clearTimeout(rtTm); rtTm=setTimeout(loadAll,450); }).subscribe();
 
 function renderAll(){
-  renderCategoryFilterOptions();
-  renderTagFilterPop();
-  renderMain();
-  renderTagsPage();
-  renderGroupsPage();
-  renderRelTypesPage();
-  if($('#page-viz').classList.contains('on')) renderViz();
+  renderDash(); renderFilterPop(); renderBrowse();
+  renderSettings(); renderGraphControls();
+  if(S.page==='graph') renderGraph();
+  if(S.page==='stats') renderStats();
 }
 
-/* =====================================================
-   메인 페이지
-===================================================== */
-function renderCategoryFilterOptions(){
-  const cat = tagTypeByName('분류');
-  const sel = $('#qCategory');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">분류: 전체</option>' + (cat ? cat.tags.map(t => `<option value="${t.id}">${esc(t.label)}</option>`).join('') : '');
-  sel.value = cur;
+/* ---------- dashboard ---------- */
+function pushRecent(id){
+  S.recent = [id, ...S.recent.filter(x=>x!==id)].slice(0,12);
+  try{ localStorage.setItem('fa_recent', JSON.stringify(S.recent)); }catch(e){}
 }
-function renderTagFilterPop(){
-  const pop = $('#tagFilterPop');
-  pop.innerHTML = NON_CATEGORY_ORDER.map(tn => {
-    const tt = tagTypeByName(tn);
-    if(!tt || !tt.tags.length) return '';
-    return `<div class="filter-sec"><div class="lbl">${esc(tn)}</div><div class="filter-chip-row">
-      ${tt.tags.map(t => `<button class="filter-chip ${S.tagFilter.has(t.id)?'on':''}" data-tid="${t.id}">${esc(t.label)}</button>`).join('')}
-    </div></div>`;
-  }).join('') || '<div style="color:var(--muted);font-size:12.5px">등록된 태그가 없습니다.</div>';
-  pop.querySelectorAll('.filter-chip').forEach(b => b.addEventListener('click', () => {
-    const id = b.dataset.tid;
-    S.tagFilter.has(id) ? S.tagFilter.delete(id) : S.tagFilter.add(id);
-    renderTagFilterPop();
-    renderMain();
-  }));
-  $('#tagFilterBadge').textContent = S.tagFilter.size ? ` (${S.tagFilter.size})` : '';
+function miniCard(f, sub, badge){
+  return `<div class="mini-card" onclick="openDetail('${f.id}')">
+    ${badge?`<span class="badge">${badge}</span>`:''}
+    <div class="av">${avatarHtml(f)}</div>
+    <div class="nm">${esc(f.name)}</div>
+    <div class="sub">${esc(sub||'')}</div>
+  </div>`;
 }
-$('#btnTagFilter').addEventListener('click', () => $('#tagFilterPop').classList.toggle('on'));
-document.addEventListener('click', e => {
-  if(!e.target.closest('.filter-pop-wrap')) $('#tagFilterPop').classList.remove('on');
-});
-$('#btnFavFilter').addEventListener('click', () => { S.favToggle = !S.favToggle; $('#btnFavFilter').classList.toggle('on', S.favToggle); renderMain(); });
-$('#qSearch').addEventListener('input', renderMain);
-$('#qCategory').addEventListener('change', renderMain);
-$('#qSort').addEventListener('change', renderMain);
+function frow(f){
+  const tags = TAG_KINDS.flatMap(k=>f.tagsByType[k]||[]).slice(0,3);
+  const meta = [f.category?.label, f.groups.map(g=>g.name).join('·'), relCount(f)?`관계 ${relCount(f)}`:''].filter(Boolean).join(' · ');
+  return `<div class="frow" onclick="openDetail('${f.id}')">
+    <div class="av">${avatarHtml(f)}</div>
+    <div class="main">
+      <div class="nm">${esc(f.name)} ${f.favorite?'<span class="fav-star on" style="font-size:12px">★</span>':''}</div>
+      <div class="meta">${esc(meta||'정보 없음')}</div>
+    </div>
+    <div class="right">
+      <span class="stars">${starsHtml(f.rating||0)}</span>
+      <div style="display:flex;gap:4px">${tags.map(t=>`<span class="mini-tag">${esc(t.label)}</span>`).join('')}</div>
+    </div>
+  </div>`;
+}
+function renderDash(){
+  const F = S.friends;
+  const totalRel = S.relations.length;
+  const avg = F.length ? (F.reduce((a,b)=>a+(b.rating||0),0)/F.length).toFixed(1) : '0.0';
+  $('#dashStats').innerHTML = `
+    <div class="stat-box"><div class="v">${F.length}</div><div class="k">전체 친구</div></div>
+    <div class="stat-box"><div class="v">${totalRel}</div><div class="k">등록된 관계</div></div>
+    <div class="stat-box"><div class="v">${S.groups.length}</div><div class="k">무리</div></div>
+    <div class="stat-box"><div class="v">${avg}</div><div class="k">평균 별점</div></div>`;
 
-function starsHtml(rating, size){
-  let h = '';
-  for(let i=1;i<=5;i++) h += `<span class="${i<=rating?'':'off'}">★</span>`;
-  return h;
+  const secs = [];
+  const recent = S.recent.map(id=>friendById(id)).filter(Boolean);
+  if(recent.length) secs.push({t:'최근 본 사람', s:'', items:recent.map(f=>miniCard(f, f.category?.label||''))});
+
+  const favs = F.filter(f=>f.favorite);
+  if(favs.length) secs.push({t:'즐겨찾기', s:`${favs.length}명`, items:favs.map(f=>miniCard(f, `★${f.rating||0}`, '★'))});
+
+  const strong = F.map(f=>({f, n:relCount(f)})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n).slice(0,10);
+  if(strong.length) secs.push({t:'관계가 많은 사람', s:'연결 수 기준', items:strong.map(x=>miniCard(x.f, `관계 ${x.n}개`))});
+
+  const noted = F.filter(f=>f.description||f.relationship_note||f.etc_note);
+  if(noted.length) secs.push({t:'메모가 있는 사람', s:`${noted.length}명`, items:noted.slice(0,10).map(f=>miniCard(f, (f.description||f.relationship_note||f.etc_note).slice(0,14)))});
+
+  let html = secs.map(sec=>`<div class="dash-section">
+    <div class="dash-head"><h3>${esc(sec.t)}</h3>${sec.s?`<span class="sub">${esc(sec.s)}</span>`:''}</div>
+    <div class="hscroll">${sec.items.join('')}</div></div>`).join('');
+
+  if(S.groups.length){
+    html += `<div class="dash-section"><div class="dash-head"><h3>무리</h3><span class="sub">클릭하면 해당 무리만 보기</span></div>
+      <div class="group-strip">${S.groups.map(g=>{
+        const n = F.filter(f=>f.groups.some(x=>x.id===g.id)).length;
+        return `<button class="group-pill" onclick="browseByGroup('${g.id}')"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}<span class="n">${n}</span></button>`;
+      }).join('')}</div></div>`;
+  }
+  $('#dashSections').innerHTML = html;
+
+  $('#allCount').textContent = F.length;
+  $('#dashAllList').innerHTML = F.length ? F.slice(0,8).map(frow).join('')
+    : `<div class="empty-note">아직 등록된 친구가 없습니다.<br>오른쪽 아래 ＋ 버튼으로 시작하세요.</div>`;
 }
-function renderMain(){
+window.browseByGroup = gid => { S.filterGroups = new Set([gid]); renderFilterPop(); showBrowse(true); renderBrowse(); };
+function showBrowse(on){ S.browse=on; $('#dashView').style.display=on?'none':''; $('#browseView').style.display=on?'':'none'; }
+$('#toBrowse').addEventListener('click',()=>{ showBrowse(true); renderBrowse(); });
+$('#backToDash').addEventListener('click',()=>{ showBrowse(false); renderDash(); });
+
+/* ---------- browse / filters ---------- */
+function renderFilterPop(){
+  const pop = $('#filterPop');
+  let html = `<div class="sec"><div class="lbl">즐겨찾기</div><div class="toggle-grid">
+    <button class="pill ${S.filterFav?'on':''}" data-fav="1">★ 즐겨찾기만</button></div></div>`;
+  if(S.groups.length) html += `<div class="sec"><div class="lbl">무리</div><div class="toggle-grid">
+    ${S.groups.map(g=>`<button class="pill ${S.filterGroups.has(g.id)?'on':''}" data-gid="${g.id}"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</button>`).join('')}</div></div>`;
+  for(const k of ['분류',...TAG_KINDS]){
+    const tt = tagType(k); if(!tt||!tt.tags.length) continue;
+    html += `<div class="sec"><div class="lbl">${esc(k)}</div><div class="toggle-grid">
+      ${tt.tags.map(t=>`<button class="pill ${S.filterTags.has(t.id)?'on':''}" data-tid="${t.id}">${esc(t.label)}</button>`).join('')}</div></div>`;
+  }
+  pop.innerHTML = html;
+  pop.querySelectorAll('[data-fav]').forEach(b=>b.addEventListener('click',()=>{ S.filterFav=!S.filterFav; renderFilterPop(); renderBrowse(); }));
+  pop.querySelectorAll('[data-gid]').forEach(b=>b.addEventListener('click',()=>{ const i=b.dataset.gid; S.filterGroups.has(i)?S.filterGroups.delete(i):S.filterGroups.add(i); renderFilterPop(); renderBrowse(); }));
+  pop.querySelectorAll('[data-tid]').forEach(b=>b.addEventListener('click',()=>{ const i=b.dataset.tid; S.filterTags.has(i)?S.filterTags.delete(i):S.filterTags.add(i); renderFilterPop(); renderBrowse(); }));
+  const n = S.filterTags.size + S.filterGroups.size + (S.filterFav?1:0);
+  $('#filterBadge').textContent = n?` (${n})`:'';
+}
+$('#btnFilter').addEventListener('click',e=>{ e.stopPropagation(); $('#filterPop').classList.toggle('on'); });
+$('#gBtnFilter').addEventListener('click',e=>{ e.stopPropagation(); $('#gFilterPop').classList.toggle('on'); });
+document.addEventListener('click',e=>{ if(!e.target.closest('.pop-wrap')) $$('.pop').forEach(p=>p.classList.remove('on')); });
+
+function renderBrowse(){
   const q = $('#qSearch').value.trim().toLowerCase();
-  const catId = $('#qCategory').value;
-  let rows = S.friends.filter(f => {
+  let rows = S.friends.filter(f=>{
     if(q && !f.name.toLowerCase().includes(q)) return false;
-    if(catId && f.category_tag_id !== catId) return false;
-    if(S.favToggle && !f.favorite) return false;
-    if(S.tagFilter.size){
-      const allTagIds = new Set(Object.values(f.tagsByType).flat().map(t=>t.id));
-      for(const id of S.tagFilter) if(!allTagIds.has(id)) return false;
+    if(S.filterFav && !f.favorite) return false;
+    if(S.filterGroups.size && !f.groups.some(g=>S.filterGroups.has(g.id))) return false;
+    if(S.filterTags.size){
+      const ids = new Set([...Object.values(f.tagsByType).flat().map(t=>t.id), f.category_tag_id].filter(Boolean));
+      for(const t of S.filterTags) if(!ids.has(t)) return false;
     }
     return true;
   });
-  const sort = $('#qSort').value;
-  rows = rows.slice().sort((a,b) => {
-    if(sort==='rating_desc') return (b.rating||0)-(a.rating||0);
-    if(sort==='rating_asc') return (a.rating||0)-(b.rating||0);
-    if(sort==='name') return a.name.localeCompare(b.name);
-    if(sort==='recent') return new Date(b.updated_at||b.created_at) - new Date(a.updated_at||a.created_at);
+  const s = $('#qSort').value;
+  rows.sort((a,b)=>{
+    if(s==='rating_desc') return (b.rating||0)-(a.rating||0);
+    if(s==='rating_asc') return (a.rating||0)-(b.rating||0);
+    if(s==='rel_desc') return relCount(b)-relCount(a);
+    if(s==='name') return a.name.localeCompare(b.name);
+    if(s==='recent') return new Date(b.updated_at||b.created_at)-new Date(a.updated_at||a.created_at);
     return 0;
   });
-  $('#mainCount').textContent = rows.length + (rows.length!==S.friends.length ? ' / '+S.friends.length : '');
-  $('#mainList').innerHTML = rows.length ? rows.map(f => {
-    const tagPreview = NON_CATEGORY_ORDER.flatMap(tn => f.tagsByType[tn]||[]).slice(0,3);
-    return `<div class="fcard2" onclick="openDetail('${f.id}')">
-      <button class="fav-btn ${f.favorite?'on':''}" onclick="event.stopPropagation();toggleFav('${f.id}')">★</button>
-      <div class="top">
-        <div class="avatar">${f.avatar_image_url ? `<img src="${esc(f.avatar_image_url)}">` : esc(f.avatar_emoji||'🙂')}</div>
-        <div>
-          <div class="nm">${esc(f.name)}</div>
-          <div class="cat">${f.category ? esc(f.category.label) : '분류 없음'}</div>
-        </div>
-      </div>
-      <div class="stars">${starsHtml(f.rating||0)}</div>
-      ${tagPreview.length ? `<div class="tagrow">${tagPreview.map(t=>`<span class="mini-tag">${esc(t.label)}</span>`).join('')}</div>` : ''}
-    </div>`;
-  }).join('') : `<div class="empty-note" style="grid-column:1/-1">${S.friends.length? '조건에 맞는 친구가 없습니다.':'아직 등록된 친구가 없습니다. 「＋ 친구 추가」로 시작하세요.'}</div>`;
+  $('#browseCount').textContent = `${rows.length} / ${S.friends.length}`;
+  $('#browseList').innerHTML = rows.length ? rows.map(frow).join('') : `<div class="empty-note">조건에 맞는 친구가 없습니다.</div>`;
 }
-window.toggleFav = async (id) => {
-  const f = friendById(id); if(!f) return;
-  const { error } = await sb.from('friends').update({favorite: !f.favorite}).eq('id', id);
-  if(error) return toast('실패: '+error.message, true);
-  f.favorite = !f.favorite;
-  renderMain();
-};
+$('#qSearch').addEventListener('input',renderBrowse);
+$('#qSort').addEventListener('change',renderBrowse);
 
-/* =====================================================
-   친구 편집 모달
-===================================================== */
-/* ---- generic toggle-grid picker with inline delete ---- */
-function renderToggleGrid(gridId, cfg){
-  const { getAll, isSelected, onToggle, onDelete } = cfg;
-  const grid = $('#'+gridId);
-  if(!grid) return;
-  const items = getAll();
-  grid.innerHTML = items.length ? items.map(it => `
-    <button type="button" class="toggle-pill ${isSelected(it.id)?'on':''}" data-id="${it.id}">
-      ${it.color ? `<span class="dot" style="background:${esc(it.color)}"></span>` : ''}${esc(it.label)}
-      <span class="del" data-del="${it.id}" title="삭제">✕</span>
-    </button>`).join('') : `<div style="color:var(--muted);font-size:12.5px">아직 없음 — 아래에서 추가하세요</div>`;
-  grid.querySelectorAll('.toggle-pill').forEach(btn => btn.addEventListener('click', e => {
-    if(e.target.closest('[data-del]')) return;
-    const id = btn.dataset.id;
-    onToggle(id, !isSelected(id));
-    renderToggleGrid(gridId, cfg);
-  }));
-  grid.querySelectorAll('[data-del]').forEach(x => x.addEventListener('click', async e => {
-    e.stopPropagation();
-    if(!confirm('삭제할까요? 부여된 모든 친구에게서도 사라집니다.')) return;
-    await onDelete(x.dataset.del);
-    renderToggleGrid(gridId, cfg);
-  }));
+/* ---------- quick add ---------- */
+function renderQuickCat(){
+  const tt = tagType('분류');
+  const items = tt?tt.tags:[];
+  $('#qCatGrid').innerHTML = items.length ? items.map(t=>`<button class="pill ${S.quickCat===t.id?'on':''}" data-id="${t.id}">${esc(t.label)}</button>`).join('')
+    : `<span class="hint">분류가 없습니다 — 아래에서 추가하세요</span>`;
+  $('#qCatGrid').querySelectorAll('.pill').forEach(b=>b.addEventListener('click',()=>{ S.quickCat = S.quickCat===b.dataset.id?null:b.dataset.id; renderQuickCat(); }));
 }
-function categoryItems(){ const tt = tagTypeByName('분류'); return tt ? tt.tags.map(t=>({id:t.id, label:t.label})) : []; }
-function tagItemsFor(name){ const tt = tagTypeByName(name); return tt ? tt.tags.map(t=>({id:t.id, label:t.label})) : []; }
-function groupItems(){ return S.groups.map(g=>({id:g.id, label:g.name, color:g.color||'#666'})); }
-
-function catGridConfig(){
-  return {
-    getAll: categoryItems,
-    isSelected: id => S.pickedCategory === id,
-    onToggle: (id, on) => { S.pickedCategory = on ? id : (S.pickedCategory===id ? null : S.pickedCategory); },
-    onDelete: async id => {
-      const { error } = await sb.from('tags').delete().eq('id', id);
-      if(error) return toast('삭제 실패: '+error.message, true);
-      const tt = tagTypeByName('분류'); if(tt) tt.tags = tt.tags.filter(t=>t.id!==id);
-      if(S.pickedCategory===id) S.pickedCategory = null;
-      toast('삭제됨');
-    },
-  };
-}
-function tagGridConfig(tn){
-  return {
-    getAll: () => tagItemsFor(tn),
-    isSelected: id => S.pickedTags[tn]?.has(id),
-    onToggle: (id, on) => { S.pickedTags[tn] = S.pickedTags[tn] || new Set(); on ? S.pickedTags[tn].add(id) : S.pickedTags[tn].delete(id); },
-    onDelete: async id => {
-      const { error } = await sb.from('tags').delete().eq('id', id);
-      if(error) return toast('삭제 실패: '+error.message, true);
-      const tt = tagTypeByName(tn); if(tt) tt.tags = tt.tags.filter(t=>t.id!==id);
-      S.pickedTags[tn]?.delete(id);
-      toast('삭제됨');
-    },
-  };
-}
-function groupGridConfig(){
-  return {
-    getAll: groupItems,
-    isSelected: id => S.pickedGroups.has(id),
-    onToggle: (id, on) => { on ? S.pickedGroups.add(id) : S.pickedGroups.delete(id); },
-    onDelete: async id => {
-      const { error } = await sb.from('groups').delete().eq('id', id);
-      if(error) return toast('삭제 실패: '+error.message, true);
-      S.groups = S.groups.filter(g=>g.id!==id);
-      S.pickedGroups.delete(id);
-      toast('삭제됨');
-    },
-  };
-}
-function renderCategoryGrid(){ renderToggleGrid('grid-분류', catGridConfig()); }
-function renderGroupGrid(){ renderToggleGrid('grid-groups', groupGridConfig()); }
-function renderFrTagBlocksWizard(){
-  const wrap = $('#frTagBlocks');
-  wrap.innerHTML = NON_CATEGORY_ORDER.map(tn => `
-    <div class="tagblock">
-      <div class="tagblock-head"><label>${esc(tn)} (복수 선택 가능)</label></div>
-      <div class="toggle-grid" id="grid-${esc(tn)}"></div>
-      <div class="tagblock-add">
-        <input type="text" id="add-${esc(tn)}" placeholder="새 ${esc(tn)} 추가">
-        <button class="btn sm" data-addtag="${esc(tn)}">추가</button>
-      </div>
-    </div>`).join('');
-  NON_CATEGORY_ORDER.forEach(tn => renderToggleGrid('grid-'+tn, tagGridConfig(tn)));
-  wrap.querySelectorAll('[data-addtag]').forEach(btn => btn.addEventListener('click', async () => {
-    const tn = btn.dataset.addtag;
-    const inp = $('#add-'+tn);
-    const label = inp.value.trim(); if(!label) return;
-    const tt = tagTypeByName(tn); if(!tt) return toast('태그 유형이 없습니다: '+tn, true);
-    const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
-    if(error) return toast('추가 실패: '+error.message, true);
-    tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
-    S.pickedTags[tn] = S.pickedTags[tn] || new Set(); S.pickedTags[tn].add(data.id);
-    inp.value = '';
-    renderToggleGrid('grid-'+tn, tagGridConfig(tn));
-    toast('추가 및 선택됨');
-  }));
-}
-$('[data-addcat]').addEventListener('click', async () => {
-  const inp = $('#add-분류');
-  const label = inp.value.trim(); if(!label) return;
-  const tt = tagTypeByName('분류'); if(!tt) return toast('분류 태그유형이 없습니다', true);
-  const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
-  if(error) return toast('추가 실패: '+error.message, true);
+$('#fabAdd').addEventListener('click',()=>{ S.quickCat=null; $('#qName').value=''; renderQuickCat(); openOv('ovQuick'); $('#qName').focus(); });
+$('#qCatAdd').addEventListener('click',async()=>{
+  const label=$('#qCatNew').value.trim(); if(!label) return;
+  const tt=tagType('분류'); if(!tt) return toast('분류 태그유형이 없습니다',true);
+  const {data,error}=await sb.from('tags').insert({tag_type_id:tt.id,label}).select().single();
+  if(error) return toast('추가 실패: '+error.message,true);
   tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
-  S.pickedCategory = data.id;
-  inp.value = '';
-  renderCategoryGrid();
-  toast('추가 및 선택됨');
+  S.quickCat=data.id; $('#qCatNew').value=''; renderQuickCat();
 });
-$('[data-addgroup]').addEventListener('click', async () => {
-  const inp = $('#add-groups');
-  const label = inp.value.trim(); if(!label) return;
-  const color = COLORS[S.groups.length % COLORS.length];
-  const { data, error } = await sb.from('groups').insert({name: label, color}).select().single();
-  if(error) return toast('추가 실패: '+error.message, true);
-  S.groups.push(data);
-  S.pickedGroups.add(data.id);
-  inp.value = '';
-  renderGroupGrid();
-  toast('추가 및 선택됨');
+$('#qSave').addEventListener('click',async()=>{
+  const name=$('#qName').value.trim(); if(!name) return toast('이름을 입력하세요',true);
+  const {data,error}=await sb.from('friends').insert({name, category_tag_id:S.quickCat||null}).select().single();
+  if(error) return toast('저장 실패: '+error.message,true);
+  closeOv('ovQuick'); toast('추가됨');
+  await loadAll();
+  openDetail(data.id);
 });
 
-/* ---- wizard step navigation ---- */
-const WIZARD_STEPS = ['기본정보','태그','무리','인간관계','메모·평가'];
-function renderWizardSteps(){
-  $('#frSteps').innerHTML = WIZARD_STEPS.map((s,i) => `<button type="button" class="wizard-step ${S.wizardStep===i?'on':''}" data-i="${i}">${i+1}. ${esc(s)}</button>`).join('');
-  $('#frSteps').querySelectorAll('.wizard-step').forEach(b => b.addEventListener('click', () => { S.wizardStep = Number(b.dataset.i); showWizardStep(); }));
-}
-function showWizardStep(){
-  document.querySelectorAll('#ovFriend .wizard-panel').forEach(p => p.classList.toggle('on', Number(p.dataset.step)===S.wizardStep));
-  renderWizardSteps();
-  const last = S.wizardStep === WIZARD_STEPS.length - 1;
-  $('#frPrev').style.display = S.wizardStep===0 ? 'none' : '';
-  $('#frNext').style.display = last ? 'none' : '';
-  $('#frSave').style.display = last ? '' : 'none';
-}
-$('#frPrev').addEventListener('click', () => { S.wizardStep = Math.max(0, S.wizardStep-1); showWizardStep(); });
-$('#frNext').addEventListener('click', () => { S.wizardStep = Math.min(WIZARD_STEPS.length-1, S.wizardStep+1); showWizardStep(); });
+/* ---------- detail ---------- */
+$$('.dtab').forEach(b=>b.addEventListener('click',()=>{
+  S.dTab=Number(b.dataset.dtab);
+  $$('.dtab').forEach(x=>x.classList.toggle('on',x===b));
+  $$('.dpanel').forEach(p=>p.classList.toggle('on',Number(p.dataset.dpanel)===S.dTab));
+}));
 
-function renderFrStars(){
-  const box = $('#frStars');
-  box.innerHTML = [1,2,3,4,5].map(i => `<span class="${i<=S.starVal?'on':''}" data-v="${i}">★</span>`).join('');
-  box.querySelectorAll('span').forEach(sp => sp.addEventListener('click', () => {
-    S.starVal = (S.starVal === Number(sp.dataset.v)) ? Number(sp.dataset.v)-1 : Number(sp.dataset.v);
-    renderFrStars();
-  }));
-}
-function relTypeOptionsHtml(sel){
-  return S.relTypes.map(t => `<option value="${t.id}" ${t.id===sel?'selected':''}>${esc(t.label)}</option>`).join('');
-}
-function friendOptionsHtml(excludeId, sel){
-  return S.friends.filter(f=>f.id!==excludeId).map(f => `<option value="${f.id}" ${f.id===sel?'selected':''}>${esc(f.name)}</option>`).join('');
-}
-function renderFrRelList(){
-  const wrap = $('#frRelList');
-  const excludeId = S.editingFriendId;
-  wrap.innerHTML = S.relDraft.map((r, idx) => `
-    <div class="rel-row" data-idx="${idx}">
-      <button class="icon-btn del rr-del" data-f="del">🗑</button>
-      <div class="rel-grid">
-        <div class="rf"><label>대상 친구</label><select data-f="friend">${friendOptionsHtml(excludeId, r.related_friend_id)}</select></div>
-        <div class="rf"><label>관계유형</label><select data-f="type">${relTypeOptionsHtml(r.relationship_type_id)}</select></div>
-      </div>
-      <div class="rel-detail-row">
-        <div class="rf"><label>설명</label><input type="text" data-f="detail" placeholder="예: 초등학교 동창" value="${esc(r.detail||'')}"></div>
-        <div class="rf"><label>강도(1~5)</label><input type="number" data-f="strength" min="1" max="5" value="${r.strength||3}"></div>
-      </div>
-    </div>`).join('') || `<div style="color:var(--muted);font-size:12.5px;padding:6px 0 12px">등록된 관계가 없습니다.</div>`;
-  wrap.querySelectorAll('.rel-row').forEach(row => {
-    const idx = Number(row.dataset.idx);
-    row.querySelector('[data-f=friend]').addEventListener('change', e => S.relDraft[idx].related_friend_id = e.target.value);
-    row.querySelector('[data-f=type]').addEventListener('change', e => S.relDraft[idx].relationship_type_id = e.target.value);
-    row.querySelector('[data-f=detail]').addEventListener('input', e => S.relDraft[idx].detail = e.target.value);
-    row.querySelector('[data-f=strength]').addEventListener('input', e => S.relDraft[idx].strength = Number(e.target.value)||3);
-    row.querySelector('[data-f=del]').addEventListener('click', () => { S.relDraft.splice(idx,1); renderFrRelList(); });
-  });
-}
-$('#frAddRel').addEventListener('click', () => {
-  if(S.friends.filter(f=>f.id!==S.editingFriendId).length === 0){ toast('다른 친구를 먼저 추가하세요', true); return; }
-  if(S.relTypes.length === 0){ toast('관계유형을 먼저 추가하세요', true); return; }
-  S.relDraft.push({related_friend_id: S.friends.find(f=>f.id!==S.editingFriendId).id, relationship_type_id: S.relTypes[0].id, detail:'', strength:3});
-  renderFrRelList();
-});
-$('#frFavToggle').addEventListener('click', () => { S.favVal = !S.favVal; $('#frFavToggle').classList.toggle('on', S.favVal); });
-
-function openFriendModal(f = null){
-  S.editingFriendId = f ? f.id : null;
-  S.pickedCategory = f ? f.category_tag_id : null;
-  S.pickedTags = {};
-  for(const tn of NON_CATEGORY_ORDER) S.pickedTags[tn] = new Set(f ? (f.tagsByType[tn]||[]).map(t=>t.id) : []);
-  S.pickedGroups = new Set(f ? f.groups.map(g=>g.id) : []);
-  S.relDraft = f ? f.relOut.map(r => ({related_friend_id:r.related_friend_id, relationship_type_id:r.relationship_type_id, detail:r.detail||'', strength:r.strength||3, _existingId:r.id})) : [];
-  S.starVal = f ? (f.rating||0) : 0;
-  S.favVal = f ? !!f.favorite : false;
-
-  $('#frTitle').childNodes[0].textContent = f ? `수정: ${f.name} ` : '친구 추가 ';
-  $('#frName').value = f?.name || '';
-  $('#frEmoji').value = f?.avatar_emoji || '';
-  $('#frImg').value = f?.avatar_image_url || '';
-  $('#frDesc').value = f?.description || '';
-  $('#frRelNote').value = f?.relationship_note || '';
-  $('#frEtc').value = f?.etc_note || '';
-  $('#frFavToggle').classList.toggle('on', S.favVal);
-
-  renderCategoryGrid();
-  renderFrTagBlocksWizard();
-  renderGroupGrid();
-  renderFrStars();
-  renderFrRelList();
-  S.wizardStep = 0;
-  showWizardStep();
-  openOv('ovFriend');
-  $('#frName').focus();
-}
-$('#btnAddFriend').addEventListener('click', () => openFriendModal());
-window.editFriend = id => { closeOv('ovDetail'); openFriendModal(friendById(id)); };
-window.delFriend = async id => {
-  const f = friendById(id);
-  if(!f || !confirm(`'${f.name}' 삭제할까요?`)) return;
-  const { error } = await sb.from('friends').delete().eq('id', id);
-  if(error) return toast('삭제 실패: '+error.message, true);
-  closeOv('ovDetail');
-  toast('삭제됨');
-  loadAll();
-};
-
-$('#frSave').addEventListener('click', async () => {
-  const name = $('#frName').value.trim();
-  if(!name) return toast('이름을 입력하세요', true);
-  const payload = {
-    name,
-    avatar_emoji: $('#frEmoji').value.trim() || null,
-    avatar_image_url: $('#frImg').value.trim() || null,
-    category_tag_id: S.pickedCategory || null,
-    description: $('#frDesc').value.trim() || null,
-    relationship_note: $('#frRelNote').value.trim() || null,
-    etc_note: $('#frEtc').value.trim() || null,
-    favorite: S.favVal,
-    rating: S.starVal,
-  };
-  let friendId;
-  if(S.editingFriendId){
-    const { error } = await sb.from('friends').update(payload).eq('id', S.editingFriendId);
-    if(error) return toast('저장 실패: '+error.message, true);
-    friendId = S.editingFriendId;
-  }else{
-    const { data, error } = await sb.from('friends').insert(payload).select().single();
-    if(error) return toast('저장 실패: '+error.message, true);
-    friendId = data.id;
-  }
-
-  const allTagIds = NON_CATEGORY_ORDER.flatMap(tn => [...(S.pickedTags[tn]||[])]);
-  await sb.from('friend_tags').delete().eq('friend_id', friendId);
-  if(allTagIds.length){
-    const { error } = await sb.from('friend_tags').insert(allTagIds.map(tid => ({friend_id: friendId, tag_id: tid})));
-    if(error) toast('태그 연결 실패: '+error.message, true);
-  }
-  await sb.from('friend_groups').delete().eq('friend_id', friendId);
-  if(S.pickedGroups.size){
-    const { error } = await sb.from('friend_groups').insert([...S.pickedGroups].map(gid => ({friend_id: friendId, group_id: gid})));
-    if(error) toast('무리 연결 실패: '+error.message, true);
-  }
-  await sb.from('friend_relationships').delete().eq('friend_id', friendId);
-  const validRel = S.relDraft.filter(r => r.related_friend_id && r.relationship_type_id);
-  if(validRel.length){
-    const { error } = await sb.from('friend_relationships').insert(validRel.map(r => ({
-      friend_id: friendId, related_friend_id: r.related_friend_id, relationship_type_id: r.relationship_type_id,
-      detail: r.detail || null, strength: r.strength || 3,
-    })));
-    if(error) toast('관계 저장 실패: '+error.message, true);
-  }
-
-  closeOv('ovFriend');
-  toast('저장됨');
-  loadAll();
-});
-
-/* =====================================================
-   상세 모달
-===================================================== */
 window.openDetail = id => {
-  const f = friendById(id);
-  if(!f) return;
-  S.detailFriendId = id;
-  $('#dAvatar').innerHTML = f.avatar_image_url ? `<img src="${esc(f.avatar_image_url)}">` : esc(f.avatar_emoji||'🙂');
-  $('#dName').textContent = f.name;
-  $('#dStars').innerHTML = starsHtml(f.rating||0);
-  $('#dCat').textContent = f.category ? f.category.label : '설정 안 됨';
-  $('#dDesc').textContent = f.description || '내용 없음';
-  for(const tn of NON_CATEGORY_ORDER){
-    $('#dTagLabel-'+tn).textContent = tn;
-    const items = f.tagsByType[tn]||[];
-    $('#dTags-'+tn).innerHTML = items.length ? items.map(t=>`<span class="chip">${esc(t.label)}</span>`).join('') : '<span style="color:var(--muted);font-size:12px">없음</span>';
-  }
-  $('#dGroups').innerHTML = f.groups.length ? f.groups.map(g=>`<span class="chip" style="border-color:${esc(g.color||'#666')}"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</span>`).join('') : '<span style="color:var(--muted);font-size:12px">없음</span>';
-
-  const relHtml = [];
-  for(const r of f.relOut){
-    relHtml.push(`<div class="rel-chip" onclick="openDetail('${r.related_friend_id}')">
-      <span class="rt" style="background:${esc(r.type?.color||'#666')}22;color:${esc(r.type?.color||'#ccc')}">${esc(r.type?.label||'?')}</span>
-      → ${esc(r.to?.name||'?')} ${r.detail?`· ${esc(r.detail)}`:''} <span style="color:var(--muted);margin-left:auto">강도 ${r.strength||3}</span>
-    </div>`);
-  }
-  for(const r of f.relIn){
-    relHtml.push(`<div class="rel-chip" onclick="openDetail('${r.friend_id}')">
-      <span class="rt" style="background:${esc(r.type?.color||'#666')}22;color:${esc(r.type?.color||'#ccc')}">${esc(r.type?.label||'?')}</span>
-      ← ${esc(r.from?.name||'?')} ${r.detail?`· ${esc(r.detail)}`:''} <span style="color:var(--muted);margin-left:auto">강도 ${r.strength||3}</span>
-    </div>`);
-  }
-  $('#dRels').innerHTML = relHtml.join('') || '<span style="color:var(--muted);font-size:12px">등록된 관계가 없습니다.</span>';
-
-  $('#dRelNoteSec').style.display = f.relationship_note ? '' : 'none';
-  $('#dRelNote').textContent = f.relationship_note || '';
-  $('#dEtcSec').style.display = f.etc_note ? '' : 'none';
-  $('#dEtc').textContent = f.etc_note || '';
+  const f = friendById(id); if(!f) return;
+  S.detailId=id; pushRecent(id);
+  S.dDraft = {
+    name:f.name, avatar_emoji:f.avatar_emoji||'', avatar_image_url:f.avatar_image_url||'',
+    category_tag_id:f.category_tag_id||null, description:f.description||'',
+    relationship_note:f.relationship_note||'', etc_note:f.etc_note||'',
+    favorite:!!f.favorite, rating:f.rating||0,
+    tags:Object.fromEntries(TAG_KINDS.map(k=>[k,new Set((f.tagsByType[k]||[]).map(t=>t.id))])),
+    groups:new Set(f.groups.map(g=>g.id)),
+  };
+  S.dRelDraft = f.relOut.map(r=>({related_friend_id:r.related_friend_id, relationship_type_id:r.relationship_type_id, detail:r.detail||'', strength:r.strength||3}));
+  S.dTab=0;
+  $$('.dtab').forEach((x,i)=>x.classList.toggle('on',i===0));
+  $$('.dpanel').forEach((p,i)=>p.classList.toggle('on',i===0));
+  renderDetail();
   openOv('ovDetail');
 };
-$('#dEdit').addEventListener('click', () => editFriend(S.detailFriendId));
-$('#dDelete').addEventListener('click', () => delFriend(S.detailFriendId));
-
-/* =====================================================
-   태그 관리 페이지
-===================================================== */
-function renderTagsPage(){
-  const q = $('#tagSearch').value.trim().toLowerCase();
-  $('#tagTypeBlocks').innerHTML = S.tagTypes.map(tt => {
-    const rows = q ? tt.tags.filter(t => t.label.toLowerCase().includes(q)) : tt.tags;
-    return `<div class="tag-type-block">
-      <h3>${esc(tt.name)} <span class="count">${tt.tags.length}</span> <button class="btn sm" data-addtag="${tt.id}" data-typename="${esc(tt.name)}">＋ 추가</button></h3>
-      <div class="grid">
-        ${rows.length ? rows.map(t => `
-          <div class="item-card">
-            <div class="top">
-              <h3>${tt.name==='분류' ? `<span style="font-size:16px">${esc(t.default_emoji||'🙂')}</span>` : ''}${esc(t.label)}</h3>
-              <button class="icon-btn" data-edittag="${t.id}" data-typeid="${tt.id}" data-typename="${esc(tt.name)}">✎</button>
-              <button class="icon-btn del" data-deltag="${t.id}">🗑</button>
-            </div>
-          </div>`).join('') : `<div class="empty-note" style="grid-column:1/-1">${q?'검색 결과 없음':'등록된 태그가 없습니다.'}</div>`}
-      </div>
-    </div>`;
-  }).join('');
-  $('#tagTypeBlocks').querySelectorAll('[data-addtag]').forEach(b => b.addEventListener('click', () => openTagModal(b.dataset.typename, b.dataset.addtag, null)));
-  $('#tagTypeBlocks').querySelectorAll('[data-edittag]').forEach(b => {
-    const tt = S.tagTypes.find(x=>x.id===b.dataset.typeid);
-    const row = tt?.tags.find(t=>t.id===b.dataset.edittag);
-    b.addEventListener('click', () => openTagModal(b.dataset.typename, b.dataset.typeid, row));
-  });
-  $('#tagTypeBlocks').querySelectorAll('[data-deltag]').forEach(b => b.addEventListener('click', () => delTag(b.dataset.deltag)));
+function renderDetailHero(){
+  const f = friendById(S.detailId); const d=S.dDraft;
+  $('#dAv').innerHTML = d.avatar_image_url ? `<img src="${esc(d.avatar_image_url)}">` : esc(d.avatar_emoji||'🙂');
+  $('#dName').textContent = d.name;
+  const cat = tagType('분류')?.tags.find(t=>t.id===d.category_tag_id);
+  const gnames = [...d.groups].map(id=>S.groups.find(g=>g.id===id)?.name).filter(Boolean);
+  $('#dSub').textContent = [cat?.label, gnames.join(' · ')].filter(Boolean).join(' · ') || '분류·무리 미지정';
+  $('#dFav').className = 'fav-star'+(d.favorite?' on':'');
+  const tagN = TAG_KINDS.reduce((a,k)=>a+d.tags[k].size,0);
+  $('#dSummary').innerHTML = `
+    <div class="sbox"><div class="v" style="color:var(--star)">${d.rating}</div><div class="k">별점</div></div>
+    <div class="sbox"><div class="v">${S.dRelDraft.length + f.relIn.length}</div><div class="k">관계</div></div>
+    <div class="sbox"><div class="v">${d.groups.size}</div><div class="k">무리</div></div>
+    <div class="sbox"><div class="v">${tagN}</div><div class="k">태그</div></div>`;
 }
-$('#tagSearch').addEventListener('input', renderTagsPage);
-function openTagModal(typeName, typeId, row){
-  S.editingTag = { typeName, typeId, row };
-  $('#tagModalTitle').childNodes[0].textContent = (row?'수정: ':'추가: ') + typeName + ' ';
-  $('#tagName').value = row?.label || '';
-  $('#tagEmojiField').style.display = typeName === '분류' ? '' : 'none';
-  $('#tagEmoji').value = row?.default_emoji || '';
-  openOv('ovTag');
-  $('#tagName').focus();
+$('#dFav').addEventListener('click',()=>{ S.dDraft.favorite=!S.dDraft.favorite; renderDetailHero(); });
+
+function pickerHtml(id, label, items, isOn, withDel){
+  return `<div class="dsec"><div class="sl">${esc(label)}</div>
+    <div class="toggle-grid" id="${id}">${items.length ? items.map(t=>`
+      <button class="pill ${withDel?'wdel':''} ${isOn(t.id)?'on':''}" data-id="${t.id}">
+        ${t.color?`<span class="color-dot" style="background:${esc(t.color)}"></span>`:''}${esc(t.label)}
+        ${withDel?`<span class="del" data-del="${t.id}">✕</span>`:''}
+      </button>`).join('') : `<span class="hint">아직 없음 — 아래에서 추가하세요</span>`}</div>
+    <div class="inline-add"><input type="text" id="${id}-new" placeholder="새 ${esc(label)} 추가"><button class="btn sm" data-add="${id}">추가</button></div>
+  </div>`;
 }
-$('#tagSave').addEventListener('click', async () => {
-  const { typeId, row, typeName } = S.editingTag;
-  const label = $('#tagName').value.trim();
-  if(!label) return toast('이름을 입력하세요', true);
-  const payload = { tag_type_id: typeId, label };
-  if(typeName === '분류') payload.default_emoji = $('#tagEmoji').value.trim() || null;
-  const q = row ? sb.from('tags').update(payload).eq('id', row.id) : sb.from('tags').insert(payload);
-  const { error } = await q;
-  if(error) return toast('저장 실패: '+error.message, true);
-  closeOv('ovTag'); toast('저장됨'); loadAll();
-});
-window.delTag = async id => {
-  if(!confirm('삭제할까요? 부여된 친구에게서도 사라집니다.')) return;
-  const { error } = await sb.from('tags').delete().eq('id', id);
-  if(error) return toast('삭제 실패: '+error.message, true);
-  toast('삭제됨'); loadAll();
-};
+function renderDetail(){
+  renderDetailHero();
+  const d=S.dDraft, f=friendById(S.detailId);
 
-/* =====================================================
-   무리 관리 페이지
-===================================================== */
-function renderGroupsPage(){
-  const q = $('#groupSearch').value.trim().toLowerCase();
-  const rows = q ? S.groups.filter(g=>g.name.toLowerCase().includes(q)) : S.groups;
-  $('#groupCount').textContent = S.groups.length;
-  $('#groupList').innerHTML = rows.length ? rows.map(g => `
-    <div class="item-card">
-      <div class="top"><h3><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</h3>
-        <button class="icon-btn" onclick="editGroup('${g.id}')">✎</button>
-        <button class="icon-btn del" onclick="delGroup('${g.id}')">🗑</button>
-      </div>
-      <div class="desc">${S.friends.filter(f=>f.groups.some(x=>x.id===g.id)).length}명 소속</div>
-    </div>`).join('') : `<div class="empty-note" style="grid-column:1/-1">${q?'검색 결과 없음':'등록된 무리가 없습니다.'}</div>`;
-}
-$('#groupSearch').addEventListener('input', renderGroupsPage);
-function renderColorRow(elId, current, onPick){
-  $('#'+elId).innerHTML = COLORS.map(c => `<div class="color-sw ${c===current?'on':''}" style="background:${c}" data-c="${c}"></div>`).join('');
-  $('#'+elId).querySelectorAll('.color-sw').forEach(sw => sw.addEventListener('click', () => { onPick(sw.dataset.c); renderColorRow(elId, sw.dataset.c, onPick); }));
-}
-function openGroupModal(row=null){
-  S.editingGroup = row;
-  S.groupColor = row?.color || COLORS[0];
-  $('#groupModalTitle').childNodes[0].textContent = row ? '수정: 무리 ' : '무리 추가 ';
-  $('#groupName').value = row?.name || '';
-  renderColorRow('groupColors', S.groupColor, c => S.groupColor = c);
-  openOv('ovGroup');
-  $('#groupName').focus();
-}
-window.editGroup = id => openGroupModal(S.groups.find(g=>g.id===id));
-window.delGroup = async id => {
-  if(!confirm('삭제할까요? 부여된 친구에게서도 사라집니다.')) return;
-  const { error } = await sb.from('groups').delete().eq('id', id);
-  if(error) return toast('삭제 실패: '+error.message, true);
-  toast('삭제됨'); loadAll();
-};
-$('#btnAddGroup').addEventListener('click', () => openGroupModal());
-$('#groupSave').addEventListener('click', async () => {
-  const name = $('#groupName').value.trim();
-  if(!name) return toast('이름을 입력하세요', true);
-  const payload = { name, color: S.groupColor };
-  const q = S.editingGroup ? sb.from('groups').update(payload).eq('id', S.editingGroup.id) : sb.from('groups').insert(payload);
-  const { error } = await q;
-  if(error) return toast('저장 실패: '+error.message, true);
-  closeOv('ovGroup'); toast('저장됨'); loadAll();
-});
-
-/* =====================================================
-   관계유형 관리 페이지
-===================================================== */
-function renderRelTypesPage(){
-  $('#relTypeCount').textContent = S.relTypes.length;
-  $('#relTypeList').innerHTML = S.relTypes.length ? S.relTypes.map(t => `
-    <div class="item-card">
-      <div class="top"><h3><span class="color-dot" style="background:${esc(t.color||'#666')}"></span>${esc(t.label)}</h3>
-        <button class="icon-btn" onclick="editRelType('${t.id}')">✎</button>
-        <button class="icon-btn del" onclick="delRelType('${t.id}')">🗑</button>
-      </div>
-    </div>`).join('') : `<div class="empty-note" style="grid-column:1/-1">등록된 관계유형이 없습니다.</div>`;
-}
-function openRelTypeModal(row=null){
-  S.editingRelType = row;
-  S.relTypeColor = row?.color || COLORS[0];
-  $('#relTypeModalTitle').childNodes[0].textContent = row ? '수정: 관계유형 ' : '관계유형 추가 ';
-  $('#relTypeName').value = row?.label || '';
-  renderColorRow('relTypeColors', S.relTypeColor, c => S.relTypeColor = c);
-  openOv('ovRelType');
-  $('#relTypeName').focus();
-}
-window.editRelType = id => openRelTypeModal(S.relTypes.find(t=>t.id===id));
-window.delRelType = async id => {
-  if(!confirm('삭제할까요? 이 유형을 사용하는 관계도 사라집니다.')) return;
-  const { error } = await sb.from('relationship_types').delete().eq('id', id);
-  if(error) return toast('삭제 실패: '+error.message, true);
-  toast('삭제됨'); loadAll();
-};
-$('#btnAddRelType').addEventListener('click', () => openRelTypeModal());
-$('#relTypeSave').addEventListener('click', async () => {
-  const label = $('#relTypeName').value.trim();
-  if(!label) return toast('이름을 입력하세요', true);
-  const payload = { label, color: S.relTypeColor };
-  const q = S.editingRelType ? sb.from('relationship_types').update(payload).eq('id', S.editingRelType.id) : sb.from('relationship_types').insert(payload);
-  const { error } = await q;
-  if(error) return toast('저장 실패: '+error.message, true);
-  closeOv('ovRelType'); toast('저장됨'); loadAll();
-});
-
-/* =====================================================
-   인간관계 시각화 (d3 force)
-===================================================== */
-let vizSim = null;
-function renderViz(){
-  const svgEl = d3.select('#vizSvg');
-  const wrap = $('#vizWrap');
-  const w = wrap.clientWidth, h = 640;
-  svgEl.attr('viewBox', [0,0,w,h]);
-  svgEl.selectAll('*').remove();
-
-  const nodes = S.friends.map(f => ({ id: f.id, name: f.name, emoji: f.avatar_emoji||'🙂', color: (f.groups[0]?.color) || '#6366f1' }));
-  const links = [];
-  for(const f of S.friends) for(const r of f.relOut){
-    links.push({ source: f.id, target: r.related_friend_id, color: r.type?.color||'#888', label: r.type?.label||'', strength: r.strength||3 });
-  }
-
-  if(!nodes.length){
-    svgEl.append('text').attr('x', w/2).attr('y', h/2).attr('text-anchor','middle').attr('fill','var(--muted)').text('등록된 친구가 없습니다.');
-    return;
-  }
-
-  const g = svgEl.append('g');
-  svgEl.call(d3.zoom().scaleExtent([0.3,3]).on('zoom', (ev) => g.attr('transform', ev.transform)));
-
-  if(vizSim) vizSim.stop();
-  vizSim = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id(d=>d.id).distance(110).strength(0.5))
-    .force('charge', d3.forceManyBody().strength(-260))
-    .force('center', d3.forceCenter(w/2, h/2))
-    .force('collide', d3.forceCollide(34));
-
-  const link = g.append('g').selectAll('line').data(links).join('line')
-    .attr('stroke', d=>d.color).attr('stroke-width', d=>1+d.strength*0.8).attr('stroke-opacity', 0.7);
-
-  const node = g.append('g').selectAll('g').data(nodes).join('g')
-    .style('cursor','pointer')
-    .call(d3.drag()
-      .on('start', (ev,d) => { if(!ev.active) vizSim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
-      .on('drag', (ev,d) => { d.fx=ev.x; d.fy=ev.y; })
-      .on('end', (ev,d) => { if(!ev.active) vizSim.alphaTarget(0); d.fx=null; d.fy=null; }))
-    .on('click', (ev,d) => openDetail(d.id));
-
-  node.append('circle').attr('r', 20).attr('fill', 'var(--panel)').attr('stroke', d=>d.color).attr('stroke-width', 3);
-  node.append('text').attr('text-anchor','middle').attr('dy','0.32em').attr('font-size','16px').text(d=>d.emoji);
-  node.append('text').attr('class','node-label').attr('text-anchor','middle').attr('dy', 34).text(d=>d.name);
-
-  vizSim.on('tick', () => {
-    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
-    node.attr('transform', d=>`translate(${d.x},${d.y})`);
-  });
-
-  const legend = $('#vizLegend');
-  legend.innerHTML = `
-    <div class="lg-sec"><div class="lg-title">관계유형</div>
-      ${S.relTypes.map(t=>`<div class="lg-row"><span class="color-dot" style="background:${esc(t.color||'#666')}"></span>${esc(t.label)}</div>`).join('') || '<div style="color:var(--muted)">없음</div>'}
+  /* 개요 */
+  const catItems = (tagType('분류')?.tags||[]).map(t=>({id:t.id,label:t.label}));
+  let p0 = `<div class="dsec"><div class="sl">기본</div>
+    <div class="field-row">
+      <div class="field" style="flex:2"><label>이름</label><input type="text" id="edName" value="${esc(d.name)}"></div>
+      <div class="field"><label>이모지</label><input type="text" id="edEmoji" value="${esc(d.avatar_emoji)}" placeholder="🙂"></div>
     </div>
-    <div class="lg-sec"><div class="lg-title">무리 (노드 테두리)</div>
-      ${S.groups.map(g=>`<div class="lg-row"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</div>`).join('') || '<div style="color:var(--muted)">없음</div>'}
-    </div>`;
-}
-window.addEventListener('resize', () => { if($('#page-viz').classList.contains('on')) renderViz(); });
+    <div class="field"><label>이미지 URL</label><input type="text" id="edImg" value="${esc(d.avatar_image_url)}" placeholder="https://..."></div>
+    <div class="field"><label>별점</label><div class="star-pick" id="edStars">${[1,2,3,4,5].map(i=>`<span class="${i<=d.rating?'on':''}" data-v="${i}">★</span>`).join('')}</div></div>
+  </div>`;
+  p0 += pickerHtml('pk-분류','분류', catItems, id=>d.category_tag_id===id, true);
+  for(const k of TAG_KINDS) p0 += pickerHtml('pk-'+k, k, (tagType(k)?.tags||[]).map(t=>({id:t.id,label:t.label})), id=>d.tags[k].has(id), true);
+  p0 += pickerHtml('pk-groups','무리', S.groups.map(g=>({id:g.id,label:g.name,color:g.color})), id=>d.groups.has(id), true);
+  $('#dPanel0').innerHTML = p0;
 
-/* init */
-(function(){
-  try{
-    const last = localStorage.getItem('fa_last_tab');
-    if(last){
-      const b = document.querySelector(`.tab-btn[data-tab="${last}"]`);
-      if(b) b.click();
+  $('#edName').addEventListener('input',e=>{ d.name=e.target.value; });
+  $('#edEmoji').addEventListener('input',e=>{ d.avatar_emoji=e.target.value; });
+  $('#edImg').addEventListener('input',e=>{ d.avatar_image_url=e.target.value; });
+  $('#edStars').querySelectorAll('span').forEach(sp=>sp.addEventListener('click',()=>{
+    const v=Number(sp.dataset.v); d.rating = d.rating===v ? v-1 : v; renderDetail();
+  }));
+  bindPicker('pk-분류', '분류', 'cat');
+  for(const k of TAG_KINDS) bindPicker('pk-'+k, k, 'tag');
+  bindPicker('pk-groups', null, 'group');
+
+  /* 관계 */
+  const inRels = f.relIn.map(r=>`<div class="rel-item" onclick="openDetail('${r.friend_id}')">
+      <span class="dir">←</span>
+      <span class="rt" style="background:${esc(r.type?.color||'#666')}22;color:${esc(r.type?.color||'#ccc')}">${esc(r.type?.label||'?')}</span>
+      <div style="flex:1;min-width:0"><div class="rn">${esc(r.from?.name||'?')}</div>${r.detail?`<div class="rd">${esc(r.detail)}</div>`:''}</div>
+      <span class="stars">${'●'.repeat(r.strength||3)}</span></div>`).join('');
+  $('#dPanel1').innerHTML = `
+    <div class="dsec"><div class="sl">내가 설정한 관계</div>
+      <div id="dRelEdits"></div>
+      <button class="btn sm" id="dAddRel">＋ 관계 추가</button>
+    </div>
+    ${inRels?`<div class="dsec"><div class="sl">상대가 나를 지목한 관계</div>${inRels}</div>`:''}`;
+  renderRelEdits();
+  $('#dAddRel').addEventListener('click',()=>{
+    const others = S.friends.filter(x=>x.id!==S.detailId);
+    if(!others.length) return toast('다른 친구를 먼저 추가하세요',true);
+    if(!S.relTypes.length) return toast('설정에서 관계유형을 먼저 추가하세요',true);
+    S.dRelDraft.push({related_friend_id:others[0].id, relationship_type_id:S.relTypes[0].id, detail:'', strength:3});
+    renderRelEdits(); renderDetailHero();
+  });
+
+  /* 메모 */
+  $('#dPanel2').innerHTML = `
+    <div class="field"><label>본문</label><textarea id="edDesc" placeholder="이 친구에 대한 소개">${esc(d.description)}</textarea></div>
+    <div class="field"><label>관계(글)</label><textarea id="edRelNote" placeholder="관계에 대한 자유 서술">${esc(d.relationship_note)}</textarea></div>
+    <div class="field"><label>기타사항</label><textarea id="edEtc">${esc(d.etc_note)}</textarea></div>`;
+  $('#edDesc').addEventListener('input',e=>{ d.description=e.target.value; });
+  $('#edRelNote').addEventListener('input',e=>{ d.relationship_note=e.target.value; });
+  $('#edEtc').addEventListener('input',e=>{ d.etc_note=e.target.value; });
+}
+function bindPicker(gridId, kind, mode){
+  const grid = $('#'+gridId); if(!grid) return;
+  const d = S.dDraft;
+  grid.querySelectorAll('.pill').forEach(b=>b.addEventListener('click',e=>{
+    if(e.target.closest('[data-del]')) return;
+    const id=b.dataset.id;
+    if(mode==='cat') d.category_tag_id = d.category_tag_id===id?null:id;
+    else if(mode==='tag') d.tags[kind].has(id)?d.tags[kind].delete(id):d.tags[kind].add(id);
+    else d.groups.has(id)?d.groups.delete(id):d.groups.add(id);
+    renderDetail();
+  }));
+  grid.querySelectorAll('[data-del]').forEach(x=>x.addEventListener('click',async e=>{
+    e.stopPropagation();
+    if(!confirm('삭제할까요? 모든 친구에게서 사라집니다.')) return;
+    const id=x.dataset.del;
+    const tbl = mode==='group'?'groups':'tags';
+    const {error}=await sb.from(tbl).delete().eq('id',id);
+    if(error) return toast('삭제 실패: '+error.message,true);
+    if(mode==='cat'){ const tt=tagType('분류'); tt.tags=tt.tags.filter(t=>t.id!==id); if(d.category_tag_id===id) d.category_tag_id=null; }
+    else if(mode==='tag'){ const tt=tagType(kind); tt.tags=tt.tags.filter(t=>t.id!==id); d.tags[kind].delete(id); }
+    else { S.groups=S.groups.filter(g=>g.id!==id); d.groups.delete(id); }
+    toast('삭제됨'); renderDetail();
+  }));
+  const addBtn = document.querySelector(`[data-add="${gridId}"]`);
+  if(addBtn) addBtn.addEventListener('click',async()=>{
+    const inp=$('#'+gridId+'-new'); const label=inp.value.trim(); if(!label) return;
+    if(mode==='group'){
+      const color=COLORS[S.groups.length%COLORS.length];
+      const {data,error}=await sb.from('groups').insert({name:label,color}).select().single();
+      if(error) return toast('추가 실패: '+error.message,true);
+      S.groups.push(data); d.groups.add(data.id);
+    }else{
+      const tn = mode==='cat'?'분류':kind;
+      const tt=tagType(tn); if(!tt) return toast('태그 유형 없음: '+tn,true);
+      const {data,error}=await sb.from('tags').insert({tag_type_id:tt.id,label}).select().single();
+      if(error) return toast('추가 실패: '+error.message,true);
+      tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
+      if(mode==='cat') d.category_tag_id=data.id; else d.tags[kind].add(data.id);
     }
-  }catch(e){}
-})();
+    toast('추가 및 선택됨'); renderDetail();
+  });
+}
+function renderRelEdits(){
+  const wrap=$('#dRelEdits'); if(!wrap) return;
+  wrap.innerHTML = S.dRelDraft.map((r,i)=>`
+    <div class="rel-edit" data-i="${i}">
+      <button class="icon-btn del rr-del" data-f="del">🗑</button>
+      <div class="rel-grid">
+        <div><label>대상</label><select data-f="friend">${S.friends.filter(f=>f.id!==S.detailId).map(f=>`<option value="${f.id}" ${f.id===r.related_friend_id?'selected':''}>${esc(f.name)}</option>`).join('')}</select></div>
+        <div><label>관계유형</label><select data-f="type">${S.relTypes.map(t=>`<option value="${t.id}" ${t.id===r.relationship_type_id?'selected':''}>${esc(t.label)}</option>`).join('')}</select></div>
+      </div>
+      <div class="rel-grid2">
+        <div><label>설명</label><input type="text" data-f="detail" value="${esc(r.detail)}" placeholder="예: 초등학교 동창"></div>
+        <div><label>강도</label><select data-f="strength">${[1,2,3,4,5].map(n=>`<option value="${n}" ${n===r.strength?'selected':''}>${n}</option>`).join('')}</select></div>
+      </div>
+    </div>`).join('') || `<div class="hint" style="margin-bottom:9px">등록된 관계가 없습니다.</div>`;
+  wrap.querySelectorAll('.rel-edit').forEach(row=>{
+    const i=Number(row.dataset.i);
+    row.querySelector('[data-f=friend]').addEventListener('change',e=>S.dRelDraft[i].related_friend_id=e.target.value);
+    row.querySelector('[data-f=type]').addEventListener('change',e=>S.dRelDraft[i].relationship_type_id=e.target.value);
+    row.querySelector('[data-f=detail]').addEventListener('input',e=>S.dRelDraft[i].detail=e.target.value);
+    row.querySelector('[data-f=strength]').addEventListener('change',e=>S.dRelDraft[i].strength=Number(e.target.value));
+    row.querySelector('[data-f=del]').addEventListener('click',()=>{ S.dRelDraft.splice(i,1); renderRelEdits(); renderDetailHero(); });
+  });
+}
+$('#dSave').addEventListener('click',async()=>{
+  const d=S.dDraft, id=S.detailId;
+  if(!d.name.trim()) return toast('이름을 입력하세요',true);
+  const {error}=await sb.from('friends').update({
+    name:d.name.trim(), avatar_emoji:d.avatar_emoji||null, avatar_image_url:d.avatar_image_url||null,
+    category_tag_id:d.category_tag_id||null, description:d.description||null,
+    relationship_note:d.relationship_note||null, etc_note:d.etc_note||null,
+    favorite:d.favorite, rating:d.rating,
+  }).eq('id',id);
+  if(error) return toast('저장 실패: '+error.message,true);
+  const tagIds = TAG_KINDS.flatMap(k=>[...d.tags[k]]);
+  await sb.from('friend_tags').delete().eq('friend_id',id);
+  if(tagIds.length) await sb.from('friend_tags').insert(tagIds.map(t=>({friend_id:id,tag_id:t})));
+  await sb.from('friend_groups').delete().eq('friend_id',id);
+  if(d.groups.size) await sb.from('friend_groups').insert([...d.groups].map(g=>({friend_id:id,group_id:g})));
+  await sb.from('friend_relationships').delete().eq('friend_id',id);
+  const valid=S.dRelDraft.filter(r=>r.related_friend_id&&r.relationship_type_id);
+  if(valid.length) await sb.from('friend_relationships').insert(valid.map(r=>({friend_id:id,related_friend_id:r.related_friend_id,relationship_type_id:r.relationship_type_id,detail:r.detail||null,strength:r.strength||3})));
+  closeOv('ovDetail'); toast('저장됨'); loadAll();
+});
+$('#dDelete').addEventListener('click',async()=>{
+  const f=friendById(S.detailId); if(!f||!confirm(`'${f.name}' 삭제할까요?`)) return;
+  const {error}=await sb.from('friends').delete().eq('id',S.detailId);
+  if(error) return toast('삭제 실패: '+error.message,true);
+  S.recent=S.recent.filter(x=>x!==S.detailId);
+  try{ localStorage.setItem('fa_recent',JSON.stringify(S.recent)); }catch(e){}
+  closeOv('ovDetail'); toast('삭제됨'); loadAll();
+});
+
+/* ---------- graph ---------- */
+function renderGraphControls(){
+  const sel=$('#gFocus'), cur=sel.value;
+  sel.innerHTML = '<option value="">중심 인물: 전체 보기</option>'+S.friends.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');
+  sel.value=cur;
+  const pop=$('#gFilterPop');
+  let html='';
+  if(S.groups.length) html += `<div class="sec"><div class="lbl">무리</div><div class="toggle-grid">
+    ${S.groups.map(g=>`<button class="pill ${S.gFilterGroups.has(g.id)?'on':''}" data-gg="${g.id}"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</button>`).join('')}</div></div>`;
+  if(S.relTypes.length) html += `<div class="sec"><div class="lbl">관계유형</div><div class="toggle-grid">
+    ${S.relTypes.map(t=>`<button class="pill ${S.gFilterTypes.has(t.id)?'on':''}" data-gt="${t.id}"><span class="color-dot" style="background:${esc(t.color||'#666')}"></span>${esc(t.label)}</button>`).join('')}</div></div>`;
+  pop.innerHTML = html || '<div class="hint">필터할 무리·관계유형이 없습니다.</div>';
+  pop.querySelectorAll('[data-gg]').forEach(b=>b.addEventListener('click',()=>{ const i=b.dataset.gg; S.gFilterGroups.has(i)?S.gFilterGroups.delete(i):S.gFilterGroups.add(i); renderGraphControls(); renderGraph(); }));
+  pop.querySelectorAll('[data-gt]').forEach(b=>b.addEventListener('click',()=>{ const i=b.dataset.gt; S.gFilterTypes.has(i)?S.gFilterTypes.delete(i):S.gFilterTypes.add(i); renderGraphControls(); renderGraph(); }));
+  const n=S.gFilterGroups.size+S.gFilterTypes.size;
+  $('#gFilterBadge').textContent = n?` (${n})`:'';
+}
+['#gFocus','#gDepth'].forEach(s=>$(s).addEventListener('change',renderGraph));
+$('#gStrength').addEventListener('input',e=>{ $('#gStrengthVal').textContent=e.target.value; renderGraph(); });
+$('#gLabels').addEventListener('change',e=>{ $('#gLabelsBox').classList.toggle('on',e.target.checked); renderGraph(); });
+$('#gIso').addEventListener('change',e=>{ $('#gIsoBox').classList.toggle('on',e.target.checked); renderGraph(); });
+$('#gFit').addEventListener('click',()=>{ S.gSelected=null; renderGraph(); });
+
+function renderGraph(){
+  const svg=d3.select('#graphSvg'), wrap=$('#graphWrap');
+  const w=wrap.clientWidth, h=Math.min(660, Math.max(420, window.innerHeight-260));
+  svg.attr('height',h).attr('viewBox',[0,0,w,h]);
+  svg.selectAll('*').remove();
+  $('#graphInfo').className='graph-info';
+
+  const minStr=Number($('#gStrength').value);
+  const focusId=$('#gFocus').value;
+  const depth=Number($('#gDepth').value);
+  const showLabels=$('#gLabels').checked;
+  const hideIso=$('#gIso').checked;
+
+  let links = S.relations.filter(r=>(r.strength||3)>=minStr)
+    .filter(r=>!S.gFilterTypes.size || S.gFilterTypes.has(r.relationship_type_id));
+  let pool = S.friends.filter(f=>!S.gFilterGroups.size || f.groups.some(g=>S.gFilterGroups.has(g.id)));
+  let ids = new Set(pool.map(f=>f.id));
+  links = links.filter(r=>ids.has(r.friend_id)&&ids.has(r.related_friend_id));
+
+  if(focusId && ids.has(focusId)){
+    const adj={}; links.forEach(r=>{ (adj[r.friend_id]=adj[r.friend_id]||[]).push(r.related_friend_id); (adj[r.related_friend_id]=adj[r.related_friend_id]||[]).push(r.friend_id); });
+    const seen=new Set([focusId]); let frontier=[focusId];
+    for(let d=0;d<depth&&frontier.length;d++){
+      const nxt=[];
+      frontier.forEach(x=>(adj[x]||[]).forEach(y=>{ if(!seen.has(y)){ seen.add(y); nxt.push(y); } }));
+      frontier=nxt;
+    }
+    ids=seen; pool=pool.filter(f=>ids.has(f.id));
+    links=links.filter(r=>ids.has(r.friend_id)&&ids.has(r.related_friend_id));
+  }
+  if(hideIso){
+    const conn=new Set(); links.forEach(r=>{ conn.add(r.friend_id); conn.add(r.related_friend_id); });
+    if(focusId) conn.add(focusId);
+    pool=pool.filter(f=>conn.has(f.id));
+  }
+
+  if(!pool.length){
+    svg.append('text').attr('x',w/2).attr('y',h/2).attr('text-anchor','middle').attr('fill','#8d93a8')
+      .text(S.friends.length?'조건에 맞는 노드가 없습니다':'등록된 친구가 없습니다');
+    renderGraphLegend(); return;
+  }
+
+  const nodes = pool.map(f=>({id:f.id, name:f.name, emoji:f.avatar_emoji||'🙂',
+    groups:f.groups, color:f.groups[0]?.color||'#5b6178', deg:0, fav:f.favorite, rating:f.rating||0}));
+  const nodeIds=new Set(nodes.map(n=>n.id));
+  const edges = links.filter(r=>nodeIds.has(r.friend_id)&&nodeIds.has(r.related_friend_id))
+    .map(r=>({source:r.friend_id, target:r.related_friend_id, color:r.type?.color||'#7a8197', label:r.type?.label||'', strength:r.strength||3, detail:r.detail||''}));
+  const degMap={}; edges.forEach(e=>{ degMap[e.source]=(degMap[e.source]||0)+1; degMap[e.target]=(degMap[e.target]||0)+1; });
+  nodes.forEach(n=>n.deg=degMap[n.id]||0);
+
+  const defs=svg.append('defs');
+  [...new Set(edges.map(e=>e.color))].forEach((c,i)=>{
+    defs.append('marker').attr('id','arr'+i).attr('viewBox','0 -5 10 10').attr('refX',26).attr('refY',0)
+      .attr('markerWidth',5).attr('markerHeight',5).attr('orient','auto')
+      .append('path').attr('d','M0,-5L10,0L0,5').attr('fill',c);
+  });
+  const colorIdx=Object.fromEntries([...new Set(edges.map(e=>e.color))].map((c,i)=>[c,i]));
+
+  const g=svg.append('g'); S.gSvgG=g;
+  S.gZoom=d3.zoom().scaleExtent([0.25,3]).on('zoom',ev=>g.attr('transform',ev.transform));
+  svg.call(S.gZoom).on('dblclick.zoom',null);
+
+  if(S.gSim) S.gSim.stop();
+  S.gSim=d3.forceSimulation(nodes)
+    .force('link',d3.forceLink(edges).id(d=>d.id).distance(d=>130-d.strength*8).strength(0.45))
+    .force('charge',d3.forceManyBody().strength(-330))
+    .force('center',d3.forceCenter(w/2,h/2))
+    .force('collide',d3.forceCollide(d=>26+d.deg*1.5));
+
+  const link=g.append('g').selectAll('line').data(edges).join('line')
+    .attr('stroke',d=>d.color).attr('stroke-width',d=>1+d.strength*0.85)
+    .attr('stroke-opacity',.72).attr('marker-end',d=>`url(#arr${colorIdx[d.color]})`);
+
+  const elabel=g.append('g').selectAll('text').data(edges).join('text')
+    .attr('class','edge-label').attr('text-anchor','middle')
+    .style('display',showLabels?'':'none').text(d=>d.label);
+
+  const node=g.append('g').selectAll('g').data(nodes).join('g').style('cursor','pointer')
+    .call(d3.drag()
+      .on('start',(ev,d)=>{ if(!ev.active) S.gSim.alphaTarget(.3).restart(); d.fx=d.x; d.fy=d.y; })
+      .on('drag',(ev,d)=>{ d.fx=ev.x; d.fy=ev.y; })
+      .on('end',(ev,d)=>{ if(!ev.active) S.gSim.alphaTarget(0); d.fx=null; d.fy=null; }))
+    .on('click',(ev,d)=>{ ev.stopPropagation(); S.gSelected = S.gSelected===d.id?null:d.id; applyHighlight(); })
+    .on('dblclick',(ev,d)=>{ ev.stopPropagation(); openDetail(d.id); });
+
+  node.each(function(d){
+    const sel=d3.select(this);
+    const r=19+Math.min(9,d.deg*1.4);
+    if(d.groups.length>1){
+      const arc=d3.arc().innerRadius(r+2.5).outerRadius(r+6);
+      const pie=d3.pie().value(1).sort(null)(d.groups);
+      sel.selectAll('path.ring').data(pie).join('path').attr('class','ring')
+        .attr('d',arc).attr('fill',x=>x.data.color||'#5b6178');
+    }
+    sel.append('circle').attr('r',r).attr('fill','#1e2230')
+      .attr('stroke',d.color).attr('stroke-width',d.groups.length>1?2:3);
+    sel.append('text').attr('text-anchor','middle').attr('dy','.34em').attr('font-size',(r*0.85)+'px').text(d.emoji);
+    sel.append('text').attr('class','node-label').attr('text-anchor','middle').attr('dy',r+15)
+      .text(d.name + (d.fav?' ★':''));
+  });
+
+  svg.on('click',()=>{ S.gSelected=null; applyHighlight(); });
+
+  function applyHighlight(){
+    const sel=S.gSelected;
+    if(!sel){
+      node.style('opacity',1); link.style('opacity',.72); elabel.style('opacity',1);
+      $('#graphInfo').className='graph-info';
+      return;
+    }
+    const near=new Set([sel]);
+    edges.forEach(e=>{ const s=e.source.id||e.source, t=e.target.id||e.target;
+      if(s===sel) near.add(t); if(t===sel) near.add(s); });
+    node.style('opacity',d=>near.has(d.id)?1:.13);
+    link.style('opacity',d=>{ const s=d.source.id||d.source, t=d.target.id||d.target;
+      return (s===sel||t===sel)?.95:.05; });
+    elabel.style('opacity',d=>{ const s=d.source.id||d.source, t=d.target.id||d.target;
+      return (s===sel||t===sel)?1:.05; });
+    const f=friendById(sel);
+    const conn=edges.filter(e=>{ const s=e.source.id||e.source,t=e.target.id||e.target; return s===sel||t===sel; });
+    $('#graphInfo').className='graph-info on';
+    $('#graphInfo').innerHTML = `<span class="gi-name">${esc(f.name)}</span>
+      <span class="stars">${starsHtml(f.rating||0)}</span>
+      <span style="color:var(--muted)">연결 ${conn.length}개 · ${esc(f.groups.map(g=>g.name).join(', ')||'무리 없음')}</span>
+      <button class="btn sm primary" style="margin-left:auto" onclick="openDetail('${sel}')">상세 보기</button>
+      <button class="btn sm" onclick="setFocus('${sel}')">중심으로</button>`;
+  }
+  window.setFocus = id => { $('#gFocus').value=id; S.gSelected=null; renderGraph(); };
+
+  S.gSim.on('tick',()=>{
+    link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
+    elabel.attr('x',d=>(d.source.x+d.target.x)/2).attr('y',d=>(d.source.y+d.target.y)/2-3);
+    node.attr('transform',d=>`translate(${d.x},${d.y})`);
+  });
+  renderGraphLegend();
+  applyHighlight();
+}
+function renderGraphLegend(){
+  $('#graphLegend').innerHTML = `
+    <div class="lg-sec"><div class="lg-title">관계유형 (선)</div>
+      ${S.relTypes.length?S.relTypes.map(t=>`<div class="lg-row"><span class="color-dot" style="background:${esc(t.color||'#666')}"></span>${esc(t.label)}</div>`).join(''):'<div style="color:var(--muted)">없음</div>'}</div>
+    <div class="lg-sec"><div class="lg-title">무리 (테두리)</div>
+      ${S.groups.length?S.groups.map(g=>`<div class="lg-row"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</div>`).join(''):'<div style="color:var(--muted)">없음</div>'}</div>
+    <div class="lg-sec"><div class="lg-title">읽는 법</div>
+      <div style="color:var(--muted);line-height:1.5">원 크기 = 연결 수<br>선 굵기 = 관계 강도<br>화살표 = 관계 방향</div></div>`;
+}
+window.addEventListener('resize',()=>{ if(S.page==='graph') renderGraph(); });
+
+/* ---------- 분석 ---------- */
+function barList(items, color){
+  const max=Math.max(1,...items.map(i=>i.v));
+  return `<div class="bar-list">${items.map(i=>`<div class="bar-item">
+    <span class="bl">${esc(i.k)}</span>
+    <span class="bt"><span class="bf" style="width:${i.v/max*100}%;background:${i.color||color||'var(--accent)'}"></span></span>
+    <span class="bv">${i.v}</span></div>`).join('')}</div>`;
+}
+function renderStats(){
+  const F=S.friends;
+  if(!F.length){ $('#statsBody').innerHTML='<div class="empty-note">분석할 데이터가 없습니다.</div>'; return; }
+  const iso=F.filter(f=>relCount(f)===0);
+  const top=F.map(f=>({k:f.name,v:relCount(f)})).filter(x=>x.v).sort((a,b)=>b.v-a.v).slice(0,8);
+  const byGroup=S.groups.map(g=>({k:g.name,v:F.filter(f=>f.groups.some(x=>x.id===g.id)).length,color:g.color}));
+  const byType=S.relTypes.map(t=>({k:t.label,v:S.relations.filter(r=>r.relationship_type_id===t.id).length,color:t.color}));
+  const tagFreq={};
+  F.forEach(f=>TAG_KINDS.forEach(k=>(f.tagsByType[k]||[]).forEach(t=>tagFreq[t.label]=(tagFreq[t.label]||0)+1)));
+  const topTags=Object.entries(tagFreq).map(([k,v])=>({k,v})).sort((a,b)=>b.v-a.v).slice(0,8);
+  const density = F.length>1 ? (S.relations.length/(F.length*(F.length-1)/2)*100).toFixed(1) : '0.0';
+
+  $('#statsBody').innerHTML = `
+    <div class="stat-row">
+      <div class="stat-box"><div class="v">${(S.relations.length/F.length).toFixed(1)}</div><div class="k">1인당 평균 관계</div></div>
+      <div class="stat-box"><div class="v">${density}%</div><div class="k">관계망 밀도</div></div>
+      <div class="stat-box"><div class="v">${iso.length}</div><div class="k">고립된 사람</div></div>
+      <div class="stat-box"><div class="v">${F.filter(f=>f.favorite).length}</div><div class="k">즐겨찾기</div></div>
+    </div>
+    ${top.length?`<div class="set-block"><h3>관계가 많은 사람</h3>${barList(top)}</div>`:''}
+    ${byGroup.length?`<div class="set-block"><h3>무리별 인원</h3>${barList(byGroup)}</div>`:''}
+    ${byType.length?`<div class="set-block"><h3>관계유형 분포</h3>${barList(byType)}</div>`:''}
+    ${topTags.length?`<div class="set-block"><h3>자주 쓰인 태그</h3>${barList(topTags)}</div>`:''}
+    ${iso.length?`<div class="set-block"><h3>아직 관계가 없는 사람 <span class="count">${iso.length}</span></h3>
+      <div class="chip-row">${iso.map(f=>`<span class="chip" style="cursor:pointer" onclick="openDetail('${f.id}')">${esc(f.name)}</span>`).join('')}</div></div>`:''}`;
+}
+
+/* ---------- 설정 ---------- */
+function renderSettings(){
+  $('#setTags').innerHTML = S.tagTypes.map(tt=>`
+    <div class="set-block">
+      <h3>${esc(tt.name)} <span class="count">${tt.tags.length}</span></h3>
+      <div class="toggle-grid" id="st-${esc(tt.name)}">
+        ${tt.tags.length?tt.tags.map(t=>`<span class="pill wdel">${esc(t.label)}<span class="del" data-st-del="${t.id}">✕</span></span>`).join(''):'<span class="hint">없음</span>'}
+      </div>
+      <div class="inline-add"><input type="text" id="st-new-${esc(tt.name)}" placeholder="새 ${esc(tt.name)} 추가"><button class="btn sm" data-st-add="${tt.id}" data-st-name="${esc(tt.name)}">추가</button></div>
+    </div>`).join('');
+  $('#setTags').querySelectorAll('[data-st-del]').forEach(x=>x.addEventListener('click',async()=>{
+    if(!confirm('삭제할까요? 모든 친구에게서 사라집니다.')) return;
+    const {error}=await sb.from('tags').delete().eq('id',x.dataset.stDel);
+    if(error) return toast('삭제 실패: '+error.message,true);
+    toast('삭제됨'); loadAll();
+  }));
+  $('#setTags').querySelectorAll('[data-st-add]').forEach(b=>b.addEventListener('click',async()=>{
+    const inp=$('#st-new-'+b.dataset.stName); const label=inp.value.trim(); if(!label) return;
+    const {error}=await sb.from('tags').insert({tag_type_id:b.dataset.stAdd,label});
+    if(error) return toast('추가 실패: '+error.message,true);
+    inp.value=''; toast('추가됨'); loadAll();
+  }));
+
+  $('#setGroupCount').textContent=S.groups.length;
+  $('#setGroupGrid').innerHTML = S.groups.length?S.groups.map(g=>`
+    <span class="pill wdel" style="cursor:pointer" data-gedit="${g.id}"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}<span class="del" data-gdel="${g.id}">✕</span></span>`).join('')
+    :'<span class="hint">없음</span>';
+  $('#setGroupGrid').querySelectorAll('[data-gdel]').forEach(x=>x.addEventListener('click',async e=>{
+    e.stopPropagation();
+    if(!confirm('삭제할까요?')) return;
+    const {error}=await sb.from('groups').delete().eq('id',x.dataset.gdel);
+    if(error) return toast('삭제 실패: '+error.message,true);
+    toast('삭제됨'); loadAll();
+  }));
+  $('#setGroupGrid').querySelectorAll('[data-gedit]').forEach(p=>p.addEventListener('click',e=>{
+    if(e.target.closest('[data-gdel]')) return;
+    openColorModal('groups', S.groups.find(g=>g.id===p.dataset.gedit), 'name');
+  }));
+
+  $('#setRelCount').textContent=S.relTypes.length;
+  $('#setRelGrid').innerHTML = S.relTypes.length?S.relTypes.map(t=>`
+    <span class="pill wdel" style="cursor:pointer" data-redit="${t.id}"><span class="color-dot" style="background:${esc(t.color||'#666')}"></span>${esc(t.label)}<span class="del" data-rdel="${t.id}">✕</span></span>`).join('')
+    :'<span class="hint">없음</span>';
+  $('#setRelGrid').querySelectorAll('[data-rdel]').forEach(x=>x.addEventListener('click',async e=>{
+    e.stopPropagation();
+    if(!confirm('삭제할까요? 이 유형의 관계도 사라집니다.')) return;
+    const {error}=await sb.from('relationship_types').delete().eq('id',x.dataset.rdel);
+    if(error) return toast('삭제 실패: '+error.message,true);
+    toast('삭제됨'); loadAll();
+  }));
+  $('#setRelGrid').querySelectorAll('[data-redit]').forEach(p=>p.addEventListener('click',e=>{
+    if(e.target.closest('[data-rdel]')) return;
+    openColorModal('relationship_types', S.relTypes.find(t=>t.id===p.dataset.redit), 'label');
+  }));
+}
+$('#setGroupAdd').addEventListener('click',async()=>{
+  const name=$('#setGroupNew').value.trim(); if(!name) return;
+  const {error}=await sb.from('groups').insert({name,color:COLORS[S.groups.length%COLORS.length]});
+  if(error) return toast('추가 실패: '+error.message,true);
+  $('#setGroupNew').value=''; toast('추가됨'); loadAll();
+});
+$('#setRelAdd').addEventListener('click',async()=>{
+  const label=$('#setRelNew').value.trim(); if(!label) return;
+  const {error}=await sb.from('relationship_types').insert({label,color:COLORS[S.relTypes.length%COLORS.length]});
+  if(error) return toast('추가 실패: '+error.message,true);
+  $('#setRelNew').value=''; toast('추가됨'); loadAll();
+});
+function openColorModal(table,row,nameField){
+  if(!row) return;
+  S.colorCtx={table,row,nameField};
+  S.colorPick=row.color||COLORS[0];
+  $('#colorName').value=row[nameField]||'';
+  renderColorRow();
+  openOv('ovColor');
+}
+function renderColorRow(){
+  $('#colorRow').innerHTML=COLORS.map(c=>`<div class="color-sw ${c===S.colorPick?'on':''}" style="background:${c}" data-c="${c}"></div>`).join('');
+  $('#colorRow').querySelectorAll('.color-sw').forEach(sw=>sw.addEventListener('click',()=>{ S.colorPick=sw.dataset.c; renderColorRow(); }));
+}
+$('#colorSave').addEventListener('click',async()=>{
+  const {table,row,nameField}=S.colorCtx;
+  const name=$('#colorName').value.trim(); if(!name) return toast('이름을 입력하세요',true);
+  const {error}=await sb.from(table).update({[nameField]:name,color:S.colorPick}).eq('id',row.id);
+  if(error) return toast('저장 실패: '+error.message,true);
+  closeOv('ovColor'); toast('저장됨'); loadAll();
+});
+
+/* ---------- init ---------- */
+try{ const p=localStorage.getItem('fa_page'); if(p) gotoPage(p); }catch(e){}
 loadAll();
 </script>
 </body>
 </html>
+
