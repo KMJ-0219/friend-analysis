@@ -102,6 +102,17 @@ select.search-input{cursor:pointer}
 .fav-star{color:#454c66;font-size:15px}
 .fav-star.on{color:var(--star)}
 
+/* profile card grid (친구 목록) */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:11px}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px 12px;cursor:pointer;transition:.15s;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;position:relative}
+.pcard:hover{border-color:#4a5273;transform:translateY(-2px)}
+.pcard .fav{position:absolute;top:10px;right:11px;color:var(--star);font-size:12.5px}
+.pcard .av{width:58px;height:58px;border-radius:18px;background:var(--panel2);display:flex;align-items:center;justify-content:center;font-size:27px;overflow:hidden;border:1px solid var(--line)}
+.pcard .av img{width:100%;height:100%;object-fit:cover}
+.pcard .nm{font-weight:800;font-size:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard .sub{font-size:11px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pcard .tags{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+
 /* filter bar */
 .filterbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
 .filterbar .search-input{flex:1;min-width:150px}
@@ -273,7 +284,7 @@ select.search-input{cursor:pointer}
     <div class="dash-section">
       <div class="dash-head"><h3>전체 친구</h3><span class="count" id="allCount">0</span>
         <button class="more" id="toBrowse">검색·필터 →</button></div>
-      <div class="row-list" id="dashAllList"></div>
+      <div class="card-grid" id="dashAllList"></div>
     </div>
   </div>
 
@@ -297,7 +308,7 @@ select.search-input{cursor:pointer}
         <option value="recent">최근 수정순</option>
       </select>
     </div>
-    <div class="row-list" id="browseList"></div>
+    <div class="card-grid" id="browseList"></div>
   </div>
 </section>
 
@@ -316,6 +327,7 @@ select.search-input{cursor:pointer}
     <label class="slider-ctl">최소 강도 <input type="range" id="gStrength" min="1" max="5" value="1"><span id="gStrengthVal" style="font-family:var(--mono)">1</span></label>
     <label class="chkbox" id="gLabelsBox"><input type="checkbox" id="gLabels">관계 라벨</label>
     <label class="chkbox on" id="gIsoBox"><input type="checkbox" id="gIso" checked>고립 숨기기</label>
+    <label class="chkbox on" id="gInfoBox"><input type="checkbox" id="gInfoToggle" checked>정보창 표시</label>
     <button class="btn" id="gFit">전체 맞춤</button>
   </div>
   <div id="graphWrap">
@@ -403,11 +415,9 @@ select.search-input{cursor:pointer}
     <div class="dtabs">
       <button class="dtab on" data-dtab="0">개요</button>
       <button class="dtab" data-dtab="1">관계</button>
-      <button class="dtab" data-dtab="2">메모</button>
     </div>
     <div class="dpanel on" data-dpanel="0" id="dPanel0"></div>
     <div class="dpanel" data-dpanel="1" id="dPanel1"></div>
-    <div class="dpanel" data-dpanel="2" id="dPanel2"></div>
     <div class="modal-foot">
       <button class="btn danger left" id="dDelete">삭제</button>
       <button class="btn" data-close="ovDetail">닫기</button>
@@ -453,7 +463,7 @@ const S = {
   filterTags:new Set(), filterGroups:new Set(), filterFav:false,
   detailId:null, dTab:0, dDraft:null, dRelDraft:[],
   quickCat:null,
-  gFilterGroups:new Set(), gFilterTypes:new Set(),
+  gFilterGroups:new Set(), gFilterTypes:new Set(), gFoldGroups:new Set(), gHideInfo:false,
   gSelected:null, gSim:null, gZoom:null, gSvgG:null,
   colorCtx:null, colorPick:COLORS[0],
   recent: JSON.parse(localStorage.getItem('fa_recent')||'[]'),
@@ -472,6 +482,7 @@ function tagType(n){ return S.tagTypes.find(t=>t.name===n); }
 function friendById(id){ return S.friends.find(f=>f.id===id); }
 function relCount(f){ return f.relOut.length + f.relIn.length; }
 function avatarHtml(f){ return f.avatar_image_url ? `<img src="${esc(f.avatar_image_url)}">` : esc(f.avatar_emoji||'🙂'); }
+function nextColor(existing){ const used=new Set((existing||[]).map(x=>x.color).filter(Boolean)); for(const c of COLORS) if(!used.has(c)) return c; return COLORS[(existing||[]).length % COLORS.length]; }
 
 /* ---------- nav ---------- */
 function gotoPage(p){
@@ -550,6 +561,18 @@ function frow(f){
     </div>
   </div>`;
 }
+function pcard(f){
+  const tags = TAG_KINDS.flatMap(k=>f.tagsByType[k]||[]).slice(0,3);
+  const meta = [f.category?.label, f.groups.map(g=>g.name).join('·')].filter(Boolean).join(' · ');
+  return `<div class="pcard" onclick="openDetail('${f.id}')">
+    ${f.favorite?'<span class="fav">★</span>':''}
+    <div class="av">${avatarHtml(f)}</div>
+    <div class="nm">${esc(f.name)}</div>
+    <div class="stars">${starsHtml(f.rating||0)}</div>
+    <div class="sub">${esc(meta||'정보 없음')}</div>
+    ${tags.length?`<div class="tags">${tags.map(t=>`<span class="mini-tag">${esc(t.label)}</span>`).join('')}</div>`:''}
+  </div>`;
+}
 function renderDash(){
   const F = S.friends;
   const totalRel = S.relations.length;
@@ -587,7 +610,7 @@ function renderDash(){
   $('#dashSections').innerHTML = html;
 
   $('#allCount').textContent = F.length;
-  $('#dashAllList').innerHTML = F.length ? F.slice(0,8).map(frow).join('')
+  $('#dashAllList').innerHTML = F.length ? F.slice(0,12).map(pcard).join('')
     : `<div class="empty-note">아직 등록된 친구가 없습니다.<br>오른쪽 아래 ＋ 버튼으로 시작하세요.</div>`;
 }
 window.browseByGroup = gid => { S.filterGroups = new Set([gid]); renderFilterPop(); showBrowse(true); renderBrowse(); };
@@ -640,7 +663,7 @@ function renderBrowse(){
     return 0;
   });
   $('#browseCount').textContent = `${rows.length} / ${S.friends.length}`;
-  $('#browseList').innerHTML = rows.length ? rows.map(frow).join('') : `<div class="empty-note">조건에 맞는 친구가 없습니다.</div>`;
+  $('#browseList').innerHTML = rows.length ? rows.map(pcard).join('') : `<div class="empty-note">조건에 맞는 친구가 없습니다.</div>`;
 }
 $('#qSearch').addEventListener('input',renderBrowse);
 $('#qSort').addEventListener('change',renderBrowse);
@@ -689,7 +712,7 @@ window.openDetail = id => {
     tags:Object.fromEntries(TAG_KINDS.map(k=>[k,new Set((f.tagsByType[k]||[]).map(t=>t.id))])),
     groups:new Set(f.groups.map(g=>g.id)),
   };
-  S.dRelDraft = f.relOut.map(r=>({related_friend_id:r.related_friend_id, relationship_type_id:r.relationship_type_id, detail:r.detail||'', strength:r.strength||3}));
+  S.dRelDraft = f.relOut.map(r=>({related_friend_id:r.related_friend_id, relationship_type_id:r.relationship_type_id, detail:r.detail||'', strength:r.strength||3, mutual:false}));
   S.dTab=0;
   $$('.dtab').forEach((x,i)=>x.classList.toggle('on',i===0));
   $$('.dpanel').forEach((p,i)=>p.classList.toggle('on',i===0));
@@ -727,9 +750,13 @@ function renderDetail(){
   renderDetailHero();
   const d=S.dDraft, f=friendById(S.detailId);
 
-  /* 개요 */
-  const catItems = (tagType('분류')?.tags||[]).map(t=>({id:t.id,label:t.label}));
-  let p0 = `<div class="dsec"><div class="sl">기본</div>
+  /* 개요: 메모가 맨 위, 그 다음 기본정보 */
+  let p0 = `<div class="dsec"><div class="sl">메모</div>
+    <div class="field"><label>본문</label><textarea id="edDesc" placeholder="이 친구에 대한 소개">${esc(d.description)}</textarea></div>
+    <div class="field"><label>관계(글)</label><textarea id="edRelNote" placeholder="관계에 대한 자유 서술">${esc(d.relationship_note)}</textarea></div>
+    <div class="field"><label>기타사항</label><textarea id="edEtc">${esc(d.etc_note)}</textarea></div>
+  </div>`;
+  p0 += `<div class="dsec"><div class="sl">기본</div>
     <div class="field-row">
       <div class="field" style="flex:2"><label>이름</label><input type="text" id="edName" value="${esc(d.name)}"></div>
       <div class="field"><label>이모지</label><input type="text" id="edEmoji" value="${esc(d.avatar_emoji)}" placeholder="🙂"></div>
@@ -737,11 +764,15 @@ function renderDetail(){
     <div class="field"><label>이미지 URL</label><input type="text" id="edImg" value="${esc(d.avatar_image_url)}" placeholder="https://..."></div>
     <div class="field"><label>별점</label><div class="star-pick" id="edStars">${[1,2,3,4,5].map(i=>`<span class="${i<=d.rating?'on':''}" data-v="${i}">★</span>`).join('')}</div></div>
   </div>`;
+  const catItems = (tagType('분류')?.tags||[]).map(t=>({id:t.id,label:t.label}));
   p0 += pickerHtml('pk-분류','분류', catItems, id=>d.category_tag_id===id, true);
   for(const k of TAG_KINDS) p0 += pickerHtml('pk-'+k, k, (tagType(k)?.tags||[]).map(t=>({id:t.id,label:t.label})), id=>d.tags[k].has(id), true);
   p0 += pickerHtml('pk-groups','무리', S.groups.map(g=>({id:g.id,label:g.name,color:g.color})), id=>d.groups.has(id), true);
   $('#dPanel0').innerHTML = p0;
 
+  $('#edDesc').addEventListener('input',e=>{ d.description=e.target.value; });
+  $('#edRelNote').addEventListener('input',e=>{ d.relationship_note=e.target.value; });
+  $('#edEtc').addEventListener('input',e=>{ d.etc_note=e.target.value; });
   $('#edName').addEventListener('input',e=>{ d.name=e.target.value; });
   $('#edEmoji').addEventListener('input',e=>{ d.avatar_emoji=e.target.value; });
   $('#edImg').addEventListener('input',e=>{ d.avatar_image_url=e.target.value; });
@@ -769,18 +800,9 @@ function renderDetail(){
     const others = S.friends.filter(x=>x.id!==S.detailId);
     if(!others.length) return toast('다른 친구를 먼저 추가하세요',true);
     if(!S.relTypes.length) return toast('설정에서 관계유형을 먼저 추가하세요',true);
-    S.dRelDraft.push({related_friend_id:others[0].id, relationship_type_id:S.relTypes[0].id, detail:'', strength:3});
+    S.dRelDraft.push({related_friend_id:others[0].id, relationship_type_id:S.relTypes[0].id, detail:'', strength:3, mutual:false});
     renderRelEdits(); renderDetailHero();
   });
-
-  /* 메모 */
-  $('#dPanel2').innerHTML = `
-    <div class="field"><label>본문</label><textarea id="edDesc" placeholder="이 친구에 대한 소개">${esc(d.description)}</textarea></div>
-    <div class="field"><label>관계(글)</label><textarea id="edRelNote" placeholder="관계에 대한 자유 서술">${esc(d.relationship_note)}</textarea></div>
-    <div class="field"><label>기타사항</label><textarea id="edEtc">${esc(d.etc_note)}</textarea></div>`;
-  $('#edDesc').addEventListener('input',e=>{ d.description=e.target.value; });
-  $('#edRelNote').addEventListener('input',e=>{ d.relationship_note=e.target.value; });
-  $('#edEtc').addEventListener('input',e=>{ d.etc_note=e.target.value; });
 }
 function bindPicker(gridId, kind, mode){
   const grid = $('#'+gridId); if(!grid) return;
@@ -809,7 +831,7 @@ function bindPicker(gridId, kind, mode){
   if(addBtn) addBtn.addEventListener('click',async()=>{
     const inp=$('#'+gridId+'-new'); const label=inp.value.trim(); if(!label) return;
     if(mode==='group'){
-      const color=COLORS[S.groups.length%COLORS.length];
+      const color=nextColor(S.groups);
       const {data,error}=await sb.from('groups').insert({name:label,color}).select().single();
       if(error) return toast('추가 실패: '+error.message,true);
       S.groups.push(data); d.groups.add(data.id);
@@ -837,6 +859,7 @@ function renderRelEdits(){
         <div><label>설명</label><input type="text" data-f="detail" value="${esc(r.detail)}" placeholder="예: 초등학교 동창"></div>
         <div><label>강도</label><select data-f="strength">${[1,2,3,4,5].map(n=>`<option value="${n}" ${n===r.strength?'selected':''}>${n}</option>`).join('')}</select></div>
       </div>
+      <label class="chkbox ${r.mutual?'on':''}" style="margin-top:9px"><input type="checkbox" data-f="mutual" ${r.mutual?'checked':''}>양쪽 모두 적용 (반대방향 자동 생성)</label>
     </div>`).join('') || `<div class="hint" style="margin-bottom:9px">등록된 관계가 없습니다.</div>`;
   wrap.querySelectorAll('.rel-edit').forEach(row=>{
     const i=Number(row.dataset.i);
@@ -844,6 +867,7 @@ function renderRelEdits(){
     row.querySelector('[data-f=type]').addEventListener('change',e=>S.dRelDraft[i].relationship_type_id=e.target.value);
     row.querySelector('[data-f=detail]').addEventListener('input',e=>S.dRelDraft[i].detail=e.target.value);
     row.querySelector('[data-f=strength]').addEventListener('change',e=>S.dRelDraft[i].strength=Number(e.target.value));
+    row.querySelector('[data-f=mutual]').addEventListener('change',e=>{ S.dRelDraft[i].mutual=e.target.checked; e.target.closest('.chkbox').classList.toggle('on',e.target.checked); });
     row.querySelector('[data-f=del]').addEventListener('click',()=>{ S.dRelDraft.splice(i,1); renderRelEdits(); renderDetailHero(); });
   });
 }
@@ -865,6 +889,12 @@ $('#dSave').addEventListener('click',async()=>{
   await sb.from('friend_relationships').delete().eq('friend_id',id);
   const valid=S.dRelDraft.filter(r=>r.related_friend_id&&r.relationship_type_id);
   if(valid.length) await sb.from('friend_relationships').insert(valid.map(r=>({friend_id:id,related_friend_id:r.related_friend_id,relationship_type_id:r.relationship_type_id,detail:r.detail||null,strength:r.strength||3})));
+  const mutuals = valid.filter(r=>r.mutual);
+  for(const r of mutuals){
+    const dupExists = S.relations.some(x=>x.friend_id===r.related_friend_id && x.related_friend_id===id && x.relationship_type_id===r.relationship_type_id);
+    if(dupExists) continue;
+    await sb.from('friend_relationships').insert({friend_id:r.related_friend_id, related_friend_id:id, relationship_type_id:r.relationship_type_id, detail:r.detail||null, strength:r.strength||3});
+  }
   closeOv('ovDetail'); toast('저장됨'); loadAll();
 });
 $('#dDelete').addEventListener('click',async()=>{
@@ -887,16 +917,20 @@ function renderGraphControls(){
     ${S.groups.map(g=>`<button class="pill ${S.gFilterGroups.has(g.id)?'on':''}" data-gg="${g.id}"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</button>`).join('')}</div></div>`;
   if(S.relTypes.length) html += `<div class="sec"><div class="lbl">관계유형</div><div class="toggle-grid">
     ${S.relTypes.map(t=>`<button class="pill ${S.gFilterTypes.has(t.id)?'on':''}" data-gt="${t.id}"><span class="color-dot" style="background:${esc(t.color||'#666')}"></span>${esc(t.label)}</button>`).join('')}</div></div>`;
+  if(S.groups.length) html += `<div class="sec"><div class="lbl">무리를 폴더로 접기</div><div class="toggle-grid">
+    ${S.groups.map(g=>`<button class="pill ${S.gFoldGroups.has(g.id)?'on':''}" data-gfold="${g.id}">📁 ${esc(g.name)}</button>`).join('')}</div></div>`;
   pop.innerHTML = html || '<div class="hint">필터할 무리·관계유형이 없습니다.</div>';
   pop.querySelectorAll('[data-gg]').forEach(b=>b.addEventListener('click',()=>{ const i=b.dataset.gg; S.gFilterGroups.has(i)?S.gFilterGroups.delete(i):S.gFilterGroups.add(i); renderGraphControls(); renderGraph(); }));
   pop.querySelectorAll('[data-gt]').forEach(b=>b.addEventListener('click',()=>{ const i=b.dataset.gt; S.gFilterTypes.has(i)?S.gFilterTypes.delete(i):S.gFilterTypes.add(i); renderGraphControls(); renderGraph(); }));
-  const n=S.gFilterGroups.size+S.gFilterTypes.size;
+  pop.querySelectorAll('[data-gfold]').forEach(b=>b.addEventListener('click',()=>{ const i=b.dataset.gfold; S.gFoldGroups.has(i)?S.gFoldGroups.delete(i):S.gFoldGroups.add(i); renderGraphControls(); renderGraph(); }));
+  const n=S.gFilterGroups.size+S.gFilterTypes.size+S.gFoldGroups.size;
   $('#gFilterBadge').textContent = n?` (${n})`:'';
 }
 ['#gFocus','#gDepth'].forEach(s=>$(s).addEventListener('change',renderGraph));
 $('#gStrength').addEventListener('input',e=>{ $('#gStrengthVal').textContent=e.target.value; renderGraph(); });
 $('#gLabels').addEventListener('change',e=>{ $('#gLabelsBox').classList.toggle('on',e.target.checked); renderGraph(); });
 $('#gIso').addEventListener('change',e=>{ $('#gIsoBox').classList.toggle('on',e.target.checked); renderGraph(); });
+$('#gInfoToggle').addEventListener('change',e=>{ S.gHideInfo=!e.target.checked; $('#gInfoBox').classList.toggle('on',e.target.checked); renderGraph(); });
 $('#gFit').addEventListener('click',()=>{ S.gSelected=null; renderGraph(); });
 
 function renderGraph(){
@@ -941,11 +975,32 @@ function renderGraph(){
     renderGraphLegend(); return;
   }
 
-  const nodes = pool.map(f=>({id:f.id, name:f.name, emoji:f.avatar_emoji||'🙂',
-    groups:f.groups, color:f.groups[0]?.color||'#5b6178', deg:0, fav:f.favorite, rating:f.rating||0}));
+  const poolIds = new Set(pool.map(f=>f.id));
+  const foldOf = {};
+  pool.forEach(f=>{
+    const fg = f.groups.find(g=>S.gFoldGroups.has(g.id));
+    if(fg) foldOf[f.id] = 'folder:'+fg.id;
+  });
+  const folderMembers = {};
+  pool.forEach(f=>{ const fid=foldOf[f.id]; if(fid) (folderMembers[fid]=folderMembers[fid]||[]).push(f); });
+  const nodeMap = {};
+  pool.forEach(f=>{ if(!foldOf[f.id]) nodeMap[f.id]={id:f.id, name:f.name, emoji:f.avatar_emoji||'🙂', groups:f.groups, color:f.groups[0]?.color||'#5b6178', deg:0, fav:f.favorite, rating:f.rating||0, isFolder:false}; });
+  Object.entries(folderMembers).forEach(([fid,members])=>{
+    const gid=fid.slice(7); const g=S.groups.find(x=>x.id===gid);
+    nodeMap[fid]={id:fid, name:`${g?g.name:'무리'} (${members.length}명)`, emoji:'📁', groups:g?[g]:[], color:g?.color||'#5b6178', deg:0, fav:false, rating:0, isFolder:true, members};
+  });
+  const nodes = Object.values(nodeMap);
   const nodeIds=new Set(nodes.map(n=>n.id));
-  const edges = links.filter(r=>nodeIds.has(r.friend_id)&&nodeIds.has(r.related_friend_id))
-    .map(r=>({source:r.friend_id, target:r.related_friend_id, color:r.type?.color||'#7a8197', label:r.type?.label||'', strength:r.strength||3, detail:r.detail||''}));
+
+  const edgeMap={};
+  links.filter(r=>poolIds.has(r.friend_id)&&poolIds.has(r.related_friend_id)).forEach(r=>{
+    const s=foldOf[r.friend_id]||r.friend_id, t=foldOf[r.related_friend_id]||r.related_friend_id;
+    if(s===t || !nodeIds.has(s) || !nodeIds.has(t)) return;
+    const key=s+'→'+t, lbl=r.type?.label||'';
+    if(!edgeMap[key]) edgeMap[key]={source:s, target:t, color:r.type?.color||'#7a8197', labels:new Set(lbl?[lbl]:[]), strength:r.strength||3, detail:r.detail||'', n:1};
+    else { const e=edgeMap[key]; e.n++; e.strength=Math.max(e.strength,r.strength||3); if(lbl) e.labels.add(lbl); }
+  });
+  const edges = Object.values(edgeMap).map(e=>({...e, label:[...e.labels].join('·')+(e.n>1?` ×${e.n}`:'')}));
   const degMap={}; edges.forEach(e=>{ degMap[e.source]=(degMap[e.source]||0)+1; degMap[e.target]=(degMap[e.target]||0)+1; });
   nodes.forEach(n=>n.deg=degMap[n.id]||0);
 
@@ -982,7 +1037,7 @@ function renderGraph(){
       .on('drag',(ev,d)=>{ d.fx=ev.x; d.fy=ev.y; })
       .on('end',(ev,d)=>{ if(!ev.active) S.gSim.alphaTarget(0); d.fx=null; d.fy=null; }))
     .on('click',(ev,d)=>{ ev.stopPropagation(); S.gSelected = S.gSelected===d.id?null:d.id; applyHighlight(); })
-    .on('dblclick',(ev,d)=>{ ev.stopPropagation(); openDetail(d.id); });
+    .on('dblclick',(ev,d)=>{ ev.stopPropagation(); if(d.isFolder){ const gid=d.id.slice(7); S.gFoldGroups.delete(gid); renderGraphControls(); renderGraph(); } else openDetail(d.id); });
 
   node.each(function(d){
     const sel=d3.select(this);
@@ -994,7 +1049,8 @@ function renderGraph(){
         .attr('d',arc).attr('fill',x=>x.data.color||'#5b6178');
     }
     sel.append('circle').attr('r',r).attr('fill','#1e2230')
-      .attr('stroke',d.color).attr('stroke-width',d.groups.length>1?2:3);
+      .attr('stroke',d.color).attr('stroke-width',d.groups.length>1?2:(d.isFolder?4:3))
+      .attr('stroke-dasharray',d.isFolder?'4,2':null);
     sel.append('text').attr('text-anchor','middle').attr('dy','.34em').attr('font-size',(r*0.85)+'px').text(d.emoji);
     sel.append('text').attr('class','node-label').attr('text-anchor','middle').attr('dy',r+15)
       .text(d.name + (d.fav?' ★':''));
@@ -1017,16 +1073,25 @@ function renderGraph(){
       return (s===sel||t===sel)?.95:.05; });
     elabel.style('opacity',d=>{ const s=d.source.id||d.source, t=d.target.id||d.target;
       return (s===sel||t===sel)?1:.05; });
-    const f=friendById(sel);
+    if(S.gHideInfo){ $('#graphInfo').className='graph-info'; return; }
     const conn=edges.filter(e=>{ const s=e.source.id||e.source,t=e.target.id||e.target; return s===sel||t===sel; });
+    const nd = nodeMap[sel];
     $('#graphInfo').className='graph-info on';
-    $('#graphInfo').innerHTML = `<span class="gi-name">${esc(f.name)}</span>
-      <span class="stars">${starsHtml(f.rating||0)}</span>
-      <span style="color:var(--muted)">연결 ${conn.length}개 · ${esc(f.groups.map(g=>g.name).join(', ')||'무리 없음')}</span>
-      <button class="btn sm primary" style="margin-left:auto" onclick="openDetail('${sel}')">상세 보기</button>
-      <button class="btn sm" onclick="setFocus('${sel}')">중심으로</button>`;
+    if(nd && nd.isFolder){
+      $('#graphInfo').innerHTML = `<span class="gi-name">📁 ${esc(nd.name)}</span>
+        <span style="color:var(--muted)">연결 ${conn.length}개 · 폴더 안 ${nd.members.length}명</span>
+        <button class="btn sm primary" style="margin-left:auto" onclick="unfoldGroup('${sel.slice(7)}')">펼치기</button>`;
+    }else{
+      const f=friendById(sel);
+      $('#graphInfo').innerHTML = `<span class="gi-name">${esc(f.name)}</span>
+        <span class="stars">${starsHtml(f.rating||0)}</span>
+        <span style="color:var(--muted)">연결 ${conn.length}개 · ${esc(f.groups.map(g=>g.name).join(', ')||'무리 없음')}</span>
+        <button class="btn sm primary" style="margin-left:auto" onclick="openDetail('${sel}')">상세 보기</button>
+        <button class="btn sm" onclick="setFocus('${sel}')">중심으로</button>`;
+    }
   }
   window.setFocus = id => { $('#gFocus').value=id; S.gSelected=null; renderGraph(); };
+  window.unfoldGroup = gid => { S.gFoldGroups.delete(gid); renderGraphControls(); renderGraph(); };
 
   S.gSim.on('tick',()=>{
     link.attr('x1',d=>d.source.x).attr('y1',d=>d.source.y).attr('x2',d=>d.target.x).attr('y2',d=>d.target.y);
@@ -1043,7 +1108,7 @@ function renderGraphLegend(){
     <div class="lg-sec"><div class="lg-title">무리 (테두리)</div>
       ${S.groups.length?S.groups.map(g=>`<div class="lg-row"><span class="color-dot" style="background:${esc(g.color||'#666')}"></span>${esc(g.name)}</div>`).join(''):'<div style="color:var(--muted)">없음</div>'}</div>
     <div class="lg-sec"><div class="lg-title">읽는 법</div>
-      <div style="color:var(--muted);line-height:1.5">원 크기 = 연결 수<br>선 굵기 = 관계 강도<br>화살표 = 관계 방향</div></div>`;
+      <div style="color:var(--muted);line-height:1.5">원 크기 = 연결 수<br>선 굵기 = 관계 강도<br>화살표 = 관계 방향<br>📁 점선 원 = 접힌 무리 폴더</div></div>`;
 }
 window.addEventListener('resize',()=>{ if(S.page==='graph') renderGraph(); });
 
@@ -1139,13 +1204,13 @@ function renderSettings(){
 }
 $('#setGroupAdd').addEventListener('click',async()=>{
   const name=$('#setGroupNew').value.trim(); if(!name) return;
-  const {error}=await sb.from('groups').insert({name,color:COLORS[S.groups.length%COLORS.length]});
+  const {error}=await sb.from('groups').insert({name,color:nextColor(S.groups)});
   if(error) return toast('추가 실패: '+error.message,true);
   $('#setGroupNew').value=''; toast('추가됨'); loadAll();
 });
 $('#setRelAdd').addEventListener('click',async()=>{
   const label=$('#setRelNew').value.trim(); if(!label) return;
-  const {error}=await sb.from('relationship_types').insert({label,color:COLORS[S.relTypes.length%COLORS.length]});
+  const {error}=await sb.from('relationship_types').insert({label,color:nextColor(S.relTypes)});
   if(error) return toast('추가 실패: '+error.message,true);
   $('#setRelNew').value=''; toast('추가됨'); loadAll();
 });
@@ -1175,4 +1240,5 @@ loadAll();
 </script>
 </body>
 </html>
+
 
