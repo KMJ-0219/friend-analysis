@@ -122,10 +122,35 @@ select.search-input{cursor:pointer}
 .inline-new input{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;outline:none;font-size:12.5px}
 .star-pick{display:flex;gap:4px;font-size:22px;color:#3a3f52;cursor:pointer}
 .star-pick span.on{color:var(--star)}
-.rel-row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px}
-.rel-row .rr-top{display:flex;gap:8px;margin-bottom:8px}
-.rel-row select,.rel-row input{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:6px 8px;font-size:12.5px}
-.rel-row .rr-del{margin-left:auto}
+
+/* form sections */
+.form-section{background:#171a24;border:1px solid var(--line);border-radius:12px;padding:15px 16px 3px;margin-bottom:12px}
+.form-section-title{font-size:11.5px;font-weight:800;color:var(--accent2);letter-spacing:.04em;margin-bottom:13px;display:flex;align-items:center;gap:7px}
+.form-section-title::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent2);flex-shrink:0}
+
+/* combo (tag/group token input) */
+.combo{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:6px 7px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;position:relative;transition:border-color .15s;min-height:40px}
+.combo:focus-within{border-color:var(--accent)}
+.combo-chip{display:inline-flex;align-items:center;gap:5px;background:var(--panel2);border:1px solid var(--line);border-radius:20px;padding:5px 5px 5px 11px;font-size:12.5px;font-weight:600}
+.combo-chip .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.combo-chip .x{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:10px}
+.combo-chip .x:hover{background:#3a3f52;color:#fff}
+.combo-input{flex:1;min-width:90px;background:transparent;border:none;outline:none;padding:5px 3px;font-size:13px}
+.combo-drop{position:absolute;top:calc(100% + 5px);left:0;right:0;background:var(--bg2);border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 28px #000a;max-height:190px;overflow-y:auto;z-index:60;display:none}
+.combo-drop.on{display:block}
+.combo-opt{padding:9px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px}
+.combo-opt:hover{background:var(--panel2)}
+.combo-opt.create{color:var(--accent2);font-weight:700;border-top:1px solid var(--line)}
+.combo-empty{padding:10px 12px;color:var(--muted);font-size:12.5px}
+
+/* relationship builder */
+.rel-row{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:8px;position:relative}
+.rel-row .rr-del{position:absolute;top:9px;right:9px}
+.rel-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:9px;padding-right:30px}
+.rel-detail-row{display:grid;grid-template-columns:1fr 92px;gap:9px}
+.rel-row .rf label{font-size:10.5px;color:var(--muted);font-weight:700;display:block;margin-bottom:4px}
+.rel-row select,.rel-row input{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font-size:12.5px;outline:none}
+.rel-row select:focus,.rel-row input:focus{border-color:var(--accent)}
 
 /* detail modal */
 .detail-head{display:flex;align-items:center;gap:12px;margin-bottom:14px}
@@ -262,62 +287,78 @@ select.search-input{cursor:pointer}
   <div class="modal" style="max-width:640px">
     <h2 id="frTitle">친구 추가 <button class="icon-btn x" data-close="ovFriend">✕</button></h2>
 
-    <div class="field-row">
-      <div class="field" style="flex:2">
-        <label>이름</label>
-        <input type="text" id="frName" placeholder="이름">
+    <div class="form-section">
+      <div class="form-section-title">기본 정보</div>
+      <div class="field-row">
+        <div class="field" style="flex:2">
+          <label>이름</label>
+          <input type="text" id="frName" placeholder="이름">
+        </div>
+        <div class="field" style="flex:1.4">
+          <label>분류</label>
+          <div class="combo" id="frCategoryCombo"></div>
+        </div>
       </div>
+      <div class="field-row">
+        <div class="field">
+          <label>아바타 이모지</label>
+          <input type="text" id="frEmoji" placeholder="🙂 (비우면 분류 기본값)">
+        </div>
+        <div class="field" style="flex:2">
+          <label>아바타 이미지 URL (선택)</label>
+          <input type="text" id="frImg" placeholder="https://...">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">소개</div>
       <div class="field">
-        <label>분류</label>
-        <select id="frCategory"><option value="">선택 안 함</option></select>
+        <textarea id="frDesc" placeholder="이 친구에 대한 소개"></textarea>
       </div>
     </div>
-    <div class="field-row">
+
+    <div class="form-section">
+      <div class="form-section-title">태그</div>
+      <div id="frTagPickers"></div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">무리</div>
       <div class="field">
-        <label>아바타 이모지</label>
-        <input type="text" id="frEmoji" placeholder="🙂 (비우면 분류 기본값)">
-      </div>
-      <div class="field" style="flex:2">
-        <label>아바타 이미지 URL (선택)</label>
-        <input type="text" id="frImg" placeholder="https://...">
+        <div class="combo" id="frGroupCombo"></div>
       </div>
     </div>
 
-    <div class="field">
-      <label>본문</label>
-      <textarea id="frDesc" placeholder="이 친구에 대한 소개"></textarea>
-    </div>
-
-    <div id="frTagPickers"></div>
-
-    <div class="field">
-      <label>무리</label>
-      <div class="pick-box" id="frGroupPick"></div>
-    </div>
-
-    <div class="field">
-      <label>인간관계</label>
+    <div class="form-section">
+      <div class="form-section-title">인간관계</div>
       <div id="frRelList"></div>
-      <button class="btn sm" id="frAddRel">＋ 관계 추가</button>
+      <button class="btn sm" id="frAddRel" style="margin-bottom:12px">＋ 관계 추가</button>
     </div>
 
-    <div class="field">
-      <label>관계(글)</label>
-      <textarea id="frRelNote" placeholder="관계에 대한 자유 서술"></textarea>
-    </div>
-    <div class="field">
-      <label>기타사항</label>
-      <textarea id="frEtc"></textarea>
-    </div>
-
-    <div class="field-row">
+    <div class="form-section">
+      <div class="form-section-title">메모</div>
       <div class="field">
-        <label>별점</label>
-        <div class="star-pick" id="frStars"></div>
+        <label>관계(글)</label>
+        <textarea id="frRelNote" placeholder="관계에 대한 자유 서술"></textarea>
       </div>
       <div class="field">
-        <label>즐겨찾기</label>
-        <button class="toggle-chip" id="frFavToggle" style="margin-top:2px">★ 즐겨찾기</button>
+        <label>기타사항</label>
+        <textarea id="frEtc"></textarea>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-section-title">평가</div>
+      <div class="field-row">
+        <div class="field">
+          <label>별점</label>
+          <div class="star-pick" id="frStars"></div>
+        </div>
+        <div class="field">
+          <label>즐겨찾기</label>
+          <button class="toggle-chip" id="frFavToggle" style="margin-top:2px">★ 즐겨찾기</button>
+        </div>
       </div>
     </div>
 
@@ -451,6 +492,7 @@ const S = {
   relTypes: [],
   friends: [],        // enriched: {..., tagsByType:{name:[tag,...]}, category, groups:[...], relOut:[...], relIn:[...]}
   editingFriendId: null,
+  pickedCategory: null,
   pickedTags: {},     // tagTypeName -> Set(tagId)
   pickedGroups: new Set(),
   relDraft: [],        // [{related_friend_id, relationship_type_id, detail, strength, _existingId}]
@@ -648,60 +690,115 @@ window.toggleFav = async (id) => {
 /* =====================================================
    친구 편집 모달
 ===================================================== */
-function renderFrCategorySelect(selId){
-  const cat = tagTypeByName('분류');
-  const sel = $('#frCategory');
-  sel.innerHTML = '<option value="">선택 안 함</option>' + (cat ? cat.tags.map(t=>`<option value="${t.id}">${esc(t.label)}</option>`).join('') : '');
-  sel.value = selId || '';
+/* ---- generic combo (chip token input with search + inline create) ---- */
+function initCombo(elId, {getAll, isSelected, multi, onToggle, onCreate, placeholder}){
+  const root = $('#'+elId);
+  root.innerHTML = `<div class="combo-drop"></div><input class="combo-input" placeholder="${esc(placeholder||'검색 또는 입력')}">`;
+  const inputEl = root.querySelector('.combo-input');
+  const dropEl = root.querySelector('.combo-drop');
+
+  function renderChips(){
+    root.querySelectorAll('.combo-chip').forEach(c => c.remove());
+    const selected = getAll().filter(it => isSelected(it.id));
+    selected.forEach(it => {
+      const chip = document.createElement('span');
+      chip.className = 'combo-chip';
+      chip.innerHTML = `${it.color ? `<span class="dot" style="background:${esc(it.color)}"></span>` : ''}${esc(it.label)}<span class="x" data-remove="${it.id}">✕</span>`;
+      chip.querySelector('.x').addEventListener('click', e => { e.stopPropagation(); onToggle(it.id, false); renderChips(); renderDrop(); });
+      root.insertBefore(chip, inputEl);
+    });
+  }
+  function renderDrop(){
+    const q = inputEl.value.trim().toLowerCase();
+    const all = getAll();
+    const filtered = all.filter(it => !isSelected(it.id) && it.label.toLowerCase().includes(q));
+    const exact = all.some(it => it.label.toLowerCase() === q);
+    let html = filtered.map(it => `<div class="combo-opt" data-id="${it.id}">${it.color?`<span class="dot" style="background:${esc(it.color)}"></span>`:''}${esc(it.label)}</div>`).join('');
+    if(q && !exact) html += `<div class="combo-opt create" data-create="1">＋ '${esc(inputEl.value.trim())}' 새로 추가</div>`;
+    dropEl.innerHTML = html || `<div class="combo-empty">${q ? '일치하는 항목 없음' : (all.length ? '입력해서 검색하거나 새로 추가하세요' : '아직 없음 — 입력해서 추가하세요')}</div>`;
+    dropEl.querySelectorAll('[data-id]').forEach(o => o.addEventListener('click', () => {
+      onToggle(o.dataset.id, true);
+      inputEl.value = '';
+      renderChips();
+      if(!multi){ closeDrop(); } else renderDrop();
+      inputEl.focus();
+    }));
+    const createOpt = dropEl.querySelector('[data-create]');
+    if(createOpt) createOpt.addEventListener('click', async () => {
+      const label = inputEl.value.trim();
+      const newId = await onCreate(label);
+      if(newId){ onToggle(newId, true); inputEl.value=''; renderChips(); if(!multi) closeDrop(); else renderDrop(); }
+      inputEl.focus();
+    });
+  }
+  function openDrop(){ dropEl.classList.add('on'); renderDrop(); }
+  function closeDrop(){ dropEl.classList.remove('on'); }
+  inputEl.addEventListener('focus', openDrop);
+  inputEl.addEventListener('input', renderDrop);
+  document.addEventListener('click', e => { if(!root.contains(e.target)) closeDrop(); });
+  renderChips();
+}
+
+function categoryItems(){ const tt = tagTypeByName('분류'); return tt ? tt.tags.map(t=>({id:t.id, label:t.label})) : []; }
+function tagItemsFor(name){ const tt = tagTypeByName(name); return tt ? tt.tags.map(t=>({id:t.id, label:t.label})) : []; }
+function groupItems(){ return S.groups.map(g=>({id:g.id, label:g.name, color:g.color||'#666'})); }
+
+function renderFrCategoryCombo(selId){
+  S.pickedCategory = selId || null;
+  initCombo('frCategoryCombo', {
+    getAll: categoryItems,
+    isSelected: id => S.pickedCategory === id,
+    multi: false,
+    onToggle: (id, sel) => { S.pickedCategory = sel ? id : (S.pickedCategory === id ? null : S.pickedCategory); },
+    onCreate: async label => {
+      const tt = tagTypeByName('분류'); if(!tt) return null;
+      const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
+      if(error){ toast('추가 실패: '+error.message, true); return null; }
+      tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
+      return data.id;
+    },
+    placeholder: '분류 검색 또는 새로 추가',
+  });
 }
 function renderFrTagPickers(){
   const wrap = $('#frTagPickers');
-  wrap.innerHTML = NON_CATEGORY_ORDER.map(tn => {
-    const tt = tagTypeByName(tn);
-    const tagId = tt?.id;
-    const items = tt ? tt.tags : [];
-    return `<div class="field">
+  wrap.innerHTML = NON_CATEGORY_ORDER.map(tn => `
+    <div class="field">
       <label>${esc(tn)}</label>
-      <div class="pick-box" data-typename="${esc(tn)}">
-        ${items.length ? items.map(t => `<label class="pick-row"><input type="checkbox" data-tid="${t.id}" data-typename="${esc(tn)}" ${S.pickedTags[tn]?.has(t.id)?'checked':''}><b>${esc(t.label)}</b></label>`).join('')
-          : `<div style="padding:8px;color:var(--muted);font-size:12px">아직 없음</div>`}
-      </div>
-      <div class="inline-new">
-        <input type="text" placeholder="새 ${esc(tn)} 추가" data-newfor="${esc(tn)}">
-        <button class="btn sm" data-addfor="${esc(tn)}">추가</button>
-      </div>
-    </div>`;
-  }).join('');
-  wrap.querySelectorAll('input[type=checkbox]').forEach(ch => ch.addEventListener('change', () => {
-    const tn = ch.dataset.typename;
-    S.pickedTags[tn] = S.pickedTags[tn] || new Set();
-    ch.checked ? S.pickedTags[tn].add(ch.dataset.tid) : S.pickedTags[tn].delete(ch.dataset.tid);
-  }));
-  wrap.querySelectorAll('[data-addfor]').forEach(btn => btn.addEventListener('click', async () => {
-    const tn = btn.dataset.addfor;
-    const inp = wrap.querySelector(`input[data-newfor="${tn}"]`);
-    const label = inp.value.trim();
-    if(!label) return;
-    let tt = tagTypeByName(tn);
-    if(!tt){ toast('태그 유형이 없습니다: '+tn, true); return; }
-    const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
-    if(error) return toast('추가 실패: '+error.message, true);
-    tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
-    S.pickedTags[tn] = S.pickedTags[tn] || new Set(); S.pickedTags[tn].add(data.id);
-    inp.value = '';
-    renderFrTagPickers();
-    toast('추가 및 선택됨');
-  }));
+      <div class="combo" id="combo-${esc(tn)}"></div>
+    </div>`).join('');
+  NON_CATEGORY_ORDER.forEach(tn => {
+    initCombo('combo-'+tn, {
+      getAll: () => tagItemsFor(tn),
+      isSelected: id => S.pickedTags[tn]?.has(id),
+      multi: true,
+      onToggle: (id, sel) => { S.pickedTags[tn] = S.pickedTags[tn] || new Set(); sel ? S.pickedTags[tn].add(id) : S.pickedTags[tn].delete(id); },
+      onCreate: async label => {
+        const tt = tagTypeByName(tn); if(!tt){ toast('태그 유형이 없습니다: '+tn, true); return null; }
+        const { data, error } = await sb.from('tags').insert({tag_type_id: tt.id, label}).select().single();
+        if(error){ toast('추가 실패: '+error.message, true); return null; }
+        tt.tags.push(data); tt.tags.sort((a,b)=>a.label.localeCompare(b.label));
+        return data.id;
+      },
+      placeholder: tn + ' 검색 또는 새로 추가',
+    });
+  });
 }
-function renderFrGroupPick(){
-  const box = $('#frGroupPick');
-  box.innerHTML = S.groups.length ? S.groups.map(g => `
-    <label class="pick-row"><input type="checkbox" data-gid="${g.id}" ${S.pickedGroups.has(g.id)?'checked':''}>
-      <span class="color-dot" style="background:${esc(g.color||'#666')}"></span><b>${esc(g.name)}</b></label>`).join('')
-    : `<div style="padding:8px;color:var(--muted);font-size:12px">등록된 무리가 없습니다. 「무리 관리」 탭에서 추가하세요.</div>`;
-  box.querySelectorAll('input').forEach(ch => ch.addEventListener('change', () => {
-    ch.checked ? S.pickedGroups.add(ch.dataset.gid) : S.pickedGroups.delete(ch.dataset.gid);
-  }));
+function renderFrGroupCombo(){
+  initCombo('frGroupCombo', {
+    getAll: groupItems,
+    isSelected: id => S.pickedGroups.has(id),
+    multi: true,
+    onToggle: (id, sel) => { sel ? S.pickedGroups.add(id) : S.pickedGroups.delete(id); },
+    onCreate: async label => {
+      const color = COLORS[S.groups.length % COLORS.length];
+      const { data, error } = await sb.from('groups').insert({name: label, color}).select().single();
+      if(error){ toast('추가 실패: '+error.message, true); return null; }
+      S.groups.push(data);
+      return data.id;
+    },
+    placeholder: '무리 검색 또는 새로 추가',
+  });
 }
 function renderFrStars(){
   const box = $('#frStars');
@@ -722,16 +819,16 @@ function renderFrRelList(){
   const excludeId = S.editingFriendId;
   wrap.innerHTML = S.relDraft.map((r, idx) => `
     <div class="rel-row" data-idx="${idx}">
-      <div class="rr-top">
-        <select data-f="friend">${friendOptionsHtml(excludeId, r.related_friend_id)}</select>
-        <select data-f="type">${relTypeOptionsHtml(r.relationship_type_id)}</select>
-        <button class="icon-btn del rr-del" data-f="del">🗑</button>
+      <button class="icon-btn del rr-del" data-f="del">🗑</button>
+      <div class="rel-grid">
+        <div class="rf"><label>대상 친구</label><select data-f="friend">${friendOptionsHtml(excludeId, r.related_friend_id)}</select></div>
+        <div class="rf"><label>관계유형</label><select data-f="type">${relTypeOptionsHtml(r.relationship_type_id)}</select></div>
       </div>
-      <div class="rr-top">
-        <input type="text" data-f="detail" placeholder="관계 설명" value="${esc(r.detail||'')}" style="flex:1">
-        <input type="number" data-f="strength" min="1" max="5" value="${r.strength||3}" style="width:56px" title="강도(1-5)">
+      <div class="rel-detail-row">
+        <div class="rf"><label>설명</label><input type="text" data-f="detail" placeholder="예: 초등학교 동창" value="${esc(r.detail||'')}"></div>
+        <div class="rf"><label>강도(1~5)</label><input type="number" data-f="strength" min="1" max="5" value="${r.strength||3}"></div>
       </div>
-    </div>`).join('') || `<div style="color:var(--muted);font-size:12.5px;padding:6px 0">등록된 관계가 없습니다.</div>`;
+    </div>`).join('') || `<div style="color:var(--muted);font-size:12.5px;padding:6px 0 12px">등록된 관계가 없습니다.</div>`;
   wrap.querySelectorAll('.rel-row').forEach(row => {
     const idx = Number(row.dataset.idx);
     row.querySelector('[data-f=friend]').addEventListener('change', e => S.relDraft[idx].related_friend_id = e.target.value);
@@ -767,9 +864,9 @@ function openFriendModal(f = null){
   $('#frEtc').value = f?.etc_note || '';
   $('#frFavToggle').classList.toggle('on', S.favVal);
 
-  renderFrCategorySelect(f?.category_tag_id);
+  renderFrCategoryCombo(f?.category_tag_id);
   renderFrTagPickers();
-  renderFrGroupPick();
+  renderFrGroupCombo();
   renderFrStars();
   renderFrRelList();
   openOv('ovFriend');
@@ -794,7 +891,7 @@ $('#frSave').addEventListener('click', async () => {
     name,
     avatar_emoji: $('#frEmoji').value.trim() || null,
     avatar_image_url: $('#frImg').value.trim() || null,
-    category_tag_id: $('#frCategory').value || null,
+    category_tag_id: S.pickedCategory || null,
     description: $('#frDesc').value.trim() || null,
     relationship_note: $('#frRelNote').value.trim() || null,
     etc_note: $('#frEtc').value.trim() || null,
