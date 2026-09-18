@@ -3,181 +3,178 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>인간관계 대장 — Dossier</title>
+<title>사람 서랍 — People Ledger</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root{
-  --cork-1:#2b2420;
-  --cork-2:#3a3128;
-  --card:#f3ead4;
-  --card-edge:#e3d6b3;
-  --ink:#241c14;
-  --ink-soft:#5c5142;
-  --pin-red:#b3402c;
-  --thread:#b3402c;
-  --accent:#8a6d3b;
-  --line:#d8c99e;
-  --danger:#a33;
-  --radius:3px;
+  --bg:#171a21;
+  --panel:#1e222c;
+  --panel-2:#262b38;
+  --card:#20242e;
+  --border:#333a4d;
+  --text:#e7e4da;
+  --text-soft:#9096a8;
+  --accent:#cf9d4f;
+  --accent-soft:#cf9d4f26;
+  --danger:#d16a5c;
+  --radius:10px;
 }
 *{box-sizing:border-box;}
 html,body{margin:0;padding:0;}
 body{
-  background:
-    radial-gradient(ellipse at 20% 10%, #453a2f 0%, transparent 55%),
-    radial-gradient(ellipse at 80% 90%, #241f19 0%, transparent 55%),
-    var(--cork-2);
-  color:var(--ink);
+  background:var(--bg);
+  color:var(--text);
   font-family:'IBM Plex Sans KR', sans-serif;
   min-height:100vh;
 }
-h1,h2,h3,.serif{font-family:'Source Serif 4', serif;}
+.serif{font-family:'Source Serif 4', serif;}
+h1,h2,h3{font-family:'Source Serif 4', serif; font-weight:600;}
+a{color:var(--accent);}
 
 /* ---------- Top bar ---------- */
 .topbar{
   display:flex; align-items:center; gap:14px;
-  padding:16px 20px;
-  background:var(--cork-1);
-  border-bottom:1px solid #171310;
+  padding:16px 22px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
   position:sticky; top:0; z-index:30;
 }
 .hamburger{
   width:38px;height:38px;border-radius:50%;
-  background:var(--card); border:none; cursor:pointer;
+  background:var(--panel-2); border:1px solid var(--border); cursor:pointer;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
   flex:none;
 }
-.hamburger span{width:16px;height:2px;background:var(--ink);display:block;}
-.topbar h1{color:var(--card); font-size:1.3rem; margin:0; letter-spacing:.3px; flex:none;}
+.hamburger span{width:15px;height:1.5px;background:var(--text);display:block;}
+.topbar h1{color:var(--text); font-size:1.25rem; margin:0; flex:none;}
 .searchbox{
   flex:1; display:flex; align-items:center; gap:8px;
-  background:#efe6cd; border-radius:20px; padding:8px 16px; max-width:420px;
+  background:var(--panel-2); border:1px solid var(--border); border-radius:20px; padding:8px 16px; max-width:400px;
 }
 .searchbox input{
-  border:none;background:transparent;outline:none;flex:1;font-size:.95rem;font-family:inherit;color:var(--ink);
+  border:none;background:transparent;outline:none;flex:1;font-size:.92rem;font-family:inherit;color:var(--text);
 }
 .tabbtns{display:flex; gap:6px; margin-left:auto;}
 .tabbtn{
-  background:transparent; border:1px solid #6b5f4d; color:#e6dcc4; padding:8px 14px;
-  border-radius:20px; cursor:pointer; font-family:inherit; font-size:.85rem;
+  background:transparent; border:1px solid var(--border); color:var(--text-soft); padding:8px 14px;
+  border-radius:20px; cursor:pointer; font-family:inherit; font-size:.83rem;
 }
-.tabbtn.active{background:var(--pin-red); border-color:var(--pin-red); color:#fff;}
+.tabbtn.active{background:var(--accent-soft); border-color:var(--accent); color:var(--accent);}
 .addbtn{
-  background:var(--pin-red); color:#fff; border:none; border-radius:20px;
-  padding:9px 16px; cursor:pointer; font-family:inherit; font-weight:600; font-size:.85rem; flex:none;
+  background:var(--accent); color:#20242e; border:none; border-radius:20px;
+  padding:9px 16px; cursor:pointer; font-family:inherit; font-weight:600; font-size:.83rem; flex:none;
 }
 
 /* ---------- Filter drawer ---------- */
 .drawer{
   position:fixed; top:0; left:-340px; width:320px; height:100%;
-  background:#ece1c3; z-index:40; transition:left .25s ease;
-  overflow-y:auto; padding:20px; border-right:1px solid var(--card-edge);
+  background:var(--panel); z-index:40; transition:left .22s ease;
+  overflow-y:auto; padding:22px; border-right:1px solid var(--border);
 }
 .drawer.open{left:0;}
-.drawer h3{margin:18px 0 8px; font-size:.95rem; color:var(--ink-soft); font-weight:600;}
+.drawer h3{margin:18px 0 8px; font-size:.85rem; color:var(--text-soft); font-weight:600; font-family:inherit;}
 .drawer h3:first-child{margin-top:0;}
 .chipwrap{display:flex; flex-wrap:wrap; gap:6px;}
 .chip{
-  border:1px solid var(--line); background:#fff; border-radius:14px; padding:5px 11px;
+  border:1px solid var(--border); background:var(--panel-2); color:var(--text); border-radius:14px; padding:5px 11px;
   font-size:.8rem; cursor:pointer; user-select:none;
 }
-.chip.selected{background:var(--accent); color:#fff; border-color:var(--accent);}
-.addchip{
-  display:flex; gap:4px; margin-top:6px;
-}
-.addchip input{flex:1; border:1px solid var(--line); border-radius:14px; padding:4px 10px; font-size:.78rem; font-family:inherit;}
-.addchip button{border:none; background:var(--ink-soft); color:#fff; border-radius:14px; padding:4px 10px; font-size:.78rem; cursor:pointer;}
-.stars-filter{display:flex; gap:3px; cursor:pointer;}
-.overlay{position:fixed; inset:0; background:rgba(0,0,0,.35); z-index:35; display:none;}
+.chip.selected{background:var(--accent); color:#1c1f27; border-color:var(--accent);}
+.addchip{display:flex; gap:4px; margin-top:6px;}
+.addchip input{flex:1; border:1px solid var(--border); background:var(--panel-2); color:var(--text); border-radius:14px; padding:4px 10px; font-size:.78rem; font-family:inherit;}
+.addchip button{border:none; background:var(--accent); color:#1c1f27; border-radius:14px; padding:4px 10px; font-size:.78rem; cursor:pointer;}
+.stars-filter{display:flex; gap:3px; cursor:pointer; color:var(--accent);}
+.overlay{position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:35; display:none;}
 .overlay.show{display:block;}
-.favtoggle{display:flex; align-items:center; gap:8px; margin-top:8px; font-size:.85rem;}
+.favtoggle{display:flex; align-items:center; gap:8px; margin-top:8px; font-size:.85rem; color:var(--text-soft);}
 
 /* ---------- Card grid ---------- */
-.gridwrap{padding:26px; max-width:1200px; margin:0 auto;}
-.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:18px;}
+.gridwrap{padding:28px; max-width:1200px; margin:0 auto;}
+.grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:16px;}
 .card{
-  background:var(--card); border:1px solid var(--card-edge); border-radius:var(--radius);
-  padding:16px 12px 12px; text-align:center; cursor:pointer; position:relative;
-  box-shadow:2px 3px 0 rgba(0,0,0,.25);
-  transition:transform .12s ease;
+  background:var(--card); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px 12px 14px; text-align:center; cursor:pointer; position:relative;
+  transition:border-color .15s ease, transform .15s ease;
 }
-.card:hover{transform:translateY(-3px) rotate(-.4deg);}
-.card::before{
-  content:''; position:absolute; top:-7px; left:50%; transform:translateX(-50%);
-  width:12px; height:12px; border-radius:50%; background:var(--pin-red);
-  box-shadow:0 2px 2px rgba(0,0,0,.4);
-}
-.card .fav{position:absolute; top:8px; right:8px; font-size:.95rem;}
+.card:hover{border-color:var(--accent); transform:translateY(-2px);}
+.card .fav{position:absolute; top:10px; right:10px; font-size:.85rem; color:var(--accent);}
 .avatar{
-  width:58px; height:58px; border-radius:50%; margin:6px auto 10px; background:#fff;
-  display:flex; align-items:center; justify-content:center; font-size:1.8rem; overflow:hidden; border:2px solid var(--card-edge);
+  width:58px; height:58px; border-radius:50%; margin:2px auto 10px; background:var(--panel-2);
+  display:flex; align-items:center; justify-content:center; font-size:1.7rem; overflow:hidden; border:1px solid var(--border);
 }
 .avatar img{width:100%;height:100%;object-fit:cover;}
 .card .name{font-weight:600; font-size:.95rem;}
-.card .cat{font-size:.72rem; color:var(--ink-soft); margin-top:2px;}
-.card .stars{margin-top:6px; font-size:.78rem; color:#c99a2e;}
-.empty-msg{color:#e6dcc4; text-align:center; padding:60px 20px; font-size:.95rem;}
+.card .cat{font-size:.72rem; color:var(--text-soft); margin-top:2px;}
+.card .stars{margin-top:6px; font-size:.76rem; color:var(--accent);}
+.empty-msg{color:var(--text-soft); text-align:center; padding:60px 20px; font-size:.95rem;}
 
 /* ---------- Modal ---------- */
-.modal-bg{position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center; justify-content:center; z-index:60; padding:20px;}
+.modal-bg{position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:60; padding:20px;}
 .modal-bg.show{display:flex;}
 .modal{
-  background:var(--card); width:min(560px,100%); max-height:88vh; overflow-y:auto;
-  border-radius:4px; padding:26px 26px 30px; position:relative;
+  background:var(--panel); width:min(560px,100%); max-height:88vh; overflow-y:auto;
+  border-radius:14px; padding:26px 26px 30px; position:relative; border:1px solid var(--border);
 }
-.modal h2{margin:0 0 4px;}
-.modal .close{position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--ink-soft);}
+.modal h2{margin:0 0 4px; color:var(--text);}
+.modal .close{position:absolute; top:14px; right:16px; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--text-soft);}
 .field-row{margin:14px 0;}
-.field-row label{display:block; font-size:.78rem; color:var(--ink-soft); margin-bottom:4px; font-weight:600;}
+.field-row label{display:block; font-size:.78rem; color:var(--text-soft); margin-bottom:4px; font-weight:600;}
 .field-row .val{font-size:.92rem; line-height:1.5; white-space:pre-wrap;}
 .field-row input[type=text], .field-row textarea, .field-row select{
-  width:100%; border:1px solid var(--line); border-radius:4px; padding:8px 10px; font-family:inherit; font-size:.88rem;
+  width:100%; border:1px solid var(--border); background:var(--panel-2); color:var(--text); border-radius:6px; padding:8px 10px; font-family:inherit; font-size:.88rem;
 }
 .field-row textarea{min-height:70px; resize:vertical;}
 .tagpills{display:flex; flex-wrap:wrap; gap:5px;}
-.tagpill{background:#e6dcc4; border-radius:12px; padding:3px 10px; font-size:.76rem;}
+.tagpill{background:var(--panel-2); border:1px solid var(--border); border-radius:12px; padding:3px 10px; font-size:.76rem;}
 .modal-actions{display:flex; gap:10px; margin-top:20px; justify-content:flex-end;}
 .btn{border:none; border-radius:20px; padding:8px 18px; cursor:pointer; font-family:inherit; font-size:.85rem; font-weight:600;}
-.btn.primary{background:var(--pin-red); color:#fff;}
-.btn.ghost{background:transparent; border:1px solid var(--ink-soft); color:var(--ink-soft);}
+.btn.primary{background:var(--accent); color:#1c1f27;}
+.btn.ghost{background:transparent; border:1px solid var(--border); color:var(--text-soft);}
 .btn.small{padding:5px 12px; font-size:.76rem;}
-.rel-item{display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px dashed var(--line); font-size:.85rem;}
+.rel-item{display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px dashed var(--border); font-size:.85rem;}
 .rel-dot{width:10px;height:10px;border-radius:50%;flex:none;}
 .rel-item .who{font-weight:600;}
-.rel-item .rtype{color:var(--ink-soft); font-size:.75rem;}
-.starpicker span{cursor:pointer; font-size:1.1rem;}
+.rel-item .rtype{color:var(--text-soft); font-size:.75rem;}
+.starpicker span{cursor:pointer; font-size:1.1rem; color:var(--accent);}
+.avatarpicker{display:flex; align-items:center; gap:12px;}
+.avatarpicker .preview{width:56px;height:56px;border-radius:50%;background:var(--panel-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;overflow:hidden;flex:none;}
+.avatarpicker .preview img{width:100%;height:100%;object-fit:cover;}
+.filebtn{display:inline-block; background:var(--panel-2); border:1px solid var(--border); color:var(--text); border-radius:14px; padding:6px 12px; font-size:.78rem; cursor:pointer;}
+.filebtn input{display:none;}
 
-/* ---------- Settings modal (groups/relationship types) ---------- */
-.settingsrow{display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--line);}
-.settingsrow input[type=text]{flex:1; border:1px solid var(--line); border-radius:4px; padding:5px 8px; font-family:inherit;}
+/* ---------- Settings modal ---------- */
+.settingsrow{display:flex; align-items:center; gap:8px; padding:6px 0; border-bottom:1px solid var(--border);}
+.settingsrow input[type=text]{flex:1; border:1px solid var(--border); background:var(--panel-2); color:var(--text); border-radius:4px; padding:5px 8px; font-family:inherit;}
 .settingsrow input[type=color]{width:30px;height:30px;border:none;background:none;padding:0;}
+.settings-tabs{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:14px;}
+.settings-tabs .chip{font-size:.78rem;}
 
 /* ---------- Visualization page ---------- */
 #vizpage{display:none;}
 #vizpage.active{display:block;}
 #mainpage.active{display:block;}
 #mainpage{display:none;}
-.vizbar{display:flex; align-items:center; gap:12px; padding:12px 20px; background:var(--cork-1); flex-wrap:wrap;}
-.vizbar select{font-family:inherit; border-radius:14px; padding:6px 12px; border:1px solid #6b5f4d; background:#efe6cd;}
-.vizbar label{color:#e6dcc4; font-size:.82rem;}
-#graphcanvas{display:block; width:100%; height:calc(100vh - 130px); background:transparent; cursor:grab;}
-.legend{display:flex; gap:14px; flex-wrap:wrap; padding:8px 20px; font-size:.78rem; color:#e6dcc4;}
+.vizbar{display:flex; align-items:center; gap:12px; padding:12px 22px; background:var(--panel); flex-wrap:wrap; border-bottom:1px solid var(--border);}
+.vizbar select{font-family:inherit; border-radius:14px; padding:6px 12px; border:1px solid var(--border); background:var(--panel-2); color:var(--text);}
+.vizbar label{color:var(--text-soft); font-size:.82rem;}
+#graphcanvas{display:block; width:100%; height:calc(100vh - 150px); background:radial-gradient(ellipse at center, #1c202a 0%, var(--bg) 75%); cursor:grab;}
+.legend{display:flex; gap:14px; flex-wrap:wrap; padding:8px 22px; font-size:.78rem; color:var(--text-soft);}
 .legend span{display:inline-flex; align-items:center; gap:5px;}
-.legend i{width:12px;height:12px;border-radius:50%;display:inline-block;}
+.legend i{width:11px;height:11px;border-radius:50%;display:inline-block;}
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <button class="hamburger" id="hamburgerBtn"><span></span><span></span><span></span></button>
-  <h1>인간관계 대장</h1>
+  <h1>사람 서랍</h1>
   <div class="searchbox"><span>🔎</span><input id="searchInput" placeholder="이름으로 검색"></div>
   <div class="tabbtns">
     <button class="tabbtn active" id="tabMain">프로필</button>
     <button class="tabbtn" id="tabViz">관계 시각화</button>
-    <button class="tabbtn" id="tabSettings">태그/무리 관리</button>
+    <button class="tabbtn" id="tabSettings">태그 관리</button>
   </div>
   <button class="addbtn" id="addFriendBtn">+ 새 프로필</button>
 </div>
@@ -204,29 +201,21 @@ h1,h2,h3,.serif{font-family:'Source Serif 4', serif;}
 
 <div id="vizpage">
   <div class="vizbar">
-    <label>무리 표현 방식</label>
+    <label>무리 표현</label>
     <select id="groupModeSel">
-      <option value="ring">소속된 모든 무리를 색상 링으로 표시</option>
-      <option value="primary">대표 무리 1개만 노드 색으로</option>
-      <option value="cluster">무리별 클러스터링만 (색 없음)</option>
+      <option value="wedge">부채꼴 배경 (대표 무리)</option>
+      <option value="ring">색상 링 (소속된 모든 무리)</option>
       <option value="none">표시 안 함</option>
     </select>
-    <label style="margin-left:10px;">필터</label>
+    <label style="margin-left:10px;">무리 필터</label>
     <select id="groupFilterSel"><option value="">전체 보기</option></select>
   </div>
   <div class="legend" id="relLegend"></div>
   <canvas id="graphcanvas"></canvas>
 </div>
 
-<!-- Friend detail / edit modal -->
-<div class="modal-bg" id="friendModalBg">
-  <div class="modal" id="friendModal"></div>
-</div>
-
-<!-- Settings modal (tag types / groups / relationship types) -->
-<div class="modal-bg" id="settingsModalBg">
-  <div class="modal" id="settingsModal" style="max-width:640px;"></div>
-</div>
+<div class="modal-bg" id="friendModalBg"><div class="modal" id="friendModal"></div></div>
+<div class="modal-bg" id="settingsModalBg"><div class="modal" id="settingsModal" style="max-width:660px;"></div></div>
 
 <script>
 const SUPABASE_URL = "https://hlvpffypajsoythbfrvb.supabase.co";
@@ -234,15 +223,14 @@ const SUPABASE_KEY = "sb_publishable_lGroGfmZE91oueKBLlgerQ_Ja8Fwhmz";
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 let state = {
-  friends: [], tagTypes: [], tags: [], groups: [], relTypes: [], relationships: [],
-  friendTags: [], friendGroups: [],
-  filters: { search:"", category:null, tagIds:new Set(), favOnly:false, minStar:0, sort:"name" },
-  editingFriendId: null,
+  friends:[], tagTypes:[], tags:[], groups:[], relTypes:[], relationships:[],
+  friendTags:[], friendGroups:[],
+  filters:{ search:"", tagIds:new Set(), favOnly:false, minStar:0, sort:"name" },
+  editingFriendId:null, pendingAvatarFile:null,
 };
 
-// ---------------- Data loading ----------------
 async function loadAll(){
-  const [ft, tg, gp, rt, fr, frt, frg, rel] = await Promise.all([
+  const [ft,tg,gp,rt,fr,frt,frg,rel] = await Promise.all([
     sb.from('tag_types').select('*').order('created_at'),
     sb.from('tags').select('*').order('created_at'),
     sb.from('groups').select('*').order('created_at'),
@@ -252,22 +240,16 @@ async function loadAll(){
     sb.from('friend_groups').select('*'),
     sb.from('friend_relationships').select('*'),
   ]);
-  state.tagTypes = ft.data||[]; state.tags = tg.data||[]; state.groups = gp.data||[];
-  state.relTypes = rt.data||[]; state.friends = fr.data||[]; state.friendTags = frt.data||[];
-  state.friendGroups = frg.data||[]; state.relationships = rel.data||[];
-  renderDrawerFilters();
-  renderGrid();
-  renderGroupFilterOptions();
+  state.tagTypes=ft.data||[]; state.tags=tg.data||[]; state.groups=gp.data||[];
+  state.relTypes=rt.data||[]; state.friends=fr.data||[]; state.friendTags=frt.data||[];
+  state.friendGroups=frg.data||[]; state.relationships=rel.data||[];
+  renderDrawerFilters(); renderGrid(); renderGroupFilterOptions();
   if(document.getElementById('vizpage').classList.contains('active')) drawGraph();
 }
-
 function subscribeRealtime(){
-  sb.channel('public:all')
-    .on('postgres_changes', {event:'*', schema:'public'}, ()=>{ loadAll(); })
-    .subscribe();
+  sb.channel('public:all').on('postgres_changes',{event:'*',schema:'public'},()=>loadAll()).subscribe();
 }
 
-// ---------------- Helpers ----------------
 const tagsByType = (typeName)=> state.tags.filter(t=>{
   const tt = state.tagTypes.find(x=>x.id===t.tag_type_id);
   return tt && tt.name===typeName;
@@ -279,83 +261,66 @@ const relTypeById = (id)=> state.relTypes.find(r=>r.id===id) || {label:'관계',
 
 // ---------------- Drawer filters ----------------
 function renderDrawerFilters(){
-  const wrap = document.getElementById('dynamicFilters');
-  wrap.innerHTML='';
+  const wrap = document.getElementById('dynamicFilters'); wrap.innerHTML='';
   state.tagTypes.forEach(tt=>{
-    const box = document.createElement('div');
-    const heading = document.createElement('h3'); heading.textContent = tt.name;
-    box.appendChild(heading);
-    const chipwrap = document.createElement('div'); chipwrap.className='chipwrap';
+    const box=document.createElement('div');
+    const h=document.createElement('h3'); h.textContent=tt.name; box.appendChild(h);
+    const cw=document.createElement('div'); cw.className='chipwrap';
     tagsByType(tt.name).forEach(tag=>{
-      const chip = document.createElement('span');
+      const chip=document.createElement('span');
       chip.className='chip'+(state.filters.tagIds.has(tag.id)?' selected':'');
-      chip.textContent = tag.label;
-      chip.onclick = ()=>{
+      chip.textContent=tag.label;
+      chip.onclick=()=>{
         if(state.filters.tagIds.has(tag.id)) state.filters.tagIds.delete(tag.id);
         else state.filters.tagIds.add(tag.id);
         renderDrawerFilters(); renderGrid();
       };
-      chipwrap.appendChild(chip);
+      cw.appendChild(chip);
     });
-    box.appendChild(chipwrap);
-    const addRow = document.createElement('div'); addRow.className='addchip';
-    const inp = document.createElement('input'); inp.placeholder='새 '+tt.name+' 추가';
-    const btn = document.createElement('button'); btn.textContent='추가';
-    btn.onclick = async ()=>{
-      if(!inp.value.trim()) return;
-      await sb.from('tags').insert({tag_type_id:tt.id, label:inp.value.trim()});
-      inp.value='';
-    };
-    addRow.appendChild(inp); addRow.appendChild(btn);
-    box.appendChild(addRow);
+    box.appendChild(cw);
+    const addRow=document.createElement('div'); addRow.className='addchip';
+    const inp=document.createElement('input'); inp.placeholder='새 '+tt.name+' 추가';
+    const btn=document.createElement('button'); btn.textContent='추가';
+    btn.onclick=async()=>{ if(!inp.value.trim())return; await sb.from('tags').insert({tag_type_id:tt.id,label:inp.value.trim()}); inp.value=''; };
+    addRow.appendChild(inp); addRow.appendChild(btn); box.appendChild(addRow);
     wrap.appendChild(box);
   });
-  const minStarWrap = document.getElementById('minStarFilter');
-  minStarWrap.innerHTML='';
+  const ms=document.getElementById('minStarFilter'); ms.innerHTML='';
   for(let i=1;i<=5;i++){
-    const s = document.createElement('span');
-    s.textContent = i<=state.filters.minStar ? '★' : '☆';
-    s.style.color = '#c99a2e';
-    s.onclick = ()=>{ state.filters.minStar = (state.filters.minStar===i)?0:i; renderDrawerFilters(); renderGrid(); };
-    minStarWrap.appendChild(s);
+    const s=document.createElement('span'); s.textContent = i<=state.filters.minStar?'★':'☆';
+    s.onclick=()=>{ state.filters.minStar=(state.filters.minStar===i)?0:i; renderDrawerFilters(); renderGrid(); };
+    ms.appendChild(s);
   }
 }
-
-document.getElementById('favOnly').onchange = (e)=>{ state.filters.favOnly = e.target.checked; renderGrid(); };
-document.getElementById('searchInput').oninput = (e)=>{ state.filters.search = e.target.value.trim(); renderGrid(); };
+document.getElementById('favOnly').onchange=(e)=>{ state.filters.favOnly=e.target.checked; renderGrid(); };
+document.getElementById('searchInput').oninput=(e)=>{ state.filters.search=e.target.value.trim(); renderGrid(); };
 document.querySelectorAll('#sortChips .chip').forEach(c=>{
-  c.onclick = ()=>{
-    document.querySelectorAll('#sortChips .chip').forEach(x=>x.classList.remove('selected'));
-    c.classList.add('selected'); state.filters.sort = c.dataset.sort; renderGrid();
-  };
+  c.onclick=()=>{ document.querySelectorAll('#sortChips .chip').forEach(x=>x.classList.remove('selected')); c.classList.add('selected'); state.filters.sort=c.dataset.sort; renderGrid(); };
 });
 
-// ---------------- Grid rendering ----------------
 function friendMatchesFilters(f){
   if(state.filters.search && !f.name.toLowerCase().includes(state.filters.search.toLowerCase())) return false;
   if(state.filters.favOnly && !f.favorite) return false;
   if(state.filters.minStar && (f.rating||0) < state.filters.minStar) return false;
   if(state.filters.tagIds.size){
-    const owned = new Set([...friendTagIds(f.id), f.category_tag_id].filter(Boolean));
+    const owned=new Set([...friendTagIds(f.id), f.category_tag_id].filter(Boolean));
     for(const tid of state.filters.tagIds) if(!owned.has(tid)) return false;
   }
   return true;
 }
-
 function renderGrid(){
-  const grid = document.getElementById('friendGrid');
-  let list = state.friends.filter(friendMatchesFilters);
+  const grid=document.getElementById('friendGrid');
+  let list=state.friends.filter(friendMatchesFilters);
   if(state.filters.sort==='name') list.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
   else if(state.filters.sort==='rating') list.sort((a,b)=>(b.rating||0)-(a.rating||0));
   else if(state.filters.sort==='recent') list.sort((a,b)=>new Date(b.updated_at)-new Date(a.updated_at));
-
   grid.innerHTML='';
-  document.getElementById('emptyMsg').style.display = list.length? 'none':'block';
+  document.getElementById('emptyMsg').style.display=list.length?'none':'block';
   list.forEach(f=>{
-    const card = document.createElement('div'); card.className='card';
-    card.onclick = ()=>openFriendModal(f.id);
-    const cat = f.category_tag_id ? tagLabel(f.category_tag_id) : '';
-    card.innerHTML = `
+    const card=document.createElement('div'); card.className='card';
+    card.onclick=()=>openFriendModal(f.id);
+    const cat=f.category_tag_id?tagLabel(f.category_tag_id):'';
+    card.innerHTML=`
       ${f.favorite?'<div class="fav">⭐</div>':''}
       <div class="avatar">${f.avatar_image_url?`<img src="${f.avatar_image_url}">`:(f.avatar_emoji||'🙂')}</div>
       <div class="name">${f.name}</div>
@@ -365,21 +330,16 @@ function renderGrid(){
     grid.appendChild(card);
   });
 }
-
 function renderGroupFilterOptions(){
-  const sel = document.getElementById('groupFilterSel');
-  const cur = sel.value;
-  sel.innerHTML = '<option value="">전체 보기</option>' + state.groups.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
-  sel.value = cur;
+  const sel=document.getElementById('groupFilterSel'); const cur=sel.value;
+  sel.innerHTML='<option value="">전체 보기</option>'+state.groups.map(g=>`<option value="${g.id}">${g.name}</option>`).join('');
+  sel.value=cur;
 }
 
-// ---------------- Drawer toggle ----------------
-const drawer = document.getElementById('drawer');
-const drawerOverlay = document.getElementById('drawerOverlay');
-document.getElementById('hamburgerBtn').onclick = ()=>{ drawer.classList.add('open'); drawerOverlay.classList.add('show'); };
-drawerOverlay.onclick = ()=>{ drawer.classList.remove('open'); drawerOverlay.classList.remove('show'); };
+const drawer=document.getElementById('drawer'), drawerOverlay=document.getElementById('drawerOverlay');
+document.getElementById('hamburgerBtn').onclick=()=>{ drawer.classList.add('open'); drawerOverlay.classList.add('show'); };
+drawerOverlay.onclick=()=>{ drawer.classList.remove('open'); drawerOverlay.classList.remove('show'); };
 
-// ---------------- Tabs ----------------
 function setTab(tab){
   document.getElementById('mainpage').classList.toggle('active', tab==='main');
   document.getElementById('vizpage').classList.toggle('active', tab==='viz');
@@ -387,59 +347,54 @@ function setTab(tab){
   document.getElementById('tabViz').classList.toggle('active', tab==='viz');
   if(tab==='viz'){ resizeCanvas(); drawGraph(); }
 }
-document.getElementById('tabMain').onclick = ()=>setTab('main');
-document.getElementById('tabViz').onclick = ()=>setTab('viz');
-document.getElementById('tabSettings').onclick = openSettingsModal;
+document.getElementById('tabMain').onclick=()=>setTab('main');
+document.getElementById('tabViz').onclick=()=>setTab('viz');
+document.getElementById('tabSettings').onclick=openSettingsModal;
 
-// ---------------- Friend modal (view / edit) ----------------
-const friendModalBg = document.getElementById('friendModalBg');
-const friendModalEl = document.getElementById('friendModal');
-
-function closeFriendModal(){ friendModalBg.classList.remove('show'); state.editingFriendId=null; }
-friendModalBg.onclick = (e)=>{ if(e.target===friendModalBg) closeFriendModal(); };
+// ---------------- Friend modal ----------------
+const friendModalBg=document.getElementById('friendModalBg'), friendModalEl=document.getElementById('friendModal');
+function closeFriendModal(){ friendModalBg.classList.remove('show'); state.editingFriendId=null; state.pendingAvatarFile=null; }
+friendModalBg.onclick=(e)=>{ if(e.target===friendModalBg) closeFriendModal(); };
 
 function openFriendModal(id, startEdit=false){
-  const f = id ? state.friends.find(x=>x.id===id) : null;
-  state.editingFriendId = id;
+  const f=id?state.friends.find(x=>x.id===id):null;
+  state.editingFriendId=id; state.pendingAvatarFile=null;
   renderFriendModal(f, startEdit);
   friendModalBg.classList.add('show');
 }
 
 function renderFriendModal(f, editMode){
-  const isNew = !f;
-  const catTags = tagsByType('분류');
-  const otherTypes = state.tagTypes.filter(t=>t.name!=='분류');
-  const myTagIds = f ? new Set(friendTagIds(f.id)) : new Set();
-  const myGroupIds = f ? new Set(friendGroupIds(f.id)) : new Set();
-  const myRels = f ? state.relationships.filter(r=>r.friend_id===f.id || r.related_friend_id===f.id) : [];
+  const isNew=!f;
+  const catTags=tagsByType('분류');
+  const otherTypes=state.tagTypes.filter(t=>t.name!=='분류');
+  const myTagIds=f?new Set(friendTagIds(f.id)):new Set();
+  const myGroupIds=f?new Set(friendGroupIds(f.id)):new Set();
+  const myRels=f?state.relationships.filter(r=>r.friend_id===f.id||r.related_friend_id===f.id):[];
 
   if(!editMode && !isNew){
-    friendModalEl.innerHTML = `
+    friendModalEl.innerHTML=`
       <button class="close" onclick="closeFriendModal()">✕</button>
-      <div class="avatar" style="margin:0 auto 10px;width:70px;height:70px;font-size:2.2rem;">${f.avatar_image_url?`<img src="${f.avatar_image_url}">`:(f.avatar_emoji||'🙂')}</div>
+      <div class="avatar" style="margin:0 auto 10px;width:70px;height:70px;font-size:2.1rem;">${f.avatar_image_url?`<img src="${f.avatar_image_url}">`:(f.avatar_emoji||'🙂')}</div>
       <h2 style="text-align:center;">${f.name} ${f.favorite?'⭐':''}</h2>
-      <div style="text-align:center;color:var(--ink-soft);font-size:.85rem;">${f.category_tag_id?tagLabel(f.category_tag_id):''}</div>
-      <div style="text-align:center;margin-top:6px;color:#c99a2e;">${'★'.repeat(f.rating||0)}${'☆'.repeat(5-(f.rating||0))}</div>
-
+      <div style="text-align:center;color:var(--text-soft);font-size:.85rem;">${f.category_tag_id?tagLabel(f.category_tag_id):''}</div>
+      <div style="text-align:center;margin-top:6px;color:var(--accent);">${'★'.repeat(f.rating||0)}${'☆'.repeat(5-(f.rating||0))}</div>
       ${otherTypes.map(tt=>{
-        const ids = [...myTagIds].filter(id=> (state.tags.find(t=>t.id===id)||{}).tag_type_id===tt.id);
+        const ids=[...myTagIds].filter(id=>(state.tags.find(t=>t.id===id)||{}).tag_type_id===tt.id);
         if(!ids.length) return '';
         return `<div class="field-row"><label>${tt.name}</label><div class="tagpills">${ids.map(id=>`<span class="tagpill">${tagLabel(id)}</span>`).join('')}</div></div>`;
       }).join('')}
-
       <div class="field-row"><label>본문</label><div class="val">${f.description||'-'}</div></div>
       <div class="field-row"><label>관계(글)</label><div class="val">${f.relationship_note||'-'}</div></div>
-      <div class="field-row"><label>무리</label><div class="tagpills">${[...myGroupIds].map(gid=>{const g=state.groups.find(x=>x.id===gid); return g?`<span class="tagpill" style="background:${g.color}22;border:1px solid ${g.color};">${g.name}</span>`:'';}).join('')||'-'}</div></div>
+      <div class="field-row"><label>무리</label><div class="tagpills">${[...myGroupIds].map(gid=>{const g=state.groups.find(x=>x.id===gid); return g?`<span class="tagpill" style="border-color:${g.color};">${g.name}</span>`:'';}).join('')||'-'}</div></div>
       <div class="field-row"><label>인간관계</label>
-        ${myRels.length? myRels.map(r=>{
-          const otherId = r.friend_id===f.id ? r.related_friend_id : r.friend_id;
-          const other = state.friends.find(x=>x.id===otherId);
-          const rt = relTypeById(r.relationship_type_id);
-          return `<div class="rel-item"><span class="rel-dot" style="background:${rt.color}"></span><span class="who">${other?other.name:'(삭제됨)'}</span><span class="rtype">${rt.label} · 강도 ${r.strength}</span></div>${r.detail?`<div style="font-size:.78rem;color:var(--ink-soft);margin:2px 0 4px 18px;">${r.detail}</div>`:''}`;
-        }).join('') : '<div class="val">-</div>'}
+        ${myRels.length?myRels.map(r=>{
+          const otherId=r.friend_id===f.id?r.related_friend_id:r.friend_id;
+          const other=state.friends.find(x=>x.id===otherId);
+          const rt=relTypeById(r.relationship_type_id);
+          return `<div class="rel-item"><span class="rel-dot" style="background:${rt.color}"></span><span class="who">${other?other.name:'(삭제됨)'}</span><span class="rtype">${rt.label} · 강도 ${r.strength}</span></div>${r.detail?`<div style="font-size:.78rem;color:var(--text-soft);margin:2px 0 4px 18px;">${r.detail}</div>`:''}`;
+        }).join(''):'<div class="val">-</div>'}
       </div>
       <div class="field-row"><label>기타사항</label><div class="val">${f.etc_note||'-'}</div></div>
-
       <div class="modal-actions">
         <button class="btn ghost" onclick="deleteFriend('${f.id}')">삭제</button>
         <button class="btn primary" onclick="openFriendModal('${f.id}', true)">수정</button>
@@ -448,13 +403,18 @@ function renderFriendModal(f, editMode){
     return;
   }
 
-  // ---- edit / create mode ----
-  friendModalEl.innerHTML = `
+  friendModalEl.innerHTML=`
     <button class="close" onclick="closeFriendModal()">✕</button>
     <h2>${isNew?'새 프로필':'프로필 수정'}</h2>
     <div class="field-row"><label>이름</label><input type="text" id="f_name" value="${f?f.name:''}"></div>
-    <div class="field-row"><label>아바타 이모지 (분류 선택 시 자동 채워짐, 직접 수정 가능)</label><input type="text" id="f_emoji" value="${f?(f.avatar_emoji||''):''}" placeholder="예: 😎"></div>
-    <div class="field-row"><label>아바타 사진 URL (선택)</label><input type="text" id="f_image" value="${f?(f.avatar_image_url||''):''}" placeholder="https://..."></div>
+    <div class="field-row"><label>사진 / 이모지</label>
+      <div class="avatarpicker">
+        <div class="preview" id="avatarPreview">${f&&f.avatar_image_url?`<img src="${f.avatar_image_url}">`:(f?(f.avatar_emoji||'🙂'):'🙂')}</div>
+        <input type="text" id="f_emoji" placeholder="이모지 (예: 😎)" value="${f?(f.avatar_emoji||''):''}" style="width:120px;">
+        <label class="filebtn">사진 업로드<input type="file" id="f_photofile" accept="image/*"></label>
+      </div>
+      <div style="font-size:.72rem;color:var(--text-soft);margin-top:4px;">분류를 고르면 기본 이모지가 자동으로 채워져요. 사진을 올리면 사진이 우선 표시됩니다.</div>
+    </div>
     <div class="field-row"><label>분류</label>
       <select id="f_category"><option value="">선택 안 함</option>${catTags.map(t=>`<option value="${t.id}" ${f&&f.category_tag_id===t.id?'selected':''}>${t.label}</option>`).join('')}</select>
     </div>
@@ -472,8 +432,7 @@ function renderFriendModal(f, editMode){
     </div>
     <div class="field-row"><label>기타사항</label><textarea id="f_etc">${f?(f.etc_note||''):''}</textarea></div>
     <div class="field-row"><label>즐겨찾기</label><input type="checkbox" id="f_fav" ${f&&f.favorite?'checked':''}></div>
-    <div class="field-row"><label>별점</label><div class="starpicker" id="f_stars">${[1,2,3,4,5].map(i=>`<span data-v="${i}">${(f&&f.rating>=i)?'★':'☆'}</span>`).join('')}</div></div>
-
+    <div class="field-row"><label>별점</label><div class="starpicker" id="f_stars" data-value="${f?f.rating||0:0}">${[1,2,3,4,5].map(i=>`<span data-v="${i}">${(f&&f.rating>=i)?'★':'☆'}</span>`).join('')}</div></div>
     ${!isNew?`
     <div class="field-row"><label>인간관계 추가</label>
       <select id="rel_target">${state.friends.filter(x=>x.id!==f.id).map(x=>`<option value="${x.id}">${x.name}</option>`).join('')}</select>
@@ -482,48 +441,71 @@ function renderFriendModal(f, editMode){
       <textarea id="rel_detail" placeholder="세부 설명 (자유 서술)" style="margin-top:6px;"></textarea>
       <button class="btn small ghost" style="margin-top:6px;" onclick="addRelationship()">관계 추가</button>
     </div>`:''}
-
     <div class="modal-actions">
       <button class="btn ghost" onclick="closeFriendModal()">취소</button>
       <button class="btn primary" onclick="saveFriend(${isNew?'null':`'${f.id}'`})">저장</button>
     </div>
   `;
   friendModalEl.querySelectorAll('#f_stars span').forEach(s=>{
-    s.onclick = ()=>{
-      const v = +s.dataset.v;
-      friendModalEl.querySelectorAll('#f_stars span').forEach(x=>{ x.textContent = (+x.dataset.v<=v)?'★':'☆'; });
-      friendModalEl.querySelector('#f_stars').dataset.value = v;
+    s.onclick=()=>{
+      const v=+s.dataset.v;
+      friendModalEl.querySelectorAll('#f_stars span').forEach(x=>{ x.textContent=(+x.dataset.v<=v)?'★':'☆'; });
+      friendModalEl.querySelector('#f_stars').dataset.value=v;
     };
   });
+  document.getElementById('f_photofile').onchange=(e)=>{
+    const file=e.target.files[0]; if(!file) return;
+    state.pendingAvatarFile=file;
+    const reader=new FileReader();
+    reader.onload=()=>{ document.getElementById('avatarPreview').innerHTML=`<img src="${reader.result}">`; };
+    reader.readAsDataURL(file);
+  };
+  document.getElementById('f_category').onchange=(e)=>{
+    if(f && f.avatar_emoji) return;
+    const tag=state.tags.find(t=>t.id===e.target.value);
+    if(tag && tag.default_emoji && !document.getElementById('f_emoji').value){
+      document.getElementById('f_emoji').value=tag.default_emoji;
+      document.getElementById('avatarPreview').textContent=tag.default_emoji;
+    }
+  };
+}
+
+async function uploadAvatarIfNeeded(friendId){
+  if(!state.pendingAvatarFile) return null;
+  const file=state.pendingAvatarFile;
+  const ext=(file.name.split('.').pop()||'jpg');
+  const path=`${friendId}/${Date.now()}.${ext}`;
+  const {error}=await sb.storage.from('avatars').upload(path, file, {upsert:true});
+  if(error){ alert('사진 업로드 실패: '+error.message); return null; }
+  const {data}=sb.storage.from('avatars').getPublicUrl(path);
+  return data.publicUrl;
 }
 
 async function saveFriend(id){
-  const name = document.getElementById('f_name').value.trim();
+  const name=document.getElementById('f_name').value.trim();
   if(!name){ alert('이름을 입력해주세요.'); return; }
-  const payload = {
+  const basePayload={
     name,
     avatar_emoji: document.getElementById('f_emoji').value.trim() || null,
-    avatar_image_url: document.getElementById('f_image').value.trim() || null,
     category_tag_id: document.getElementById('f_category').value || null,
     description: document.getElementById('f_desc').value,
     relationship_note: document.getElementById('f_relnote').value,
     etc_note: document.getElementById('f_etc').value,
     favorite: document.getElementById('f_fav').checked,
-    rating: +(friendModalEl.querySelector('#f_stars').dataset.value || (id? (state.friends.find(x=>x.id===id)||{}).rating||0 : 0)),
+    rating: +(friendModalEl.querySelector('#f_stars').dataset.value || 0),
   };
-  let friendId = id;
-  if(id){
-    await sb.from('friends').update(payload).eq('id', id);
-  } else {
-    const {data} = await sb.from('friends').insert(payload).select().single();
-    friendId = data.id;
-  }
-  // tags
-  const selectedTagIds = [...friendModalEl.querySelectorAll('.chipwrap[data-tagtype] .chip.selected')].map(c=>c.dataset.tagid);
+  let friendId=id;
+  if(id){ await sb.from('friends').update(basePayload).eq('id', id); }
+  else { const {data}=await sb.from('friends').insert(basePayload).select().single(); friendId=data.id; }
+
+  const uploadedUrl = await uploadAvatarIfNeeded(friendId);
+  if(uploadedUrl){ await sb.from('friends').update({avatar_image_url: uploadedUrl}).eq('id', friendId); }
+
+  const selectedTagIds=[...friendModalEl.querySelectorAll('.chipwrap[data-tagtype] .chip.selected')].map(c=>c.dataset.tagid);
   await sb.from('friend_tags').delete().eq('friend_id', friendId);
   if(selectedTagIds.length) await sb.from('friend_tags').insert(selectedTagIds.map(tid=>({friend_id:friendId, tag_id:tid})));
-  // groups
-  const selectedGroupIds = [...friendModalEl.querySelectorAll('#f_groups .chip.selected')].map(c=>c.dataset.gid);
+
+  const selectedGroupIds=[...friendModalEl.querySelectorAll('#f_groups .chip.selected')].map(c=>c.dataset.gid);
   await sb.from('friend_groups').delete().eq('friend_id', friendId);
   if(selectedGroupIds.length) await sb.from('friend_groups').insert(selectedGroupIds.map(gid=>({friend_id:friendId, group_id:gid})));
 
@@ -532,240 +514,234 @@ async function saveFriend(id){
 }
 
 async function addRelationship(){
-  const id = state.editingFriendId;
-  const target = document.getElementById('rel_target').value;
-  const type = document.getElementById('rel_type').value;
-  const strength = +document.getElementById('rel_strength').value;
-  const detail = document.getElementById('rel_detail').value;
+  const id=state.editingFriendId;
+  const target=document.getElementById('rel_target').value;
+  const type=document.getElementById('rel_type').value;
+  const strength=+document.getElementById('rel_strength').value;
+  const detail=document.getElementById('rel_detail').value;
   if(!target) return;
   await sb.from('friend_relationships').insert({friend_id:id, related_friend_id:target, relationship_type_id:type, strength, detail});
-  await loadAll();
-  openFriendModal(id, true);
+  await loadAll(); openFriendModal(id, true);
 }
-
 async function deleteFriend(id){
   if(!confirm('정말 삭제할까요? 관련 태그/무리/관계 기록도 함께 삭제됩니다.')) return;
   await sb.from('friends').delete().eq('id', id);
-  closeFriendModal();
-  await loadAll();
+  closeFriendModal(); await loadAll();
 }
+document.getElementById('addFriendBtn').onclick=()=>openFriendModal(null, true);
 
-document.getElementById('addFriendBtn').onclick = ()=>openFriendModal(null, true);
-
-// ---------------- Settings modal ----------------
+// ---------------- Settings modal (full tag CRUD) ----------------
+let settingsTab = null;
 function openSettingsModal(){
+  settingsTab = state.tagTypes[0] ? state.tagTypes[0].name : null;
   renderSettingsModal();
   document.getElementById('settingsModalBg').classList.add('show');
 }
-document.getElementById('settingsModalBg').onclick = (e)=>{ if(e.target.id==='settingsModalBg') e.currentTarget.classList.remove('show'); };
+document.getElementById('settingsModalBg').onclick=(e)=>{ if(e.target.id==='settingsModalBg') e.currentTarget.classList.remove('show'); };
 
 function renderSettingsModal(){
-  const el = document.getElementById('settingsModal');
-  el.innerHTML = `
+  const el=document.getElementById('settingsModal');
+  const allTabs = [...state.tagTypes.map(t=>t.name), '무리', '관계 유형'];
+  el.innerHTML=`
     <button class="close" onclick="document.getElementById('settingsModalBg').classList.remove('show')">✕</button>
-    <h2>태그 · 무리 · 관계 유형 관리</h2>
-
-    <h3 class="serif" style="margin-top:18px;">분류별 기본 아바타</h3>
-    <div id="catAvatarList"></div>
-
-    <h3 class="serif" style="margin-top:22px;">무리 (그룹)</h3>
-    <div id="groupList"></div>
-    <div class="addchip" style="margin-top:8px;">
-      <input type="text" id="newGroupName" placeholder="새 무리 이름">
-      <input type="color" id="newGroupColor" value="#8a6d3b">
-      <button onclick="addGroup()">추가</button>
-    </div>
-
-    <h3 class="serif" style="margin-top:22px;">관계 유형 (절친/우호/적대 등)</h3>
-    <div id="relTypeList"></div>
-    <div class="addchip" style="margin-top:8px;">
-      <input type="text" id="newRelName" placeholder="새 관계 유형">
-      <input type="color" id="newRelColor" value="#b3402c">
-      <button onclick="addRelType()">추가</button>
-    </div>
+    <h2>태그 관리</h2>
+    <div class="settings-tabs">${allTabs.map(name=>`<span class="chip ${settingsTab===name?'selected':''}" onclick="settingsTab='${name}'; renderSettingsModal();">${name}</span>`).join('')}</div>
+    <div id="settingsBody"></div>
   `;
-  const catList = document.getElementById('catAvatarList');
-  tagsByType('분류').forEach(t=>{
-    const row = document.createElement('div'); row.className='settingsrow';
-    row.innerHTML = `<span style="width:70px;">${t.label}</span>
-      <input type="text" style="width:60px;" value="${t.default_emoji||''}" placeholder="이모지" onchange="updateTagAvatar('${t.id}', this.value, null)">
-      <input type="text" placeholder="사진 URL (선택)" value="${t.default_image_url||''}" onchange="updateTagAvatar('${t.id}', null, this.value)">`;
-    catList.appendChild(row);
-  });
-  const gList = document.getElementById('groupList');
-  state.groups.forEach(g=>{
-    const row = document.createElement('div'); row.className='settingsrow';
-    row.innerHTML = `<input type="color" value="${g.color||'#8a6d3b'}" onchange="updateGroupColor('${g.id}', this.value)">
-      <span style="flex:1;">${g.name}</span>
-      <button class="btn small ghost" onclick="deleteGroup('${g.id}')">삭제</button>`;
-    gList.appendChild(row);
-  });
-  const rList = document.getElementById('relTypeList');
-  state.relTypes.forEach(rt=>{
-    const row = document.createElement('div'); row.className='settingsrow';
-    row.innerHTML = `<input type="color" value="${rt.color||'#999999'}" onchange="updateRelTypeColor('${rt.id}', this.value)">
-      <span style="flex:1;">${rt.label}</span>
-      <button class="btn small ghost" onclick="deleteRelType('${rt.id}')">삭제</button>`;
-    rList.appendChild(row);
-  });
-}
+  const body=document.getElementById('settingsBody');
 
-async function updateTagAvatar(tagId, emoji, image){
-  const patch = {};
-  if(emoji!==null) patch.default_emoji = emoji || null;
-  if(image!==null) patch.default_image_url = image || null;
-  await sb.from('tags').update(patch).eq('id', tagId);
+  if(settingsTab==='무리'){
+    body.innerHTML=`<div id="groupList"></div>
+      <div class="addchip" style="margin-top:10px;">
+        <input type="text" id="newGroupName" placeholder="새 무리 이름">
+        <input type="color" id="newGroupColor" value="#cf9d4f">
+        <button onclick="addGroup()">추가</button>
+      </div>`;
+    const gList=document.getElementById('groupList');
+    state.groups.forEach(g=>{
+      const row=document.createElement('div'); row.className='settingsrow';
+      row.innerHTML=`<input type="color" value="${g.color||'#cf9d4f'}" onchange="updateGroupField('${g.id}','color',this.value)">
+        <input type="text" value="${g.name}" onchange="updateGroupField('${g.id}','name',this.value)">
+        <button class="btn small ghost" onclick="deleteGroup('${g.id}')">삭제</button>`;
+      gList.appendChild(row);
+    });
+    return;
+  }
+  if(settingsTab==='관계 유형'){
+    body.innerHTML=`<div id="relTypeList"></div>
+      <div class="addchip" style="margin-top:10px;">
+        <input type="text" id="newRelName" placeholder="새 관계 유형">
+        <input type="color" id="newRelColor" value="#cf9d4f">
+        <button onclick="addRelType()">추가</button>
+      </div>`;
+    const rList=document.getElementById('relTypeList');
+    state.relTypes.forEach(rt=>{
+      const row=document.createElement('div'); row.className='settingsrow';
+      row.innerHTML=`<input type="color" value="${rt.color||'#999999'}" onchange="updateRelTypeField('${rt.id}','color',this.value)">
+        <input type="text" value="${rt.label}" onchange="updateRelTypeField('${rt.id}','label',this.value)">
+        <button class="btn small ghost" onclick="deleteRelType('${rt.id}')">삭제</button>`;
+      rList.appendChild(row);
+    });
+    return;
+  }
+  // a tag_type tab (분류, 특징, 관심분야, 키워드, 성격, ...)
+  const tt = state.tagTypes.find(t=>t.name===settingsTab);
+  if(!tt){ body.innerHTML=''; return; }
+  const isCategory = tt.name==='분류';
+  body.innerHTML = `<div id="tagList"></div>
+    <div class="addchip" style="margin-top:10px;">
+      <input type="text" id="newTagName" placeholder="새 ${tt.name} 추가">
+      <button onclick="addTagValue('${tt.id}')">추가</button>
+    </div>`;
+  const list=document.getElementById('tagList');
+  tagsByType(tt.name).forEach(tag=>{
+    const row=document.createElement('div'); row.className='settingsrow';
+    row.innerHTML = `<input type="text" value="${tag.label}" onchange="updateTagField('${tag.id}','label',this.value)">
+      ${isCategory?`<input type="text" style="width:60px;flex:none;" value="${tag.default_emoji||''}" placeholder="이모지" onchange="updateTagField('${tag.id}','default_emoji',this.value)">`:''}
+      <button class="btn small ghost" onclick="deleteTagValue('${tag.id}')">삭제</button>`;
+    list.appendChild(row);
+  });
 }
+async function addTagValue(typeId){
+  const inp=document.getElementById('newTagName'); if(!inp.value.trim()) return;
+  await sb.from('tags').insert({tag_type_id:typeId, label:inp.value.trim()});
+  await loadAll(); renderSettingsModal();
+}
+async function updateTagField(id, field, value){ await sb.from('tags').update({[field]: value||null}).eq('id', id); }
+async function deleteTagValue(id){ if(!confirm('이 항목을 삭제할까요? 이 태그가 걸린 프로필에서도 제거됩니다.')) return; await sb.from('tags').delete().eq('id', id); await loadAll(); renderSettingsModal(); }
 async function addGroup(){
-  const name = document.getElementById('newGroupName').value.trim();
-  const color = document.getElementById('newGroupColor').value;
-  if(!name) return;
-  await sb.from('groups').insert({name, color});
-  await loadAll(); renderSettingsModal();
+  const name=document.getElementById('newGroupName').value.trim(); const color=document.getElementById('newGroupColor').value;
+  if(!name) return; await sb.from('groups').insert({name,color}); await loadAll(); renderSettingsModal();
 }
-async function updateGroupColor(id, color){ await sb.from('groups').update({color}).eq('id', id); }
+async function updateGroupField(id, field, value){ await sb.from('groups').update({[field]:value}).eq('id', id); }
 async function deleteGroup(id){ if(!confirm('이 무리를 삭제할까요?')) return; await sb.from('groups').delete().eq('id', id); await loadAll(); renderSettingsModal(); }
-
 async function addRelType(){
-  const label = document.getElementById('newRelName').value.trim();
-  const color = document.getElementById('newRelColor').value;
-  if(!label) return;
-  await sb.from('relationship_types').insert({label, color});
-  await loadAll(); renderSettingsModal();
+  const label=document.getElementById('newRelName').value.trim(); const color=document.getElementById('newRelColor').value;
+  if(!label) return; await sb.from('relationship_types').insert({label,color}); await loadAll(); renderSettingsModal();
 }
-async function updateRelTypeColor(id, color){ await sb.from('relationship_types').update({color}).eq('id', id); }
+async function updateRelTypeField(id, field, value){ await sb.from('relationship_types').update({[field]:value}).eq('id', id); }
 async function deleteRelType(id){ if(!confirm('이 관계 유형을 삭제할까요?')) return; await sb.from('relationship_types').delete().eq('id', id); await loadAll(); renderSettingsModal(); }
 
-// ---------------- Visualization (force-directed graph on canvas) ----------------
-const canvas = document.getElementById('graphcanvas');
-const ctx = canvas.getContext('2d');
-let nodes = [], simRunning = false;
+// ---------------- Visualization: radial relationship wheel ----------------
+const canvas=document.getElementById('graphcanvas'), ctx=canvas.getContext('2d');
+let nodes=[], hoveredId=null;
 
-function resizeCanvas(){
-  canvas.width = canvas.clientWidth;
-  canvas.height = canvas.clientHeight;
-}
-window.addEventListener('resize', ()=>{ if(document.getElementById('vizpage').classList.contains('active')){ resizeCanvas(); } });
+function resizeCanvas(){ canvas.width=canvas.clientWidth; canvas.height=canvas.clientHeight; }
+window.addEventListener('resize', ()=>{ if(document.getElementById('vizpage').classList.contains('active')) resizeCanvas(); });
+document.getElementById('groupModeSel').onchange=drawGraph;
+document.getElementById('groupFilterSel').onchange=drawGraph;
 
-document.getElementById('groupModeSel').onchange = drawGraph;
-document.getElementById('groupFilterSel').onchange = drawGraph;
-
-function initNodes(filterGroupId){
+function layoutNodes(filterGroupId){
   let list = state.friends;
   if(filterGroupId) list = list.filter(f=>friendGroupIds(f.id).includes(filterGroupId));
-  const existing = new Map(nodes.map(n=>[n.id,n]));
-  nodes = list.map(f=>{
-    const prev = existing.get(f.id);
-    return prev || {id:f.id, x:Math.random()*canvas.width, y:Math.random()*canvas.height, vx:0, vy:0};
+  // group by primary group for a calmer, clustered radial order
+  list = [...list].sort((a,b)=>{
+    const ga=(friendGroupIds(a.id)[0]||''), gb=(friendGroupIds(b.id)[0]||'');
+    if(ga!==gb) return ga.localeCompare(gb);
+    return a.name.localeCompare(b.name,'ko');
+  });
+  const cx=canvas.width/2, cy=canvas.height/2;
+  const r = Math.min(cx,cy) - 70;
+  const n = list.length || 1;
+  nodes = list.map((f,i)=>{
+    const angle = (i/n) * Math.PI*2 - Math.PI/2;
+    return { id:f.id, angle, x: cx+r*Math.cos(angle), y: cy+r*Math.sin(angle), homeX: cx+r*Math.cos(angle), homeY: cy+r*Math.sin(angle) };
   });
 }
-
-function edgesForGraph(filterGroupId){
-  const idset = new Set(nodes.map(n=>n.id));
-  return state.relationships.filter(r=> idset.has(r.friend_id) && idset.has(r.related_friend_id));
+function edgesForGraph(){
+  const idset=new Set(nodes.map(n=>n.id));
+  return state.relationships.filter(r=>idset.has(r.friend_id)&&idset.has(r.related_friend_id));
 }
-
-function simTick(edges){
-  const rep = 2600, springLen = 130, springK = 0.02, center = 0.0025, damp = 0.85;
-  for(const n of nodes){
-    n.fx=0; n.fy=0;
-    for(const m of nodes){
-      if(n===m) continue;
-      let dx=n.x-m.x, dy=n.y-m.y; let d2=dx*dx+dy*dy||0.01; let d=Math.sqrt(d2);
-      const f = rep/d2;
-      n.fx += (dx/d)*f; n.fy += (dy/d)*f;
-    }
-    n.fx += (canvas.width/2 - n.x)*center;
-    n.fy += (canvas.height/2 - n.y)*center;
-  }
-  for(const e of edges){
-    const a = nodes.find(n=>n.id===e.friend_id), b = nodes.find(n=>n.id===e.related_friend_id);
-    if(!a||!b) continue;
-    let dx=b.x-a.x, dy=b.y-a.y; let d=Math.sqrt(dx*dx+dy*dy)||0.01;
-    const f=(d-springLen)*springK;
-    a.fx += (dx/d)*f; a.fy += (dy/d)*f;
-    b.fx -= (dx/d)*f; b.fy -= (dy/d)*f;
-  }
-  for(const n of nodes){
-    n.vx = (n.vx+n.fx)*damp; n.vy=(n.vy+n.fy)*damp;
-    n.x += n.vx; n.y += n.vy;
-    n.x = Math.max(30,Math.min(canvas.width-30,n.x));
-    n.y = Math.max(30,Math.min(canvas.height-30,n.y));
-  }
-}
+function bezierPoint(a,b,cx,cy){ return {ax:a.x,ay:a.y,bx:b.x,by:b.y,cx,cy}; }
 
 function drawGraph(){
   if(!document.getElementById('vizpage').classList.contains('active')) return;
   resizeCanvas();
   const filterGroupId = document.getElementById('groupFilterSel').value || null;
   const mode = document.getElementById('groupModeSel').value;
-  initNodes(filterGroupId);
-  const edges = edgesForGraph(filterGroupId);
-
-  // legend
+  layoutNodes(filterGroupId);
+  const edges = edgesForGraph();
   const legend = document.getElementById('relLegend');
   legend.innerHTML = state.relTypes.map(rt=>`<span><i style="background:${rt.color}"></i>${rt.label}</span>`).join('');
 
-  let ticks = 0;
   cancelAnimationFrame(window.__vizraf);
   function frame(){
-    ticks++;
-    if(ticks<220) simTick(edges);
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    // edges
+    const cx=canvas.width/2, cy=canvas.height/2;
+
+    // group wedge backgrounds
+    if(mode==='wedge' && nodes.length){
+      const n=nodes.length;
+      nodes.forEach((node,i)=>{
+        const f=state.friends.find(x=>x.id===node.id); if(!f) return;
+        const gid=friendGroupIds(f.id)[0]; const g=state.groups.find(x=>x.id===gid);
+        if(!g) return;
+        const a0=(i/n)*Math.PI*2 - Math.PI/2 - (Math.PI/n);
+        const a1=(i/n)*Math.PI*2 - Math.PI/2 + (Math.PI/n);
+        ctx.beginPath(); ctx.moveTo(cx,cy);
+        ctx.arc(cx,cy, Math.min(cx,cy)-20, a0, a1);
+        ctx.closePath();
+        ctx.fillStyle = g.color+'14';
+        ctx.fill();
+      });
+    }
+
+    // edges as smooth curves through center-ish control point
     edges.forEach(e=>{
-      const a = nodes.find(n=>n.id===e.friend_id), b = nodes.find(n=>n.id===e.related_friend_id);
+      const a=nodes.find(x=>x.id===e.friend_id), b=nodes.find(x=>x.id===e.related_friend_id);
       if(!a||!b) return;
-      const rt = relTypeById(e.relationship_type_id);
-      ctx.strokeStyle = rt.color; ctx.lineWidth = 0.8 + (e.strength||3)*0.9; ctx.globalAlpha=0.75;
-      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      const rt=relTypeById(e.relationship_type_id);
+      const dim = hoveredId && hoveredId!==a.id && hoveredId!==b.id;
+      const midx=(a.x+b.x)/2, midy=(a.y+b.y)/2;
+      const pull=0.35;
+      const qx = midx + (cx-midx)*pull, qy = midy + (cy-midy)*pull;
+      ctx.strokeStyle = rt.color;
+      ctx.globalAlpha = dim ? 0.08 : 0.55;
+      ctx.lineWidth = 0.8 + (e.strength||3)*0.7;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.quadraticCurveTo(qx,qy,b.x,b.y); ctx.stroke();
     });
     ctx.globalAlpha=1;
+
     // nodes
     nodes.forEach(n=>{
-      const f = state.friends.find(x=>x.id===n.id); if(!f) return;
-      const gIds = friendGroupIds(f.id);
-      let fill = '#f3ead4';
-      if(mode==='primary' && gIds.length){ fill = (state.groups.find(g=>g.id===gIds[0])||{}).color || fill; }
-      ctx.beginPath(); ctx.arc(n.x,n.y,20,0,Math.PI*2);
-      ctx.fillStyle = fill; ctx.fill();
-      ctx.lineWidth=2; ctx.strokeStyle='#241c14'; ctx.stroke();
-
+      const f=state.friends.find(x=>x.id===n.id); if(!f) return;
+      const gIds=friendGroupIds(f.id);
+      const dim = hoveredId && hoveredId!==n.id && !edges.some(e=>(e.friend_id===hoveredId&&e.related_friend_id===n.id)||(e.related_friend_id===hoveredId&&e.friend_id===n.id));
+      ctx.globalAlpha = dim?0.25:1;
       if(mode==='ring' && gIds.length){
         gIds.forEach((gid,i)=>{
-          const g = state.groups.find(x=>x.id===gid); if(!g) return;
-          ctx.beginPath(); ctx.arc(n.x,n.y,24+i*4,0,Math.PI*2);
-          ctx.strokeStyle = g.color; ctx.lineWidth=2.4; ctx.stroke();
+          const g=state.groups.find(x=>x.id===gid); if(!g) return;
+          ctx.beginPath(); ctx.arc(n.x,n.y,20+i*4,0,Math.PI*2);
+          ctx.strokeStyle=g.color; ctx.lineWidth=2.2; ctx.stroke();
         });
       }
-      ctx.font='18px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
-      ctx.fillText(f.avatar_emoji||'🙂', n.x, n.y-2);
-      ctx.font='12px "IBM Plex Sans KR", sans-serif'; ctx.fillStyle='#f3ead4';
-      ctx.fillText(f.name, n.x, n.y+32);
+      ctx.beginPath(); ctx.arc(n.x,n.y,16,0,Math.PI*2);
+      ctx.fillStyle='#20242e'; ctx.fill();
+      ctx.lineWidth=1.4; ctx.strokeStyle='#3a4156'; ctx.stroke();
+      ctx.font='16px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.fillStyle='#e7e4da';
+      ctx.fillText(f.avatar_emoji||'🙂', n.x, n.y-1);
+      ctx.font='11px "IBM Plex Sans KR", sans-serif';
+      ctx.fillStyle= hoveredId===n.id ? '#cf9d4f' : '#9096a8';
+      ctx.fillText(f.name, n.x, n.y+28);
+      ctx.globalAlpha=1;
     });
     window.__vizraf = requestAnimationFrame(frame);
   }
   frame();
 }
-
-let dragNode=null;
-canvas.addEventListener('mousedown', e=>{
-  const r=canvas.getBoundingClientRect(); const mx=e.clientX-r.left, my=e.clientY-r.top;
-  dragNode = nodes.find(n=> (n.x-mx)**2+(n.y-my)**2 < 22*22);
-});
 canvas.addEventListener('mousemove', e=>{
-  if(!dragNode) return;
-  const r=canvas.getBoundingClientRect();
-  dragNode.x = e.clientX-r.left; dragNode.y = e.clientY-r.top; dragNode.vx=0; dragNode.vy=0;
+  const r=canvas.getBoundingClientRect(); const mx=e.clientX-r.left, my=e.clientY-r.top;
+  const n = nodes.find(n=>(n.x-mx)**2+(n.y-my)**2 < 18*18);
+  hoveredId = n ? n.id : null;
 });
-window.addEventListener('mouseup', ()=>{ dragNode=null; });
+canvas.addEventListener('mouseleave', ()=>{ hoveredId=null; });
 canvas.addEventListener('click', e=>{
   const r=canvas.getBoundingClientRect(); const mx=e.clientX-r.left, my=e.clientY-r.top;
-  const n = nodes.find(n=> (n.x-mx)**2+(n.y-my)**2 < 22*22);
+  const n = nodes.find(n=>(n.x-mx)**2+(n.y-my)**2 < 18*18);
   if(n) openFriendModal(n.id, false);
 });
 
-// ---------------- init ----------------
 loadAll();
 subscribeRealtime();
 </script>
